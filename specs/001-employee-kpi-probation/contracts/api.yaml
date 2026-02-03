@@ -1,0 +1,1184 @@
+openapi: 3.0.3
+info:
+  title: Employee KPI Probation Tracking API
+  description: API for tracking new employee probation periods, KPIs, and assessments
+  version: 1.0.0
+  contact:
+    name: Development Team
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Users
+    description: User management
+  - name: Probation
+    description: Probation record management
+  - name: KPI
+    description: KPI management
+  - name: Milestone
+    description: Milestone and assessment management
+  - name: Notifications
+    description: Notification management
+  - name: Reports
+    description: Report generation
+
+paths:
+  # ============ Auth ============
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+
+  # ============ Users ============
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/me/fcm-token:
+    post:
+      tags: [Users]
+      summary: Register FCM token for push notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Token registered
+
+  /users/team:
+    get:
+      tags: [Users]
+      summary: Get team members (Supervisor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Team members list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /users/all:
+    get:
+      tags: [Users]
+      summary: Get all users (HR Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [employee, supervisor, hr_admin]
+        - name: department
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============ Probation Records ============
+  /probation:
+    get:
+      tags: [Probation]
+      summary: List probation records
+      description: |
+        - Employee: Own record only
+        - Supervisor: Team members' records
+        - HR Admin: All records
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending_kpi, in_progress, pending_decision, passed, failed, resigned]
+        - name: supervisorId
+          in: query
+          schema:
+            type: string
+        - name: hasBottleneck
+          in: query
+          description: Filter records with overdue milestones
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Probation records list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbationListResponse'
+
+  /probation/{id}:
+    get:
+      tags: [Probation]
+      summary: Get probation record details
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      responses:
+        '200':
+          description: Probation record details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbationRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /probation/{id}/status:
+    patch:
+      tags: [Probation]
+      summary: Update probation status (HR Admin only)
+      description: Used for final decision or cancellation
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [passed, failed, resigned, terminated]
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbationRecord'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /probation/{id}/supervisor:
+    patch:
+      tags: [Probation]
+      summary: Transfer supervisor (HR Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [newSupervisorId]
+              properties:
+                newSupervisorId:
+                  type: string
+      responses:
+        '200':
+          description: Supervisor transferred
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============ KPIs ============
+  /probation/{id}/kpis:
+    get:
+      tags: [KPI]
+      summary: Get KPIs for probation record
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      responses:
+        '200':
+          description: KPIs list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kpis:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KPI'
+
+    post:
+      tags: [KPI]
+      summary: Create KPIs (Supervisor only)
+      description: Creates 3-5 KPIs for the employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kpis]
+              properties:
+                kpis:
+                  type: array
+                  minItems: 3
+                  maxItems: 5
+                  items:
+                    $ref: '#/components/schemas/KPIInput'
+      responses:
+        '201':
+          description: KPIs created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbationRecord'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /probation/{id}/kpis/{kpiId}:
+    patch:
+      tags: [KPI]
+      summary: Update a KPI (Supervisor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - name: kpiId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KPIInput'
+      responses:
+        '200':
+          description: KPI updated
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============ Milestones ============
+  /probation/{id}/milestones:
+    get:
+      tags: [Milestone]
+      summary: Get milestones for probation record
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+      responses:
+        '200':
+          description: Milestones list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  milestones:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Milestone'
+
+  /probation/{id}/milestones/{day}/self-assessment:
+    get:
+      tags: [Milestone]
+      summary: Get self-assessment (including draft)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      responses:
+        '200':
+          description: Self-assessment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelfAssessment'
+
+    put:
+      tags: [Milestone]
+      summary: Submit or save draft self-assessment (Employee only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelfAssessmentInput'
+      responses:
+        '200':
+          description: Assessment saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /probation/{id}/milestones/{day}/supervisor-assessment:
+    get:
+      tags: [Milestone]
+      summary: Get supervisor assessment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      responses:
+        '200':
+          description: Supervisor assessment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupervisorAssessment'
+
+    put:
+      tags: [Milestone]
+      summary: Submit supervisor assessment (Supervisor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupervisorAssessmentInput'
+      responses:
+        '200':
+          description: Assessment submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /probation/{id}/milestones/{day}/approve:
+    post:
+      tags: [Milestone]
+      summary: Approve milestone (Supervisor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      responses:
+        '200':
+          description: Milestone approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '400':
+          description: Cannot approve - assessments incomplete or score below threshold
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /probation/{id}/milestones/{day}/reject:
+    post:
+      tags: [Milestone]
+      summary: Reject milestone (Supervisor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProbationId'
+        - $ref: '#/components/parameters/MilestoneDay'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 10
+      responses:
+        '200':
+          description: Milestone rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============ Notifications ============
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Get user notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Notifications list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+
+  /notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: Get unread notification count
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+
+  /notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Marked as read
+
+  /notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: All marked as read
+
+  # ============ Reports ============
+  /reports/probation-summary:
+    get:
+      tags: [Reports]
+      summary: Generate probation summary report (HR Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [pdf, excel]
+            default: pdf
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [all, passed, failed, in_progress]
+      responses:
+        '200':
+          description: Report file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /reports/employee/{employeeId}:
+    get:
+      tags: [Reports]
+      summary: Generate individual employee report
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [pdf]
+            default: pdf
+      responses:
+        '200':
+          description: Report file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  # ============ Dashboard ============
+  /dashboard/hr:
+    get:
+      tags: [Dashboard]
+      summary: HR Dashboard statistics (HR Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HRDashboard'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /dashboard/supervisor:
+    get:
+      tags: [Dashboard]
+      summary: Supervisor Dashboard (Supervisor only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupervisorDashboard'
+
+  /dashboard/employee:
+    get:
+      tags: [Dashboard]
+      summary: Employee Dashboard (countdown, KPIs, status)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeDashboard'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ProbationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Probation record ID
+
+    MilestoneDay:
+      name: day
+      in: path
+      required: true
+      schema:
+        type: integer
+        enum: [30, 60, 90, 119]
+      description: Milestone day (30, 60, 90, or 119)
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        employeeId:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [employee, supervisor, hr_admin]
+        department:
+          type: string
+        supervisorId:
+          type: string
+        isActive:
+          type: boolean
+
+    UserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    KPI:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        criteria:
+          type: string
+        status:
+          type: string
+          enum: [active, completed, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+
+    KPIInput:
+      type: object
+      required: [title, description, criteria]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 1000
+        criteria:
+          type: string
+          maxLength: 500
+
+    AssessmentScore:
+      type: object
+      required: [score]
+      properties:
+        score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+
+    SelfAssessment:
+      type: object
+      properties:
+        coreValue:
+          $ref: '#/components/schemas/AssessmentScore'
+        jobPerformance:
+          $ref: '#/components/schemas/AssessmentScore'
+        attendance:
+          $ref: '#/components/schemas/AssessmentScore'
+        cultureFit:
+          $ref: '#/components/schemas/AssessmentScore'
+        averageScore:
+          type: number
+        comments:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        isDraft:
+          type: boolean
+        lastSavedAt:
+          type: string
+          format: date-time
+
+    SelfAssessmentInput:
+      type: object
+      required: [coreValue, jobPerformance, attendance, cultureFit]
+      properties:
+        coreValue:
+          $ref: '#/components/schemas/AssessmentScore'
+        jobPerformance:
+          $ref: '#/components/schemas/AssessmentScore'
+        attendance:
+          $ref: '#/components/schemas/AssessmentScore'
+        cultureFit:
+          $ref: '#/components/schemas/AssessmentScore'
+        comments:
+          type: string
+        isDraft:
+          type: boolean
+          default: false
+
+    SupervisorAssessment:
+      type: object
+      properties:
+        coreValue:
+          $ref: '#/components/schemas/AssessmentScore'
+        jobPerformance:
+          $ref: '#/components/schemas/AssessmentScore'
+        attendance:
+          $ref: '#/components/schemas/AssessmentScore'
+        cultureFit:
+          $ref: '#/components/schemas/AssessmentScore'
+        averageScore:
+          type: number
+        kpiScores:
+          type: array
+          items:
+            type: object
+            properties:
+              kpiId:
+                type: string
+              score:
+                type: integer
+                minimum: 1
+                maximum: 5
+              comment:
+                type: string
+        overallComment:
+          type: string
+        recommendation:
+          type: string
+          enum: [pass, fail, extend]
+        submittedAt:
+          type: string
+          format: date-time
+
+    SupervisorAssessmentInput:
+      type: object
+      required: [coreValue, jobPerformance, attendance, cultureFit, kpiScores, overallComment, recommendation]
+      properties:
+        coreValue:
+          $ref: '#/components/schemas/AssessmentScore'
+        jobPerformance:
+          $ref: '#/components/schemas/AssessmentScore'
+        attendance:
+          $ref: '#/components/schemas/AssessmentScore'
+        cultureFit:
+          $ref: '#/components/schemas/AssessmentScore'
+        kpiScores:
+          type: array
+          items:
+            type: object
+            required: [kpiId, score]
+            properties:
+              kpiId:
+                type: string
+              score:
+                type: integer
+                minimum: 1
+                maximum: 5
+              comment:
+                type: string
+        overallComment:
+          type: string
+          minLength: 10
+        recommendation:
+          type: string
+          enum: [pass, fail, extend]
+
+    Milestone:
+      type: object
+      properties:
+        day:
+          type: integer
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [upcoming, pending_self, pending_supervisor, pending_approval, passed, failed, overdue]
+        daysRemaining:
+          type: integer
+        selfAssessment:
+          $ref: '#/components/schemas/SelfAssessment'
+        supervisorAssessment:
+          $ref: '#/components/schemas/SupervisorAssessment'
+        approvedAt:
+          type: string
+          format: date-time
+        approvedBy:
+          type: string
+        rejectionReason:
+          type: string
+
+    ProbationRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        employee:
+          $ref: '#/components/schemas/User'
+        supervisor:
+          $ref: '#/components/schemas/User'
+        startDate:
+          type: string
+          format: date
+        probationDays:
+          type: integer
+          enum: [90, 119]
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending_kpi, in_progress, pending_decision, passed, failed, resigned, terminated]
+        kpis:
+          type: array
+          items:
+            $ref: '#/components/schemas/KPI'
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milestone'
+        finalDecision:
+          type: object
+          properties:
+            decision:
+              type: string
+              enum: [passed, failed]
+            decidedBy:
+              type: string
+            decidedAt:
+              type: string
+              format: date-time
+            reason:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProbationListResponse:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProbationRecord'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    HRDashboard:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            totalActive:
+              type: integer
+            pendingKpi:
+              type: integer
+            inProgress:
+              type: integer
+            pendingDecision:
+              type: integer
+            passedThisMonth:
+              type: integer
+            failedThisMonth:
+              type: integer
+        bottlenecks:
+          type: array
+          items:
+            type: object
+            properties:
+              record:
+                $ref: '#/components/schemas/ProbationRecord'
+              issue:
+                type: string
+              daysSinceOverdue:
+                type: integer
+        upcomingMilestones:
+          type: array
+          items:
+            type: object
+            properties:
+              record:
+                $ref: '#/components/schemas/ProbationRecord'
+              milestone:
+                $ref: '#/components/schemas/Milestone'
+              daysUntilDue:
+                type: integer
+
+    SupervisorDashboard:
+      type: object
+      properties:
+        teamMembers:
+          type: array
+          items:
+            type: object
+            properties:
+              record:
+                $ref: '#/components/schemas/ProbationRecord'
+              currentMilestone:
+                $ref: '#/components/schemas/Milestone'
+              nextAction:
+                type: string
+        pendingApprovals:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProbationRecord'
+        statistics:
+          type: object
+          properties:
+            total:
+              type: integer
+            passed:
+              type: integer
+            inProgress:
+              type: integer
+
+    EmployeeDashboard:
+      type: object
+      properties:
+        probationRecord:
+          $ref: '#/components/schemas/ProbationRecord'
+        currentMilestone:
+          $ref: '#/components/schemas/Milestone'
+        daysRemaining:
+          type: integer
+        nextAction:
+          type: string
+        progress:
+          type: object
+          properties:
+            completedMilestones:
+              type: integer
+            totalMilestones:
+              type: integer
+            percentage:
+              type: number
