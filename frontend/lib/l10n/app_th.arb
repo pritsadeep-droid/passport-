@@ -5,39 +5,13 @@
   "logout": "ออกจากระบบ",
   "email": "อีเมล",
   "password": "รหัสผ่าน",
-  "submit": "ส่ง",
-  "cancel": "ยกเลิก",
-  "save": "บันทึก",
-  "delete": "ลบ",
-  "edit": "แก้ไข",
-  "loading": "กำลังโหลด...",
-  "error": "เกิดข้อผิดพลาด",
-  "success": "สำเร็จ",
-  "confirm": "ยืนยัน",
-
-  "dashboard": "หน้าหลัก",
-  "notifications": "การแจ้งเตือน",
-  "profile": "โปรไฟล์",
-  "settings": "ตั้งค่า",
-
-  "newEmployee": "พนักงานใหม่",
-  "supervisor": "หัวหน้างาน",
-  "hrAdmin": "ผู้ดูแล HR",
-
+  "dashboard": "แดชบอร์ด",
+  "employees": "พนักงาน",
   "kpi": "KPI",
-  "kpiTitle": "ชื่อเป้าหมาย",
-  "kpiDescription": "รายละเอียด",
-  "kpiCriteria": "เกณฑ์วัดผล",
-  "createKpi": "สร้าง KPI",
-  "editKpi": "แก้ไข KPI",
-  "minKpiError": "ต้องมี KPI อย่างน้อย 3 ข้อ",
-  "maxKpiError": "KPI ได้สูงสุด 5 ข้อ",
-
-  "milestone": "ช่วงประเมิน",
-  "milestoneDay30": "30 วัน",
-  "milestoneDay60": "60 วัน",
-  "milestoneDay90": "90 วัน",
-  "milestoneDay119": "119 วัน",
+  "assessment": "การประเมิน",
+  "notifications": "การแจ้งเตือน",
+  "settings": "ตั้งค่า",
+  "probationPeriod": "ช่วงทดลองงาน",
   "daysRemaining": "เหลืออีก {days} วัน",
   "@daysRemaining": {
     "placeholders": {
@@ -46,46 +20,14 @@
       }
     }
   },
-
-  "assessment": "การประเมิน",
-  "selfAssessment": "ประเมินตนเอง",
-  "supervisorAssessment": "ประเมินโดยหัวหน้า",
-  "coreValue": "Core Value",
-  "jobPerformance": "ผลงาน",
-  "attendance": "การมาทำงาน",
-  "cultureFit": "การปรับตัว",
-  "averageScore": "คะแนนเฉลี่ย",
-  "comment": "ความเห็น",
-
-  "scoreNeedsImprovement": "ต้องปรับปรุงมาก",
-  "scoreImprove": "ต้องปรับปรุง",
-  "scoreFair": "พอใช้",
-  "scoreGood": "ดี",
-  "scoreExcellent": "ดีเยี่ยม",
-
-  "approve": "ยอมรับ",
-  "reject": "ไม่ผ่าน",
-  "pass": "ผ่าน",
-  "fail": "ไม่ผ่าน",
+  "progress": "ความคืบหน้า",
+  "complete": "เสร็จสมบูรณ์",
   "pending": "รอดำเนินการ",
-  "inProgress": "กำลังดำเนินการ",
-
-  "probationPassed": "ผ่านทดลองงาน",
-  "probationFailed": "ไม่ผ่านทดลองงาน",
-  "confirmPermanent": "ยืนยันเป็นพนักงานประจำ",
-  "rejectProbation": "ไม่ผ่านทดลองงาน",
-
-  "bottleneck": "ติดค้าง",
-  "overdue": "เกินกำหนด",
-  "upcomingMilestones": "กำลังจะถึงกำหนด",
-
-  "report": "รายงาน",
-  "downloadReport": "ดาวน์โหลดรายงาน",
-  "pdfFormat": "PDF",
-  "excelFormat": "Excel",
-
-  "noData": "ไม่มีข้อมูล",
-  "tryAgain": "ลองอีกครั้ง",
-  "networkError": "เชื่อมต่อเครือข่ายไม่ได้",
-  "sessionExpired": "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง"
+  "approved": "อนุมัติแล้ว",
+  "rejected": "ไม่อนุมัติ",
+  "submit": "ส่ง",
+  "save": "บันทึก",
+  "cancel": "ยกเลิก",
+  "confirm": "ยืนยัน",
+  "loading": "กำลังโหลด..."
 }

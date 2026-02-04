@@ -83,6 +83,38 @@ class LoadingOverlay extends StatelessWidget {
   }
 }
 
+/// Loading widget for centered loading display with optional message
+class LoadingWidget extends StatelessWidget {
+  final String? message;
+
+  const LoadingWidget({
+    super.key,
+    this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          if (message != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              message!,
+              style: AppTextStyles.body1.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 /// Inline loading indicator
 class LoadingIndicator extends StatelessWidget {
   final double size;

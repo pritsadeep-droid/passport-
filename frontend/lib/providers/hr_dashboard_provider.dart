@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/dashboard_service.dart';
 import '../services/api_client.dart';
+import 'dashboard_provider.dart';
 
 /// HR Dashboard state
 class HRDashboardState {
-  final HRDashboardData? data;
+  final HrDashboardData? data;
   final bool isLoading;
   final String? error;
   final DateTime? lastUpdated;
@@ -17,7 +18,7 @@ class HRDashboardState {
   });
 
   HRDashboardState copyWith({
-    HRDashboardData? data,
+    HrDashboardData? data,
     bool? isLoading,
     String? error,
     DateTime? lastUpdated,
@@ -42,7 +43,7 @@ class HRDashboardNotifier extends StateNotifier<HRDashboardState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final data = await _dashboardService.getHRDashboard();
+      final data = await _dashboardService.getHrDashboard();
       state = HRDashboardState(
         data: data,
         lastUpdated: DateTime.now(),
@@ -156,19 +157,19 @@ class EmployeeWithProbation {
   });
 
   factory EmployeeWithProbation.fromJson(Map<String, dynamic> json) {
-    final employee = json['employeeId'] ?? json;
+    final employee = json['employeeId'] as Map<String, dynamic>? ?? json;
     return EmployeeWithProbation(
-      id: employee['_id'] ?? employee['id'] ?? '',
-      name: employee['name'] ?? employee['email'] ?? '',
-      email: employee['email'] ?? '',
-      department: employee['department'],
-      position: employee['position'],
+      id: (employee['_id'] ?? employee['id'] ?? '') as String,
+      name: (employee['name'] ?? employee['email'] ?? '') as String,
+      email: (employee['email'] ?? '') as String,
+      department: employee['department'] as String?,
+      position: employee['position'] as String?,
       probationRecordId: json['_id']?.toString() ?? json['id']?.toString(),
-      probationStatus: json['status'],
-      daysRemaining: json['remainingDays'],
-      progressPercentage: json['progressPercentage'],
-      hasOverdue: json['hasOverdue'] ?? false,
-      isAtRisk: json['isAtRisk'] ?? false,
+      probationStatus: json['status'] as String?,
+      daysRemaining: json['remainingDays'] as int?,
+      progressPercentage: json['progressPercentage'] as int?,
+      hasOverdue: (json['hasOverdue'] as bool?) ?? false,
+      isAtRisk: (json['isAtRisk'] as bool?) ?? false,
     );
   }
 }
@@ -323,18 +324,21 @@ class BottleneckItem {
   });
 
   factory BottleneckItem.fromJson(Map<String, dynamic> json) {
+    final employee = json['employee'] as Map<String, dynamic>?;
+    final supervisor = json['supervisor'] as Map<String, dynamic>?;
+    final milestone = json['milestone'] as Map<String, dynamic>?;
     return BottleneckItem(
-      type: json['type'] ?? '',
-      severity: json['severity'] ?? 'warning',
+      type: (json['type'] as String?) ?? '',
+      severity: (json['severity'] as String?) ?? 'warning',
       recordId: json['recordId']?.toString() ?? json['probationRecordId']?.toString() ?? '',
       employeeId: json['employeeId']?.toString() ?? '',
-      employeeName: json['employeeName'] ?? json['employee']?['name'] ?? '',
-      department: json['department'] ?? json['employee']?['department'],
-      supervisorName: json['supervisorName'] ?? json['supervisor']?['name'],
-      message: json['message'] ?? '',
-      milestoneDay: json['milestoneDay'] ?? json['milestone']?['day'],
-      daysOverdue: json['daysOverdue'] ?? json['milestone']?['daysOverdue'],
-      daysPending: json['daysPending'] ?? json['daysSinceStart'],
+      employeeName: (json['employeeName'] as String?) ?? (employee?['name'] as String?) ?? '',
+      department: (json['department'] as String?) ?? (employee?['department'] as String?),
+      supervisorName: (json['supervisorName'] as String?) ?? (supervisor?['name'] as String?),
+      message: (json['message'] as String?) ?? '',
+      milestoneDay: (json['milestoneDay'] as int?) ?? (milestone?['day'] as int?),
+      daysOverdue: (json['daysOverdue'] as int?) ?? (milestone?['daysOverdue'] as int?),
+      daysPending: (json['daysPending'] as int?) ?? (json['daysSinceStart'] as int?),
     );
   }
 
@@ -361,12 +365,12 @@ class DepartmentStats {
 
   factory DepartmentStats.fromJson(Map<String, dynamic> json) {
     return DepartmentStats(
-      department: json['department'] ?? 'Unknown',
-      total: json['total'] ?? 0,
-      pendingKpi: json['pending_kpi'] ?? 0,
-      inProgress: json['in_progress'] ?? 0,
-      hasOverdue: json['hasOverdue'] ?? 0,
-      atRisk: json['atRisk'] ?? 0,
+      department: (json['department'] as String?) ?? 'Unknown',
+      total: (json['total'] as int?) ?? 0,
+      pendingKpi: (json['pending_kpi'] as int?) ?? 0,
+      inProgress: (json['in_progress'] as int?) ?? 0,
+      hasOverdue: (json['hasOverdue'] as int?) ?? 0,
+      atRisk: (json['atRisk'] as int?) ?? 0,
     );
   }
 }

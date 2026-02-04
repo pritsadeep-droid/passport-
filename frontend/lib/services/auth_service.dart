@@ -27,11 +27,11 @@ class AuthService {
         },
       );
 
-      final data = response.data['data'];
+      final data = response.data['data'] as Map<String, dynamic>;
       final authResponse = AuthResponse(
-        accessToken: data['accessToken'],
-        refreshToken: data['refreshToken'],
-        user: User.fromJson(data['user']),
+        accessToken: data['accessToken'] as String,
+        refreshToken: data['refreshToken'] as String,
+        user: User.fromJson(data['user'] as Map<String, dynamic>),
       );
 
       // Save tokens
@@ -89,7 +89,7 @@ class AuthService {
   Future<User> getCurrentUser() async {
     try {
       final response = await _apiClient.get('/users/me');
-      return User.fromJson(response.data['data']);
+      return User.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

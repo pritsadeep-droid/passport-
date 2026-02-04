@@ -127,7 +127,13 @@ const serverErrorResponse = (res, message = 'Internal server error') => {
   return errorResponse(res, 500, message);
 };
 
+// Helper function with simpler signature: success(res, data, message)
+const success = (res, data = null, message = 'Success') => {
+  return successResponse(res, 200, message, data);
+};
+
 module.exports = {
+  success,
   successResponse,
   errorResponse,
   paginatedResponse,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/assessment.dart';
+import '../../models/milestone.dart';
 import '../../models/probation_record.dart';
 import '../../providers/milestone_provider.dart';
 import '../../utils/theme.dart';
@@ -153,7 +155,7 @@ class _MilestoneApprovalScreenState
 
   Widget _buildBody(MilestoneDetailState state) {
     if (state.isLoading && state.milestoneData == null) {
-      return const LoadingWidget(message: 'กำลังโหลดข้อมูล...');
+      return LoadingWidget(message: 'กำลังโหลดข้อมูล...');
     }
 
     if (state.error != null && state.milestoneData == null) {
@@ -164,7 +166,7 @@ class _MilestoneApprovalScreenState
     }
 
     if (state.milestoneData == null) {
-      return const CustomErrorWidget(
+      return CustomErrorWidget(
         message: 'ไม่พบข้อมูล Milestone',
       );
     }
@@ -329,31 +331,27 @@ class _MilestoneApprovalScreenState
     );
   }
 
-  Widget _buildRecommendationCard(String recommendation) {
+  Widget _buildRecommendationCard(Recommendation recommendation) {
     String text;
     Color color;
     IconData icon;
 
     switch (recommendation) {
-      case 'pass':
+      case Recommendation.pass:
         text = 'หัวหน้าแนะนำ: ผ่านการประเมิน';
         color = Colors.green;
         icon = Icons.thumb_up;
         break;
-      case 'fail':
+      case Recommendation.fail:
         text = 'หัวหน้าแนะนำ: ไม่ผ่านการประเมิน';
         color = Colors.red;
         icon = Icons.thumb_down;
         break;
-      case 'extend':
+      case Recommendation.extend:
         text = 'หัวหน้าแนะนำ: ขยายระยะเวลาทดลองงาน';
         color = Colors.orange;
         icon = Icons.schedule;
         break;
-      default:
-        text = 'ไม่มีข้อเสนอแนะ';
-        color = Colors.grey;
-        icon = Icons.help_outline;
     }
 
     return Card(

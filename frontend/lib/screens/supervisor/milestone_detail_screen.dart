@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/milestone.dart';
 import '../../models/probation_record.dart';
 import '../../providers/milestone_provider.dart';
 import '../../utils/theme.dart';
@@ -48,11 +49,11 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
         return 'ผ่าน';
       case MilestoneStatus.failed:
         return 'ไม่ผ่าน';
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return 'รออนุมัติ';
-      case MilestoneStatus.pending_supervisor:
+      case MilestoneStatus.pendingSupervisor:
         return 'รอหัวหน้าประเมิน';
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSelf:
         return 'รอประเมินตนเอง';
       case MilestoneStatus.overdue:
         return 'เกินกำหนด';
@@ -68,11 +69,11 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
         return Colors.green;
       case MilestoneStatus.failed:
         return Colors.red;
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return Colors.orange;
-      case MilestoneStatus.pending_supervisor:
+      case MilestoneStatus.pendingSupervisor:
         return Colors.blue;
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSelf:
         return AppColors.primary;
       case MilestoneStatus.overdue:
         return Colors.red.shade700;
@@ -120,7 +121,7 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
 
   Widget _buildBody(MilestoneDetailState state) {
     if (state.isLoading && state.milestoneData == null) {
-      return const LoadingWidget(message: 'กำลังโหลดข้อมูล...');
+      return LoadingWidget(message: 'กำลังโหลดข้อมูล...');
     }
 
     if (state.error != null && state.milestoneData == null) {
@@ -131,7 +132,7 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
     }
 
     if (state.milestoneData == null) {
-      return const CustomErrorWidget(
+      return CustomErrorWidget(
         message: 'ไม่พบข้อมูล Milestone',
       );
     }
@@ -189,7 +190,7 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
 
             // Action buttons based on permissions
             if (state.milestoneData!.canApprove &&
-                milestone.status == MilestoneStatus.pending_approval) ...[
+                milestone.status == MilestoneStatus.pendingApproval) ...[
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,

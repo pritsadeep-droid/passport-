@@ -264,6 +264,51 @@ class SessionExpired extends StatelessWidget {
   }
 }
 
+/// Custom error widget for simple error display with optional retry
+class CustomErrorWidget extends StatelessWidget {
+  final String message;
+  final VoidCallback? onRetry;
+
+  const CustomErrorWidget({
+    super.key,
+    required this.message,
+    this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.error,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              message,
+              style: AppTextStyles.subtitle1,
+              textAlign: TextAlign.center,
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: const Text('ลองอีกครั้ง'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Snackbar helpers
 void showErrorSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(

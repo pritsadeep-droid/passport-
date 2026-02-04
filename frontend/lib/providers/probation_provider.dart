@@ -234,6 +234,32 @@ class ProbationDetailNotifier extends StateNotifier<ProbationDetailState> {
   void clearError() {
     state = state.copyWith(clearError: true);
   }
+
+  /// Create probation record
+  Future<ProbationRecord?> createProbationRecord({
+    required String employeeId,
+    required String supervisorId,
+    required DateTime startDate,
+    int probationDays = 90,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final request = CreateProbationRequest(
+        employeeId: employeeId,
+        supervisorId: supervisorId,
+        startDate: startDate,
+        probationDays: probationDays,
+      );
+
+      final record = await _probationService.createProbationRecord(request);
+      state = state.copyWith(record: record, isLoading: false);
+      return record;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
 }
 
 /// Probation detail provider (family for multiple records)
@@ -248,6 +274,70 @@ final myProbationProvider =
     StateNotifierProvider<ProbationDetailNotifier, ProbationDetailState>((ref) {
   final probationService = ref.watch(probationServiceProvider);
   return ProbationDetailNotifier(probationService);
+});
+
+/// Probation record provider with ID - allows loadRecord() without parameters
+class ProbationRecordNotifier extends StateNotifier<ProbationDetailState> {
+  final ProbationService _probationService;
+  final String recordId;
+
+  ProbationRecordNotifier(this._probationService, this.recordId)
+      : super(const ProbationDetailState());
+
+  /// Load the probation record
+  Future<void> loadRecord() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final record = await _probationService.getProbationRecordById(recordId);
+      state = state.copyWith(record: record, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// Update record in state
+  void updateRecord(ProbationRecord record) {
+    state = state.copyWith(record: record);
+  }
+
+  /// Clear error
+  void clearError() {
+    state = state.copyWith(clearError: true);
+  }
+
+  /// Create probation record
+  Future<ProbationRecord?> createProbationRecord({
+    required String employeeId,
+    required String supervisorId,
+    required DateTime startDate,
+    int probationDays = 90,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final request = CreateProbationRequest(
+        employeeId: employeeId,
+        supervisorId: supervisorId,
+        startDate: startDate,
+        probationDays: probationDays,
+      );
+
+      final record = await _probationService.createProbationRecord(request);
+      state = state.copyWith(record: record, isLoading: false);
+      return record;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
+}
+
+/// Probation record provider family (ID-based with parameterless loadRecord)
+final probationRecordProvider = StateNotifierProvider.family<
+    ProbationRecordNotifier, ProbationDetailState, String>((ref, id) {
+  final probationService = ref.watch(probationServiceProvider);
+  return ProbationRecordNotifier(probationService, id);
 });
 
 /// Team probation records provider (for supervisor)

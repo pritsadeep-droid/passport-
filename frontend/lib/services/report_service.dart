@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'api_apiClient.dart';
+import 'api_client.dart';
 
 /// Report type definition
 class ReportType {

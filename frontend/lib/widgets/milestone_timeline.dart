@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/probation_record.dart';
+import '../models/milestone.dart';
 import '../utils/theme.dart';
 
 /// Widget to display milestone timeline
@@ -47,11 +47,11 @@ class _MilestoneTimelineItem extends StatelessWidget {
         return Colors.green;
       case MilestoneStatus.failed:
         return Colors.red;
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return Colors.orange;
-      case MilestoneStatus.pending_supervisor:
+      case MilestoneStatus.pendingSupervisor:
         return Colors.blue;
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSelf:
         return AppColors.primary;
       case MilestoneStatus.overdue:
         return Colors.red.shade700;
@@ -67,11 +67,11 @@ class _MilestoneTimelineItem extends StatelessWidget {
         return Icons.check_circle;
       case MilestoneStatus.failed:
         return Icons.cancel;
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return Icons.pending_actions;
-      case MilestoneStatus.pending_supervisor:
+      case MilestoneStatus.pendingSupervisor:
         return Icons.rate_review;
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSelf:
         return Icons.edit_note;
       case MilestoneStatus.overdue:
         return Icons.warning;
@@ -87,11 +87,11 @@ class _MilestoneTimelineItem extends StatelessWidget {
         return 'ผ่าน';
       case MilestoneStatus.failed:
         return 'ไม่ผ่าน';
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return 'รออนุมัติ';
-      case MilestoneStatus.pending_supervisor:
+      case MilestoneStatus.pendingSupervisor:
         return 'รอหัวหน้าประเมิน';
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSelf:
         return 'รอประเมินตนเอง';
       case MilestoneStatus.overdue:
         return 'เกินกำหนด';
@@ -205,7 +205,7 @@ class _MilestoneTimelineItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       if (milestone.status == MilestoneStatus.upcoming ||
-                          milestone.status == MilestoneStatus.pending_self)
+                          milestone.status == MilestoneStatus.pendingSelf)
                         Text(
                           daysUntilDue > 0
                               ? '(อีก $daysUntilDue วัน)'
@@ -350,10 +350,10 @@ class MilestoneTimelineCompact extends StatelessWidget {
         return Colors.green;
       case MilestoneStatus.failed:
         return Colors.red;
-      case MilestoneStatus.pending_approval:
+      case MilestoneStatus.pendingApproval:
         return Colors.orange;
-      case MilestoneStatus.pending_supervisor:
-      case MilestoneStatus.pending_self:
+      case MilestoneStatus.pendingSupervisor:
+      case MilestoneStatus.pendingSelf:
         return AppColors.primary;
       case MilestoneStatus.overdue:
         return Colors.red.shade700;

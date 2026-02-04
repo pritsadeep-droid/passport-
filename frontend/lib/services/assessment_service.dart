@@ -1,7 +1,33 @@
 import 'package:dio/dio.dart';
+import '../models/assessment.dart' hide AssessmentScore;
+import '../models/kpi.dart';
+import '../models/milestone.dart';
 import '../models/probation_record.dart';
+import '../models/user.dart';
 import 'api_client.dart';
-import 'milestone_service.dart';
+import 'milestone_service.dart' hide UserInfo;
+
+/// Simple user info for embedded data
+class UserInfo {
+  final String id;
+  final String name;
+  final String? email;
+  final String? department;
+
+  const UserInfo({
+    required this.id,
+    required this.name,
+    this.email,
+    this.department,
+  });
+
+  factory UserInfo.fromJson(Map<String, dynamic> json) => UserInfo(
+        id: json['id'] as String? ?? json['_id'] as String,
+        name: json['name'] as String,
+        email: json['email'] as String?,
+        department: json['department'] as String?,
+      );
+}
 
 /// Current assessment data for employee
 class CurrentAssessmentData {

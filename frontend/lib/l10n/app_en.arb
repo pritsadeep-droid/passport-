@@ -1,43 +1,17 @@
 {
   "@@locale": "en",
-  "appTitle": "KPI Probation Tracking",
+  "appTitle": "KPI Probation Tracking System",
   "login": "Login",
   "logout": "Logout",
   "email": "Email",
   "password": "Password",
-  "submit": "Submit",
-  "cancel": "Cancel",
-  "save": "Save",
-  "delete": "Delete",
-  "edit": "Edit",
-  "loading": "Loading...",
-  "error": "Error",
-  "success": "Success",
-  "confirm": "Confirm",
-
   "dashboard": "Dashboard",
-  "notifications": "Notifications",
-  "profile": "Profile",
-  "settings": "Settings",
-
-  "newEmployee": "New Employee",
-  "supervisor": "Supervisor",
-  "hrAdmin": "HR Admin",
-
+  "employees": "Employees",
   "kpi": "KPI",
-  "kpiTitle": "Goal Title",
-  "kpiDescription": "Description",
-  "kpiCriteria": "Success Criteria",
-  "createKpi": "Create KPI",
-  "editKpi": "Edit KPI",
-  "minKpiError": "Minimum 3 KPIs required",
-  "maxKpiError": "Maximum 5 KPIs allowed",
-
-  "milestone": "Milestone",
-  "milestoneDay30": "Day 30",
-  "milestoneDay60": "Day 60",
-  "milestoneDay90": "Day 90",
-  "milestoneDay119": "Day 119",
+  "assessment": "Assessment",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "probationPeriod": "Probation Period",
   "daysRemaining": "{days} days remaining",
   "@daysRemaining": {
     "placeholders": {
@@ -46,46 +20,14 @@
       }
     }
   },
-
-  "assessment": "Assessment",
-  "selfAssessment": "Self Assessment",
-  "supervisorAssessment": "Supervisor Assessment",
-  "coreValue": "Core Value",
-  "jobPerformance": "Job Performance",
-  "attendance": "Attendance",
-  "cultureFit": "Culture Fit",
-  "averageScore": "Average Score",
-  "comment": "Comment",
-
-  "scoreNeedsImprovement": "Needs Major Improvement",
-  "scoreImprove": "Needs Improvement",
-  "scoreFair": "Fair",
-  "scoreGood": "Good",
-  "scoreExcellent": "Excellent",
-
-  "approve": "Approve",
-  "reject": "Reject",
-  "pass": "Pass",
-  "fail": "Fail",
+  "progress": "Progress",
+  "complete": "Complete",
   "pending": "Pending",
-  "inProgress": "In Progress",
-
-  "probationPassed": "Probation Passed",
-  "probationFailed": "Probation Failed",
-  "confirmPermanent": "Confirm as Permanent",
-  "rejectProbation": "Reject Probation",
-
-  "bottleneck": "Bottleneck",
-  "overdue": "Overdue",
-  "upcomingMilestones": "Upcoming Milestones",
-
-  "report": "Report",
-  "downloadReport": "Download Report",
-  "pdfFormat": "PDF",
-  "excelFormat": "Excel",
-
-  "noData": "No data available",
-  "tryAgain": "Try again",
-  "networkError": "Network connection failed",
-  "sessionExpired": "Session expired. Please login again"
+  "approved": "Approved",
+  "rejected": "Rejected",
+  "submit": "Submit",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "loading": "Loading..."
 }

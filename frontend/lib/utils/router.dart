@@ -20,6 +20,7 @@ import '../screens/hr/hr_dashboard_screen.dart';
 import '../screens/hr/all_employees_screen.dart';
 import '../screens/hr/employee_review_screen.dart';
 import '../screens/hr/reports_screen.dart';
+import '../screens/hr/create_user_screen.dart';
 import '../widgets/loading.dart';
 
 /// Route names
@@ -48,6 +49,7 @@ class Routes {
   static const String hrDashboard = '/hr/dashboard';
   static const String allEmployees = '/hr/employees';
   static const String employeeReview = '/hr/employee/:id/review';
+  static const String createUser = '/hr/create-user';
   static const String reports = '/hr/reports';
 
   // Common routes
@@ -225,6 +227,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               final id = state.pathParameters['id']!;
               return EmployeeReviewScreen(employeeId: id);
             },
+          ),
+
+          GoRoute(
+            path: 'create-user',
+            name: 'createUser',
+            builder: (context, state) => const CreateUserScreen(),
           ),
           GoRoute(
             path: 'reports',

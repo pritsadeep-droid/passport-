@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/notification_provider.dart';
+import '../../services/notification_service.dart';
 import '../../widgets/notification_item.dart';
 
 /// Notifications screen showing all user notifications
@@ -217,7 +218,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  void _handleNotificationTap(notification) {
+  void _handleNotificationTap(NotificationData notification) {
     // Mark as read first
     if (!notification.isRead) {
       ref.read(notificationsListProvider.notifier).markAsRead(notification.id);
@@ -260,7 +261,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     }
   }
 
-  void _handleNotificationDismiss(notification) {
+  void _handleNotificationDismiss(NotificationData notification) {
     ref.read(notificationsListProvider.notifier).deleteNotification(notification.id);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -278,7 +279,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  void _handleMarkAsRead(notification) {
+  void _handleMarkAsRead(NotificationData notification) {
     ref.read(notificationsListProvider.notifier).markAsRead(notification.id);
   }
 

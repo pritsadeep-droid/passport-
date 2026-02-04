@@ -67,7 +67,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               if (statsState.isLoading)
                 const Center(child: LoadingIndicator())
               else if (statsState.error != null)
-                AppErrorWidget(
+                CustomErrorWidget(
                   message: statsState.error!,
                   onRetry: () => ref.read(reportStatsProvider.notifier).load(),
                 )
@@ -88,7 +88,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
               if (typesState.isLoading)
                 const Center(child: LoadingIndicator())
               else if (typesState.error != null)
-                AppErrorWidget(
+                CustomErrorWidget(
                   message: typesState.error!,
                   onRetry: () => ref.read(reportTypesProvider.notifier).load(),
                 )

@@ -113,10 +113,10 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        final data = response.data['data'];
+        final data = response.data['data'] as Map<String, dynamic>;
         await _tokenStorage.saveTokens(
-          accessToken: data['accessToken'],
-          refreshToken: data['refreshToken'],
+          accessToken: data['accessToken'] as String,
+          refreshToken: data['refreshToken'] as String,
         );
         return true;
       }
@@ -238,11 +238,11 @@ class ApiResponse<T> {
     T Function(dynamic)? fromJson,
   ) {
     return ApiResponse(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
+      success: (json['success'] as bool?) ?? false,
+      message: (json['message'] as String?) ?? '',
       data: json['data'] != null && fromJson != null
           ? fromJson(json['data'])
-          : json['data'],
+          : json['data'] as T?,
       details: json['details'],
     );
   }
@@ -272,7 +272,7 @@ class PaginatedResponse<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJson,
   ) {
-    final pagination = json['pagination'] ?? {};
+    final pagination = json['pagination'] as Map<String, dynamic>? ?? {};
     final dataList = (json['data'] as List?)
             ?.map((e) => fromJson(e as Map<String, dynamic>))
             .toList() ??
@@ -280,12 +280,12 @@ class PaginatedResponse<T> {
 
     return PaginatedResponse(
       data: dataList,
-      page: pagination['page'] ?? 1,
-      limit: pagination['limit'] ?? 20,
-      total: pagination['total'] ?? 0,
-      totalPages: pagination['totalPages'] ?? 0,
-      hasNextPage: pagination['hasNextPage'] ?? false,
-      hasPrevPage: pagination['hasPrevPage'] ?? false,
+      page: (pagination['page'] as int?) ?? 1,
+      limit: (pagination['limit'] as int?) ?? 20,
+      total: (pagination['total'] as int?) ?? 0,
+      totalPages: (pagination['totalPages'] as int?) ?? 0,
+      hasNextPage: (pagination['hasNextPage'] as bool?) ?? false,
+      hasPrevPage: (pagination['hasPrevPage'] as bool?) ?? false,
     );
   }
 }
@@ -310,7 +310,7 @@ class ApiException implements Exception {
     if (error.response?.data != null) {
       final data = error.response!.data;
       if (data is Map) {
-        message = data['message'] ?? message;
+        message = (data['message'] as String?) ?? message;
         details = data['details'];
       }
     } else {

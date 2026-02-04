@@ -42,7 +42,7 @@ class _PendingApprovalsScreenState
 
   Widget _buildBody(PendingApprovalsState state) {
     if (state.isLoading && state.approvals.isEmpty) {
-      return const LoadingWidget(message: 'กำลังโหลดข้อมูล...');
+      return LoadingWidget(message: 'กำลังโหลดข้อมูล...');
     }
 
     if (state.error != null && state.approvals.isEmpty) {

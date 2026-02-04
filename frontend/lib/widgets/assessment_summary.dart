@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/assessment.dart';
 import '../models/probation_record.dart';
 import '../utils/theme.dart';
 
@@ -162,26 +163,26 @@ class _SupervisorAssessmentCard extends StatelessWidget {
     required this.showDetails,
   });
 
-  String _getRecommendationText(String? recommendation) {
+  String _getRecommendationText(Recommendation? recommendation) {
     switch (recommendation) {
-      case 'pass':
+      case Recommendation.pass:
         return 'ผ่าน';
-      case 'fail':
+      case Recommendation.fail:
         return 'ไม่ผ่าน';
-      case 'extend':
+      case Recommendation.extend:
         return 'ขยายเวลา';
       default:
         return '-';
     }
   }
 
-  Color _getRecommendationColor(String? recommendation) {
+  Color _getRecommendationColor(Recommendation? recommendation) {
     switch (recommendation) {
-      case 'pass':
+      case Recommendation.pass:
         return Colors.green;
-      case 'fail':
+      case Recommendation.fail:
         return Colors.red;
-      case 'extend':
+      case Recommendation.extend:
         return Colors.orange;
       default:
         return Colors.grey;
@@ -238,9 +239,7 @@ class _SupervisorAssessmentCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 ...assessment.kpiScores!.map((kpi) => _ScoreRow(
                       label: 'KPI',
-                      score: kpi.score != null
-                          ? AssessmentScoreData(score: kpi.score, comment: kpi.comment)
-                          : null,
+                      score: AssessmentScore(score: kpi.score, comment: kpi.comment),
                     )),
               ],
               if (assessment.recommendation != null) ...[
@@ -306,7 +305,7 @@ class _SupervisorAssessmentCard extends StatelessWidget {
 
 class _ScoreRow extends StatelessWidget {
   final String label;
-  final AssessmentScoreData? score;
+  final AssessmentScore? score;
 
   const _ScoreRow({
     required this.label,

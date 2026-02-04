@@ -494,4 +494,60 @@ class DashboardService {
       throw ApiException.fromDioError(e);
     }
   }
+
+  /// Get all probation records with pagination
+  Future<PaginatedRecords> getAllProbationRecords({
+    int page = 1,
+    int limit = 20,
+    String? status,
+    String? department,
+    String? search,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        'page': page,
+        'limit': limit,
+      };
+      if (status != null) queryParams['status'] = status;
+      if (department != null) queryParams['department'] = department;
+      if (search != null) queryParams['search'] = search;
+
+      final response = await _apiClient.get(
+        '/probation',
+        queryParameters: queryParams,
+      );
+      return PaginatedRecords.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+}
+
+/// Paginated records response
+class PaginatedRecords {
+  final List<Map<String, dynamic>> records;
+  final int page;
+  final int totalPages;
+  final int total;
+
+  const PaginatedRecords({
+    required this.records,
+    required this.page,
+    required this.totalPages,
+    required this.total,
+  });
+
+  factory PaginatedRecords.fromJson(Map<String, dynamic> json) {
+    final pagination = json['pagination'] as Map<String, dynamic>? ?? {};
+    return PaginatedRecords(
+      records: (json['data'] as List?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList() ?? [],
+      page: pagination['page'] as int? ?? 1,
+      totalPages: pagination['totalPages'] as int? ?? 1,
+      total: pagination['total'] as int? ?? 0,
+    );
+  }
 }

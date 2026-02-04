@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/notification_service.dart';
 import '../services/api_client.dart';
+import 'auth_provider.dart';
 
 /// Notification service provider
 final notificationServiceProvider = Provider<NotificationService>((ref) {

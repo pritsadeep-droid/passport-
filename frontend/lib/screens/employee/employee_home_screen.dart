@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/milestone.dart';
 import '../../models/probation_record.dart';
+import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/self_assessment_provider.dart';
+import '../../services/assessment_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/milestone_timeline.dart';
 
@@ -403,9 +406,9 @@ class _DashboardTab extends ConsumerWidget {
     final failed = milestones.where((m) => m.status == MilestoneStatus.failed).length;
     final pending = milestones
         .where((m) =>
-            m.status == MilestoneStatus.pending_self ||
-            m.status == MilestoneStatus.pending_supervisor ||
-            m.status == MilestoneStatus.pending_approval)
+            m.status == MilestoneStatus.pendingSelf ||
+            m.status == MilestoneStatus.pendingSupervisor ||
+            m.status == MilestoneStatus.pendingApproval)
         .length;
 
     return Column(
@@ -540,7 +543,7 @@ class _MilestonesTab extends ConsumerWidget {
                     child: MilestoneTimeline(
                       milestones: state.data!.milestones,
                       onMilestoneTap: (milestone) {
-                        if (milestone.status == MilestoneStatus.pending_self ||
+                        if (milestone.status == MilestoneStatus.pendingSelf ||
                             milestone.status == MilestoneStatus.overdue) {
                           context.push(
                             '/employee/assessment/${state.data!.record!.id}/${milestone.day}',

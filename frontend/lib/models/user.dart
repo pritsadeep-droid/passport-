@@ -21,6 +21,7 @@ class User with _$User {
     required String name,
     required UserRole role,
     required String department,
+    String? position,
     String? supervisorId,
     @Default(true) bool isActive,
     @Default([]) List<String> fcmTokens,

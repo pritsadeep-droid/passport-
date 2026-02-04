@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import '../models/assessment.dart';
+import '../models/milestone.dart';
 import '../models/probation_record.dart';
 import 'api_client.dart';
 
@@ -158,12 +160,28 @@ class UserInfo {
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) => UserInfo(
-        id: json['_id'] as String? ?? json['id'] as String,
-        employeeId: json['employeeId'] as String?,
-        email: json['email'] as String?,
-        name: json['name'] as String?,
-        department: json['department'] as String?,
+        id: _extractId(json['_id'] ?? json['id']),
+        employeeId: _extractStringField(json['employeeId']),
+        email: _extractStringField(json['email']),
+        name: _extractStringField(json['name']),
+        department: _extractStringField(json['department']),
       );
+
+  static String _extractId(dynamic value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    if (value is Map) {
+      // MongoDB Extended JSON format: {"$oid": "..."}
+      return value['\$oid']?.toString() ?? value['_id']?.toString() ?? value.toString();
+    }
+    return value.toString();
+  }
+
+  static String? _extractStringField(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
 /// Milestone info for pending approval

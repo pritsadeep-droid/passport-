@@ -155,7 +155,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
 
   Widget _buildBody(SelfAssessmentFormState state) {
     if (state.isLoading) {
-      return const LoadingWidget(message: 'กำลังโหลดข้อมูล...');
+      return LoadingWidget(message: 'กำลังโหลดข้อมูล...');
     }
 
     return Form(

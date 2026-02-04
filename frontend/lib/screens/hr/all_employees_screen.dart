@@ -72,6 +72,13 @@ class _AllEmployeesScreenState extends ConsumerState<AllEmployeesScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              context.push('/hr/create-user');
+            },
+            icon: const Icon(Icons.person_add),
+            tooltip: 'เพิ่มพนักงาน',
+          ),
+          IconButton(
+            onPressed: () {
               setState(() {
                 _showFilters = !_showFilters;
               });

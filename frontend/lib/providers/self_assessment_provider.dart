@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/assessment.dart' hide AssessmentScore;
 import '../models/probation_record.dart';
 import '../services/api_client.dart';
 import '../services/assessment_service.dart';
@@ -244,12 +245,21 @@ class SelfAssessmentFormNotifier extends StateNotifier<SelfAssessmentFormState> 
       );
 
       if (assessment != null) {
+        // Convert freezed AssessmentScore to service AssessmentScore
+        AssessmentScore? convertScore(dynamic score) {
+          if (score == null) return null;
+          return AssessmentScore(
+            score: score.score as int,
+            comment: score.comment as String?,
+          );
+        }
+
         state = state.copyWith(
           existingAssessment: assessment,
-          coreValue: assessment.coreValue,
-          jobPerformance: assessment.jobPerformance,
-          attendance: assessment.attendance,
-          cultureFit: assessment.cultureFit,
+          coreValue: convertScore(assessment.coreValue),
+          jobPerformance: convertScore(assessment.jobPerformance),
+          attendance: convertScore(assessment.attendance),
+          cultureFit: convertScore(assessment.cultureFit),
           comments: assessment.comments,
           isDraft: assessment.isDraft ?? false,
           isLoading: false,
