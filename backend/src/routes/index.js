@@ -10,6 +10,8 @@ const dashboardRoutes = require('./dashboard');
 const assessmentRoutes = require('./assessment');
 const notificationRoutes = require('./notifications');
 const reportRoutes = require('./reports');
+const onboardingRoutes = require('./onboarding');
+const settingsRoutes = require('./settings');
 
 // Register routes
 router.use('/auth', authRoutes);
@@ -20,6 +22,8 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/assessment', assessmentRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reports', reportRoutes);
+router.use('/onboarding', onboardingRoutes);
+router.use('/settings', settingsRoutes);
 
 // API info route
 router.get('/', (req, res) => {

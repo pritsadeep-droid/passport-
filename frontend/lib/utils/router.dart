@@ -21,6 +21,10 @@ import '../screens/hr/all_employees_screen.dart';
 import '../screens/hr/employee_review_screen.dart';
 import '../screens/hr/reports_screen.dart';
 import '../screens/hr/create_user_screen.dart';
+import '../screens/hr/milestone_settings_screen.dart';
+import '../screens/onboarding/onboarding_timeline_screen.dart';
+import '../screens/onboarding/mission_detail_screen.dart';
+import '../screens/manager/onboarding_review_screen.dart';
 import '../widgets/loading.dart';
 
 /// Route names
@@ -32,6 +36,8 @@ class Routes {
   static const String employeeHome = '/employee';
   static const String employeeDashboard = '/employee/dashboard';
   static const String selfAssessment = '/employee/assessment/:recordId/:day';
+  static const String onboarding = '/onboarding';
+  static const String missionDetail = '/onboarding/mission/:code';
 
   // Supervisor routes
   static const String supervisorHome = '/supervisor';
@@ -43,6 +49,7 @@ class Routes {
       '/supervisor/milestone/:recordId/:day';
   static const String milestoneApproval =
       '/supervisor/milestone-approval/:recordId/:day';
+  static const String onboardingReview = '/supervisor/onboarding-review/:id';
 
   // HR routes
   static const String hrHome = '/hr';
@@ -50,6 +57,7 @@ class Routes {
   static const String allEmployees = '/hr/employees';
   static const String employeeReview = '/hr/employee/:id/review';
   static const String createUser = '/hr/create-user';
+  static const String milestoneSettings = '/hr/milestone-settings';
   static const String reports = '/hr/reports';
 
   // Common routes
@@ -133,6 +141,20 @@ final routerProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
+          GoRoute(
+            path: 'onboarding',
+            name: 'onboarding',
+            builder: (context, state) => const OnboardingTimelineScreen(),
+            routes: [
+              GoRoute(
+                path: 'mission/:code',
+                name: 'missionDetail',
+                builder: (context, state) => MissionDetailScreen(
+                  missionCode: state.pathParameters['code']!,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
 
@@ -194,6 +216,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          GoRoute(
+            path: 'onboarding-review/:id',
+            name: 'onboardingReview',
+            builder: (context, state) => OnboardingReviewScreen(
+              onboardingId: state.pathParameters['id']!,
+            ),
+          ),
         ],
       ),
 
@@ -233,6 +262,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'create-user',
             name: 'createUser',
             builder: (context, state) => const CreateUserScreen(),
+          ),
+          GoRoute(
+            path: 'milestone-settings',
+            name: 'milestoneSettings',
+            builder: (context, state) => const MilestoneSettingsScreen(),
           ),
           GoRoute(
             path: 'reports',

@@ -181,7 +181,6 @@ const milestoneSchema = new mongoose.Schema(
     day: {
       type: Number,
       required: true,
-      enum: [30, 60, 90, 119],
     },
     dueDate: {
       type: Date,
@@ -286,7 +285,6 @@ const probationRecordSchema = new mongoose.Schema(
     probationDays: {
       type: Number,
       required: true,
-      enum: [90, 119],
       default: 90,
     },
     endDate: {
@@ -369,10 +367,28 @@ probationRecordSchema.pre('save', function (next) {
 });
 
 // Initialize milestones when probation record is created
-probationRecordSchema.pre('save', function (next) {
+probationRecordSchema.pre('save', async function (next) {
   if (this.isNew && this.milestones.length === 0) {
-    const milestoneDays =
-      this.probationDays === 119 ? [30, 60, 90, 119] : [30, 60, 90];
+    // Default fallback values
+    const defaultMilestoneDays = {
+      '90': [30, 60, 90],
+      '119': [30, 60, 90, 119],
+    };
+
+    let milestoneDays;
+    try {
+      const Settings = mongoose.model('Settings');
+      const settings = await Settings.getSettings();
+      const key = String(this.probationDays);
+      milestoneDays = settings.milestoneDays.get(key);
+    } catch (err) {
+      // Settings model not available or fetch failed — use fallback
+    }
+
+    if (!milestoneDays || milestoneDays.length === 0) {
+      const key = String(this.probationDays);
+      milestoneDays = defaultMilestoneDays[key] || [30, 60, 90];
+    }
 
     this.milestones = milestoneDays.map((day) => {
       const dueDate = new Date(this.startDate);

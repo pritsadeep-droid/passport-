@@ -173,11 +173,7 @@ class _SettingsScreen extends ConsumerWidget {
             icon: Icons.schedule_outlined,
             title: 'ตั้งค่า Milestone',
             subtitle: 'กำหนดวัน Milestone เริ่มต้น',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('กำลังพัฒนา...')),
-              );
-            },
+            onTap: () => context.push('/hr/milestone-settings'),
           ),
 
           _buildSettingsTile(
