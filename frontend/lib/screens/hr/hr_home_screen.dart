@@ -181,11 +181,7 @@ class _SettingsScreen extends ConsumerWidget {
             icon: Icons.assignment_outlined,
             title: 'เทมเพลต KPI',
             subtitle: 'จัดการเทมเพลต KPI เริ่มต้น',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('กำลังพัฒนา...')),
-              );
-            },
+            onTap: () => context.push('/hr/kpi-templates'),
           ),
 
           _buildSettingsTile(

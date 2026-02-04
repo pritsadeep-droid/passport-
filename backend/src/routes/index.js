@@ -12,6 +12,7 @@ const notificationRoutes = require('./notifications');
 const reportRoutes = require('./reports');
 const onboardingRoutes = require('./onboarding');
 const settingsRoutes = require('./settings');
+const kpiTemplateRoutes = require('./kpiTemplates');
 
 // Register routes
 router.use('/auth', authRoutes);
@@ -24,6 +25,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/reports', reportRoutes);
 router.use('/onboarding', onboardingRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/kpi-templates', kpiTemplateRoutes);
 
 // API info route
 router.get('/', (req, res) => {
