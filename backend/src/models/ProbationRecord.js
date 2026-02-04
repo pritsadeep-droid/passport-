@@ -1,6 +1,16 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
+// Answer Schema (embedded)
+const answerSchema = new mongoose.Schema(
+  {
+    kpiId: { type: String, required: true },
+    answer: { type: String, required: true, trim: true },
+    attachments: [String], // URLs to files
+  },
+  { _id: false }
+);
+
 // Assessment Score Schema (embedded)
 const assessmentScoreSchema = new mongoose.Schema(
   {
@@ -62,8 +72,13 @@ const selfAssessmentSchema = new mongoose.Schema(
     lastSavedAt: {
       type: Date,
     },
+    kpiAnswers: {
+      type: [answerSchema],
+      default: [],
+    },
   },
-  { _id: false }
+  },
+{ _id: false }
 );
 
 // Calculate average score before saving

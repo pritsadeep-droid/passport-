@@ -82,6 +82,27 @@ class UserService {
       throw ApiException.fromDioError(e);
     }
   }
+  /// Get supervisors (for dropdown selection)
+  Future<List<User>> getSupervisors() async {
+    try {
+      final response = await _apiClient.get(
+        '/users/all',
+        queryParameters: {
+          'role': 'supervisor',
+          'limit': 100, // Fetch enough for dropdown
+        },
+      );
+
+      final paginated = PaginatedResponse.fromJson(
+        response.data,
+        (json) => User.fromJson(json as Map<String, dynamic>),
+      );
+      
+      return paginated.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
 }
 
 class CreateUserRequest {

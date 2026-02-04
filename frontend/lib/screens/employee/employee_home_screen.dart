@@ -106,6 +106,12 @@ class _DashboardTab extends ConsumerWidget {
               _buildWelcomeCard(context, ref, user),
               const SizedBox(height: AppSpacing.lg),
 
+              // Onboarding Card
+              _buildOnboardingCard(context),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Countdown card
+
               // Countdown card
               if (myMilestonesState.data?.record != null)
                 _buildCountdownCard(myMilestonesState.data!.record!),
@@ -167,6 +173,49 @@ class _DashboardTab extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOnboardingCard(BuildContext context) {
+    return Card(
+      color: Colors.indigo.shade50,
+      child: InkWell(
+        onTap: () => context.push('/onboarding'),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.rocket_launch, color: Colors.indigo, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ภารกิจ Onboarding',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'ทำภารกิจเพื่อก้าวสู่พนักงานมืออาชีพ',
+                      style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.indigo),
+            ],
+          ),
         ),
       ),
     );

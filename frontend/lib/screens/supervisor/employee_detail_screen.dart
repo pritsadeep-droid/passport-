@@ -6,6 +6,7 @@ import '../../models/probation_record.dart';
 import '../../models/milestone.dart';
 import '../../providers/probation_provider.dart';
 import '../../providers/kpi_provider.dart';
+import '../../providers/onboarding_provider.dart';
 import '../../utils/theme.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/loading.dart';
@@ -142,6 +143,82 @@ class _OverviewTab extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           ...record.milestones.map((m) => _MilestoneCard(milestone: m)),
+          const SizedBox(height: AppSpacing.md),
+          
+          // Onboarding Section
+          Consumer(
+            builder: (context, ref, child) {
+              final teamOnboarding = ref.watch(teamOnboardingProvider);
+              return teamOnboarding.when(
+                data: (instances) {
+                  // Find instance for this employee
+                  try {
+                    // record.employee.id gives the User ID (mongo ID), record.id is Probation ID
+                    // We need to match with instance.employeeId (which is User ID)
+                    // record.employee is User object or just ID? In Frontend model ProbationRecord, employee is User object.
+                    final user = record.employee;
+                    if (user == null) return const SizedBox.shrink();
+
+                    final instance = instances.firstWhere(
+                      // instance.employeeId in frontend model is String (ID)
+                      (i) => i.employeeId == user.id,
+                    );
+                    
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.rocket_launch, color: Colors.indigo),
+                        title: const Text('Onboarding Mission'),
+                        subtitle: Text('สถานะ: ${instance.status}'),
+                        trailing: FilledButton(
+                          onPressed: () => context.push('/supervisor/onboarding-review/${instance.id}'),
+                          child: const Text('ตรวจสอบ'),
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    // Not found, show Assign button
+                    return Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.rocket_launch, color: Colors.grey),
+                        title: const Text('Onboarding Mission'),
+                        subtitle: const Text('ยังไม่ได้เริ่ม'),
+                        trailing: Consumer(
+                          builder: (context, ref, child) {
+                            return FilledButton(
+                              onPressed: () async {
+                                // Fetch templates
+                                final templates = await ref.read(onboardingTemplatesProvider.future);
+                                if (templates.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('ไม่พบ Template')),
+                                  );
+                                  return;
+                                }
+                                // For MVP, pick first template or show dialog
+                                // Let's just pick first for simplicity if only 1, or dialog
+                                if (context.mounted) {
+                                   await ref.read(assignOnboardingProvider.notifier).assign(
+                                    record.employee!.id, // User ID
+                                    templates.first.id,
+                                    DateTime.now(),
+                                  );
+                                  // Refresh team provider
+                                  ref.refresh(teamOnboardingProvider);
+                                }
+                              },
+                              child: const Text('เริ่ม Onboarding'),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const SizedBox.shrink(),
+              );
+            },
+          ),
         ],
       ),
     );

@@ -23,7 +23,35 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
   final _positionController = TextEditingController();
   
   UserRole _selectedRole = UserRole.employee;
+  String? _selectedSupervisorId;
+  List<User> _supervisors = [];
   bool _isLoading = false;
+  bool _isLoadingSupervisors = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSupervisors();
+  }
+
+  Future<void> _loadSupervisors() async {
+    setState(() => _isLoadingSupervisors = true);
+    try {
+      final supervisors = await ref.read(userServiceProvider).getSupervisors();
+      if (mounted) {
+        setState(() {
+          _supervisors = supervisors;
+        });
+      }
+    } catch (e) {
+      // Handle error implicitly or show snackbar
+      print('Error loading supervisors: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingSupervisors = false);
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -51,6 +79,10 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
       role: _selectedRole,
       department: _departmentController.text.trim(),
       position: _positionController.text.trim(),
+      role: _selectedRole,
+      department: _departmentController.text.trim(),
+      position: _positionController.text.trim(),
+      supervisorId: _selectedSupervisorId,
     );
 
     final success = await ref
@@ -182,6 +214,35 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  if (_selectedRole == UserRole.employee) ...[
+                     DropdownButtonFormField<String>(
+                      value: _selectedSupervisorId,
+                      decoration: const InputDecoration(
+                        labelText: 'หัวหน้างาน',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _supervisors.map((user) {
+                        return DropdownMenuItem(
+                          value: user.id,
+                          child: Text('${user.name} (${user.department})'),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedSupervisorId = value;
+                        });
+                      },
+                      validator: (value) {
+                         // Supervisor optional or required? Logic says if employee, usually needs supervisor.
+                         // But let's keep it optional to not break flow if no supervisor exists yet.
+                         return null;
+                      },
+                      hint: _isLoadingSupervisors 
+                          ? const Text('กำลังโหลด...') 
+                          : const Text('เลือกหัวหน้างาน'),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   TextFormField(
                     controller: _departmentController,
                     decoration: const InputDecoration(
