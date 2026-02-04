@@ -77,8 +77,7 @@ const selfAssessmentSchema = new mongoose.Schema(
       default: [],
     },
   },
-  },
-{ _id: false }
+  { _id: false }
 );
 
 // Calculate average score before saving
