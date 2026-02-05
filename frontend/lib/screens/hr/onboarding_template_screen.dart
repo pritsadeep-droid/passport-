@@ -176,6 +176,45 @@ class _OnboardingTemplateScreenState
             _showQuestionForm(context, template, question),
         onAddQuestion: (missionCode) =>
             _showQuestionForm(context, template, null, missionCode: missionCode),
+        onAddMission: () {
+          Navigator.pop(ctx);
+          _showAddMissionForm(context, template);
+        },
+      ),
+    );
+  }
+
+  void _showAddMissionForm(BuildContext context, OnboardingTemplate template) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (ctx) => _MissionCreateSheet(
+        existingCodes: template.missions.map((m) => m.code).toList(),
+        onSave: (missionData) async {
+          final updatedMissions = [
+            ...template.missions.map((m) => {
+                  'code': m.code,
+                  'title': m.title,
+                  'description': m.description,
+                  'openOffsetDays': m.openOffsetDays,
+                  'closeOffsetDays': m.closeOffsetDays,
+                }),
+            missionData,
+          ];
+
+          final success = await ref
+              .read(onboardingTemplateListProvider.notifier)
+              .update(template.id, {'missions': updatedMissions});
+
+          if (!context.mounted) return;
+          Navigator.pop(ctx);
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('เพิ่มภารกิจสำเร็จ')),
+            );
+          }
+        },
       ),
     );
   }
@@ -655,12 +694,14 @@ class _TemplateDetailSheet extends StatelessWidget {
   final void Function(Mission mission) onEditMission;
   final void Function(Question question) onEditQuestion;
   final void Function(String missionCode) onAddQuestion;
+  final VoidCallback onAddMission;
 
   const _TemplateDetailSheet({
     required this.template,
     required this.onEditMission,
     required this.onEditQuestion,
     required this.onAddQuestion,
+    required this.onAddMission,
   });
 
   @override
@@ -729,6 +770,29 @@ class _TemplateDetailSheet extends StatelessWidget {
                       onAddQuestion: () => onAddQuestion(mission.code),
                     );
                   }),
+
+                  // Add Mission button
+                  Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                        child: Icon(
+                          Icons.add,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      title: Text(
+                        'เพิ่มภารกิจใหม่',
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: const Text('สร้างภารกิจและคำถามใหม่'),
+                      onTap: onAddMission,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 
@@ -1235,6 +1299,256 @@ class _QuestionFormSheetState extends State<_QuestionFormSheet> {
       'required': _required,
       'sortOrder': widget.question?.sortOrder ?? 0,
       'options': [],
+    };
+
+    await widget.onSave(data);
+
+    if (mounted) {
+      setState(() => _saving = false);
+    }
+  }
+}
+
+class _MissionCreateSheet extends StatefulWidget {
+  final List<String> existingCodes;
+  final Future<void> Function(Map<String, dynamic> data) onSave;
+
+  const _MissionCreateSheet({
+    required this.existingCodes,
+    required this.onSave,
+  });
+
+  @override
+  State<_MissionCreateSheet> createState() => _MissionCreateSheetState();
+}
+
+class _MissionCreateSheetState extends State<_MissionCreateSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _codeController;
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _openDaysController;
+  late final TextEditingController _closeDaysController;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _codeController = TextEditingController();
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _openDaysController = TextEditingController(text: '0');
+    _closeDaysController = TextEditingController(text: '14');
+  }
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _openDaysController.dispose();
+    _closeDaysController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) {
+          return Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      'เพิ่มภารกิจใหม่',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: _codeController,
+                          decoration: const InputDecoration(
+                            labelText: 'รหัสภารกิจ *',
+                            hintText: 'เช่น H, A, P, I, N, E, S',
+                            border: OutlineInputBorder(),
+                            helperText: 'ตัวอักษรพิมพ์ใหญ่ 1-3 ตัว',
+                          ),
+                          textCapitalization: TextCapitalization.characters,
+                          maxLength: 3,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return 'กรุณากรอกรหัสภารกิจ';
+                            }
+                            final code = v.trim().toUpperCase();
+                            if (widget.existingCodes.contains(code)) {
+                              return 'รหัสนี้ถูกใช้แล้ว';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'ชื่อภารกิจ *',
+                            hintText: 'เช่น High Energy Workstyle',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return 'กรุณากรอกชื่อภารกิจ';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _descriptionController,
+                          decoration: const InputDecoration(
+                            labelText: 'คำอธิบาย',
+                            hintText: 'อธิบายเกี่ยวกับภารกิจนี้',
+                            border: OutlineInputBorder(),
+                            alignLabelWithHint: true,
+                          ),
+                          maxLines: 3,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _openDaysController,
+                                decoration: const InputDecoration(
+                                  labelText: 'วันเปิดภารกิจ *',
+                                  border: OutlineInputBorder(),
+                                  suffixText: 'วัน',
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (v) {
+                                  if (v == null || v.trim().isEmpty) {
+                                    return 'กรุณากรอก';
+                                  }
+                                  if (int.tryParse(v) == null) {
+                                    return 'ต้องเป็นตัวเลข';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _closeDaysController,
+                                decoration: const InputDecoration(
+                                  labelText: 'วันปิดภารกิจ *',
+                                  border: OutlineInputBorder(),
+                                  suffixText: 'วัน',
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (v) {
+                                  if (v == null || v.trim().isEmpty) {
+                                    return 'กรุณากรอก';
+                                  }
+                                  if (int.tryParse(v) == null) {
+                                    return 'ต้องเป็นตัวเลข';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'ภารกิจจะเปิดให้พนักงานทำได้ตั้งแต่วันที่เริ่มงาน + วันเปิด ถึงวันเปิด + วันปิด',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _saving ? null : _submit,
+                            icon: _saving
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.add),
+                            label: Text(
+                              _saving ? 'กำลังบันทึก...' : 'เพิ่มภารกิจ',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _saving = true);
+
+    final data = {
+      'code': _codeController.text.trim().toUpperCase(),
+      'title': _titleController.text.trim(),
+      'description': _descriptionController.text.trim().isEmpty
+          ? null
+          : _descriptionController.text.trim(),
+      'openOffsetDays': int.parse(_openDaysController.text.trim()),
+      'closeOffsetDays': int.parse(_closeDaysController.text.trim()),
     };
 
     await widget.onSave(data);
