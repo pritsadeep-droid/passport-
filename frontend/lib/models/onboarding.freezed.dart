@@ -1686,6 +1686,164 @@ abstract class _Answer implements Answer {
       throw _privateConstructorUsedError;
 }
 
+ReviewerInfo _$ReviewerInfoFromJson(Map<String, dynamic> json) {
+  return _ReviewerInfo.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ReviewerInfo {
+  @JsonKey(name: '_id')
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ReviewerInfoCopyWith<ReviewerInfo> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ReviewerInfoCopyWith<$Res> {
+  factory $ReviewerInfoCopyWith(
+          ReviewerInfo value, $Res Function(ReviewerInfo) then) =
+      _$ReviewerInfoCopyWithImpl<$Res, ReviewerInfo>;
+  @useResult
+  $Res call({@JsonKey(name: '_id') String id, String name});
+}
+
+/// @nodoc
+class _$ReviewerInfoCopyWithImpl<$Res, $Val extends ReviewerInfo>
+    implements $ReviewerInfoCopyWith<$Res> {
+  _$ReviewerInfoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ReviewerInfoImplCopyWith<$Res>
+    implements $ReviewerInfoCopyWith<$Res> {
+  factory _$$ReviewerInfoImplCopyWith(
+          _$ReviewerInfoImpl value, $Res Function(_$ReviewerInfoImpl) then) =
+      __$$ReviewerInfoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({@JsonKey(name: '_id') String id, String name});
+}
+
+/// @nodoc
+class __$$ReviewerInfoImplCopyWithImpl<$Res>
+    extends _$ReviewerInfoCopyWithImpl<$Res, _$ReviewerInfoImpl>
+    implements _$$ReviewerInfoImplCopyWith<$Res> {
+  __$$ReviewerInfoImplCopyWithImpl(
+      _$ReviewerInfoImpl _value, $Res Function(_$ReviewerInfoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+  }) {
+    return _then(_$ReviewerInfoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ReviewerInfoImpl implements _ReviewerInfo {
+  const _$ReviewerInfoImpl(
+      {@JsonKey(name: '_id') required this.id, required this.name});
+
+  factory _$ReviewerInfoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ReviewerInfoImplFromJson(json);
+
+  @override
+  @JsonKey(name: '_id')
+  final String id;
+  @override
+  final String name;
+
+  @override
+  String toString() {
+    return 'ReviewerInfo(id: $id, name: $name)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ReviewerInfoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, name);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ReviewerInfoImplCopyWith<_$ReviewerInfoImpl> get copyWith =>
+      __$$ReviewerInfoImplCopyWithImpl<_$ReviewerInfoImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ReviewerInfoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ReviewerInfo implements ReviewerInfo {
+  const factory _ReviewerInfo(
+      {@JsonKey(name: '_id') required final String id,
+      required final String name}) = _$ReviewerInfoImpl;
+
+  factory _ReviewerInfo.fromJson(Map<String, dynamic> json) =
+      _$ReviewerInfoImpl.fromJson;
+
+  @override
+  @JsonKey(name: '_id')
+  String get id;
+  @override
+  String get name;
+  @override
+  @JsonKey(ignore: true)
+  _$$ReviewerInfoImplCopyWith<_$ReviewerInfoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 Review _$ReviewFromJson(Map<String, dynamic> json) {
   return _Review.fromJson(json);
 }
@@ -1698,8 +1856,7 @@ mixin _$Review {
   String get decision => throw _privateConstructorUsedError;
   double? get score => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
-  String? get reviewedBy =>
-      throw _privateConstructorUsedError; // ID or Name if populated
+  ReviewerInfo? get reviewedBy => throw _privateConstructorUsedError;
   DateTime? get reviewedAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1718,8 +1875,10 @@ abstract class $ReviewCopyWith<$Res> {
       String decision,
       double? score,
       String? comment,
-      String? reviewedBy,
+      ReviewerInfo? reviewedBy,
       DateTime? reviewedAt});
+
+  $ReviewerInfoCopyWith<$Res>? get reviewedBy;
 }
 
 /// @nodoc
@@ -1767,12 +1926,24 @@ class _$ReviewCopyWithImpl<$Res, $Val extends Review>
       reviewedBy: freezed == reviewedBy
           ? _value.reviewedBy
           : reviewedBy // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as ReviewerInfo?,
       reviewedAt: freezed == reviewedAt
           ? _value.reviewedAt
           : reviewedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ReviewerInfoCopyWith<$Res>? get reviewedBy {
+    if (_value.reviewedBy == null) {
+      return null;
+    }
+
+    return $ReviewerInfoCopyWith<$Res>(_value.reviewedBy!, (value) {
+      return _then(_value.copyWith(reviewedBy: value) as $Val);
+    });
   }
 }
 
@@ -1789,8 +1960,11 @@ abstract class _$$ReviewImplCopyWith<$Res> implements $ReviewCopyWith<$Res> {
       String decision,
       double? score,
       String? comment,
-      String? reviewedBy,
+      ReviewerInfo? reviewedBy,
       DateTime? reviewedAt});
+
+  @override
+  $ReviewerInfoCopyWith<$Res>? get reviewedBy;
 }
 
 /// @nodoc
@@ -1836,7 +2010,7 @@ class __$$ReviewImplCopyWithImpl<$Res>
       reviewedBy: freezed == reviewedBy
           ? _value.reviewedBy
           : reviewedBy // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as ReviewerInfo?,
       reviewedAt: freezed == reviewedAt
           ? _value.reviewedAt
           : reviewedAt // ignore: cast_nullable_to_non_nullable
@@ -1872,8 +2046,7 @@ class _$ReviewImpl implements _Review {
   @override
   final String? comment;
   @override
-  final String? reviewedBy;
-// ID or Name if populated
+  final ReviewerInfo? reviewedBy;
   @override
   final DateTime? reviewedAt;
 
@@ -1926,7 +2099,7 @@ abstract class _Review implements Review {
       required final String decision,
       final double? score,
       final String? comment,
-      final String? reviewedBy,
+      final ReviewerInfo? reviewedBy,
       final DateTime? reviewedAt}) = _$ReviewImpl;
 
   factory _Review.fromJson(Map<String, dynamic> json) = _$ReviewImpl.fromJson;
@@ -1943,8 +2116,8 @@ abstract class _Review implements Review {
   @override
   String? get comment;
   @override
-  String? get reviewedBy;
-  @override // ID or Name if populated
+  ReviewerInfo? get reviewedBy;
+  @override
   DateTime? get reviewedAt;
   @override
   @JsonKey(ignore: true)

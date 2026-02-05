@@ -147,6 +147,17 @@ class Answer with _$Answer {
 }
 
 @freezed
+class ReviewerInfo with _$ReviewerInfo {
+  const factory ReviewerInfo({
+    @JsonKey(name: '_id') required String id,
+    required String name,
+  }) = _ReviewerInfo;
+
+  factory ReviewerInfo.fromJson(Map<String, dynamic> json) =>
+      _$ReviewerInfoFromJson(json);
+}
+
+@freezed
 class Review with _$Review {
   const factory Review({
     @JsonKey(name: '_id') String? id,
@@ -154,7 +165,7 @@ class Review with _$Review {
     required String decision,
     double? score,
     String? comment,
-    String? reviewedBy, // ID or Name if populated
+    ReviewerInfo? reviewedBy,
     DateTime? reviewedAt,
   }) = _Review;
 

@@ -182,13 +182,27 @@ Map<String, dynamic> _$$AnswerImplToJson(_$AnswerImpl instance) =>
       'submittedAt': instance.submittedAt?.toIso8601String(),
     };
 
+_$ReviewerInfoImpl _$$ReviewerInfoImplFromJson(Map<String, dynamic> json) =>
+    _$ReviewerInfoImpl(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$$ReviewerInfoImplToJson(_$ReviewerInfoImpl instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'name': instance.name,
+    };
+
 _$ReviewImpl _$$ReviewImplFromJson(Map<String, dynamic> json) => _$ReviewImpl(
       id: json['_id'] as String?,
       missionCode: json['missionCode'] as String,
       decision: json['decision'] as String,
       score: (json['score'] as num?)?.toDouble(),
       comment: json['comment'] as String?,
-      reviewedBy: json['reviewedBy'] as String?,
+      reviewedBy: json['reviewedBy'] == null
+          ? null
+          : ReviewerInfo.fromJson(json['reviewedBy'] as Map<String, dynamic>),
       reviewedAt: json['reviewedAt'] == null
           ? null
           : DateTime.parse(json['reviewedAt'] as String),
