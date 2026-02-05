@@ -115,7 +115,26 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เพิ่มพนักงานใหม่'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.person_add, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text('เพิ่มพนักงานใหม่'),
+          ],
+        ),
       ),
       body: Stack(
         children: [
@@ -126,12 +145,72 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextFormField(
-                    controller: _employeeIdController,
-                    decoration: const InputDecoration(
-                      labelText: 'รหัสพนักงาน',
-                      border: OutlineInputBorder(),
+                  // Header card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFF7ED), Color(0xFFFEF3C7)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFFED7AA)),
                     ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.person_add,
+                            color: Color(0xFFEA580C),
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'สร้างบัญชีผู้ใช้ใหม่',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Color(0xFF9A3412),
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'กรอกข้อมูลพนักงานใหม่เพื่อเพิ่มเข้าระบบ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFFEA580C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Form fields with icons
+                  _buildFormField(
+                    controller: _employeeIdController,
+                    label: 'รหัสพนักงาน',
+                    icon: Icons.badge_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกรหัสพนักงาน';
@@ -140,12 +219,10 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  _buildFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'ชื่อ-นามสกุล',
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'ชื่อ-นามสกุล',
+                    icon: Icons.person_outline,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกชื่อ-นามสกุล';
@@ -154,12 +231,10 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  _buildFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'อีเมล',
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'อีเมล',
+                    icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -172,12 +247,10 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  _buildFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'รหัสผ่าน',
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'รหัสผ่าน',
+                    icon: Icons.lock_outline,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -192,9 +265,12 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<UserRole>(
                     value: _selectedRole,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'บทบาท',
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.admin_panel_settings_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     items: UserRole.values.map((role) {
                       return DropdownMenuItem(
@@ -214,9 +290,12 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                   if (_selectedRole == UserRole.employee) ...[
                      DropdownButtonFormField<String>(
                       value: _selectedSupervisorId,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'หัวหน้างาน',
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.supervisor_account_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       items: _supervisors.map((user) {
                         return DropdownMenuItem(
@@ -230,22 +309,18 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                         });
                       },
                       validator: (value) {
-                         // Supervisor optional or required? Logic says if employee, usually needs supervisor.
-                         // But let's keep it optional to not break flow if no supervisor exists yet.
                          return null;
                       },
-                      hint: _isLoadingSupervisors 
-                          ? const Text('กำลังโหลด...') 
+                      hint: _isLoadingSupervisors
+                          ? const Text('กำลังโหลด...')
                           : const Text('เลือกหัวหน้างาน'),
                     ),
                     const SizedBox(height: 16),
                   ],
-                  TextFormField(
+                  _buildFormField(
                     controller: _departmentController,
-                    decoration: const InputDecoration(
-                      labelText: 'แผนก',
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'แผนก',
+                    icon: Icons.business_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกแผนก';
@@ -254,12 +329,10 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  _buildFormField(
                     controller: _positionController,
-                    decoration: const InputDecoration(
-                      labelText: 'ตำแหน่ง',
-                      border: OutlineInputBorder(),
-                    ),
+                    label: 'ตำแหน่ง',
+                    icon: Icons.work_outline,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกตำแหน่ง';
@@ -267,10 +340,48 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: _isLoading ? null : _submit,
-                    child: const Text('บันทึกข้อมูล'),
+                  const SizedBox(height: 32),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFDC2626), Color(0xFFB91C1C)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFDC2626).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: FilledButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.save, size: 20),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'บันทึกข้อมูล',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -285,6 +396,29 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: validator,
     );
   }
 }
