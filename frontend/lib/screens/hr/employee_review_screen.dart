@@ -6,6 +6,7 @@ import '../../models/milestone.dart';
 import '../../models/probation_record.dart';
 import '../../models/user.dart';
 import '../../providers/probation_provider.dart';
+import '../../providers/user_provider.dart';
 import '../../widgets/milestone_timeline.dart';
 import '../../widgets/final_decision_dialog.dart';
 import '../../widgets/supervisor_transfer_dialog.dart';
@@ -598,30 +599,93 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
       onDecision: (decision, reason) async {
         Navigator.of(context).pop();
 
-        // TODO: Implement decision API call
+        final finalDecision = decision == 'passed'
+            ? FinalDecision.passed
+            : FinalDecision.failed;
+
+        final result = await ref
+            .read(probationRecordProvider(widget.employeeId).notifier)
+            .makeFinalDecision(
+              decision: finalDecision,
+              reason: reason,
+            );
+
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(decision == 'passed'
-                  ? 'บันทึกผลผ่านการทดลองงานสำเร็จ'
-                  : 'บันทึกผลไม่ผ่านการทดลองงานสำเร็จ'),
-              backgroundColor: decision == 'passed' ? Colors.green : null,
-            ),
-          );
+          if (result != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(decision == 'passed'
+                    ? 'บันทึกผลผ่านการทดลองงานสำเร็จ'
+                    : 'บันทึกผลไม่ผ่านการทดลองงานสำเร็จ'),
+                backgroundColor: decision == 'passed' ? Colors.green : null,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  ref.read(probationRecordProvider(widget.employeeId)).error ??
+                  'เกิดข้อผิดพลาดในการบันทึกผล',
+                ),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
         }
       },
     );
   }
 
-  void _showTransferDialog(ProbationRecord record) {
+  void _showTransferDialog(ProbationRecord record) async {
     final employee = record.employee;
     final supervisor = record.supervisor;
 
-    // TODO: Fetch supervisors list from API
-    final supervisors = <SupervisorOption>[
-      SupervisorOption(id: '1', name: 'Manager A', email: 'managera@example.com', department: 'IT'),
-      SupervisorOption(id: '2', name: 'Manager B', email: 'managerb@example.com', department: 'HR'),
-    ];
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Fetch supervisors list from API
+    List<SupervisorOption> supervisors = [];
+    try {
+      final userService = ref.read(userServiceProvider);
+
+      // Fetch both supervisors and hr_admins
+      final supervisorResponse = await userService.getAllUsers(
+        limit: 100,
+        role: 'supervisor',
+      );
+      final hrResponse = await userService.getAllUsers(
+        limit: 100,
+        role: 'hr_admin',
+      );
+
+      final allUsers = [...supervisorResponse.data, ...hrResponse.data];
+      supervisors = allUsers
+          .map((u) => SupervisorOption(
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                department: u.department,
+              ))
+          .toList();
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ไม่สามารถโหลดรายชื่อหัวหน้างานได้: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).pop(); // Close loading dialog
 
     showSupervisorTransferDialog(
       context: context,
@@ -632,11 +696,29 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
       onTransfer: (newSupervisorId, reason) async {
         Navigator.of(context).pop();
 
-        // TODO: Implement transfer API call
+        final result = await ref
+            .read(probationRecordProvider(widget.employeeId).notifier)
+            .transferSupervisor(
+              newSupervisorId: newSupervisorId,
+              reason: reason,
+            );
+
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('โอนย้ายหัวหน้างานสำเร็จ')),
-          );
+          if (result != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('โอนย้ายหัวหน้างานสำเร็จ')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  ref.read(probationRecordProvider(widget.employeeId)).error ??
+                  'เกิดข้อผิดพลาดในการโอนย้าย',
+                ),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
         }
       },
     );
@@ -653,11 +735,29 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
       onExtend: (additionalDays, reason) async {
         Navigator.of(context).pop();
 
-        // TODO: Implement extend API call
+        final result = await ref
+            .read(probationRecordProvider(widget.employeeId).notifier)
+            .extendProbation(
+              additionalDays: additionalDays,
+              reason: reason,
+            );
+
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('ขยายเวลาทดลองงาน $additionalDays วันสำเร็จ')),
-          );
+          if (result != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('ขยายเวลาทดลองงาน $additionalDays วันสำเร็จ')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  ref.read(probationRecordProvider(widget.employeeId)).error ??
+                  'เกิดข้อผิดพลาดในการขยายเวลา',
+                ),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
         }
       },
     );

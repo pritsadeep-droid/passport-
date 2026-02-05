@@ -381,6 +381,61 @@ const getMyProbationRecord = asyncHandler(async (req, res) => {
   return successResponse(res, 200, 'Success', record);
 });
 
+/**
+ * @desc    Extend probation period
+ * @route   PATCH /api/v1/probation/:id/extend
+ * @access  Private (HR Admin)
+ */
+const extendProbation = asyncHandler(async (req, res) => {
+  const { additionalDays, reason } = req.body;
+
+  const record = await ProbationRecord.findById(req.params.id);
+
+  if (!record) {
+    return notFoundResponse(res, 'ไม่พบข้อมูลการทดลองงาน');
+  }
+
+  // Only allow extension for active probation records
+  if (!['pending_kpi', 'in_progress', 'pending_decision'].includes(record.status)) {
+    throw new ApiError(
+      400,
+      'ไม่สามารถขยายเวลาทดลองงานได้ เนื่องจากสถานะไม่อนุญาต'
+    );
+  }
+
+  // Validate additional days (1-90)
+  if (additionalDays < 1 || additionalDays > 90) {
+    throw new ApiError(400, 'จำนวนวันที่ขยายต้องอยู่ระหว่าง 1-90 วัน');
+  }
+
+  const oldEndDate = record.endDate;
+  const oldProbationDays = record.probationDays;
+
+  // Calculate new end date and probation days
+  record.probationDays = record.probationDays + additionalDays;
+  record.endDate = new Date(record.endDate.getTime() + additionalDays * 24 * 60 * 60 * 1000);
+  await record.save();
+
+  // Log action
+  await AuditLog.log({
+    action: 'probation.extended',
+    userId: req.userId,
+    targetType: 'probation_record',
+    targetId: record._id,
+    changes: {
+      before: { endDate: oldEndDate, probationDays: oldProbationDays },
+      after: { endDate: record.endDate, probationDays: record.probationDays, additionalDays, reason },
+    },
+    ip: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  await record.populate('employeeId', 'employeeId email name department role');
+  await record.populate('supervisorId', 'employeeId email name role department');
+
+  return successResponse(res, 200, 'ขยายเวลาทดลองงานสำเร็จ', record);
+});
+
 module.exports = {
   getProbationRecords,
   getProbationRecordById,
@@ -389,4 +444,5 @@ module.exports = {
   updateProbationStatus,
   transferSupervisor,
   getMyProbationRecord,
+  extendProbation,
 };

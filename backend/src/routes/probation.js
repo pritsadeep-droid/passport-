@@ -138,6 +138,25 @@ router.patch(
   probationController.transferSupervisor
 );
 
+/**
+ * @route   PATCH /api/v1/probation/:id/extend
+ * @desc    Extend probation period
+ * @access  Private (HR Admin)
+ */
+router.patch(
+  '/:id/extend',
+  authenticate,
+  authorize(ROLES.HR_ADMIN),
+  validate([
+    commonValidations.objectId('id', 'param'),
+    body('additionalDays')
+      .isInt({ min: 1, max: 90 })
+      .withMessage('Additional days must be between 1 and 90'),
+    commonValidations.string('reason', { required: true, max: 1000 }),
+  ]),
+  probationController.extendProbation
+);
+
 // ==================== KPI Routes ====================
 
 /**

@@ -1510,3 +1510,165 @@ abstract class _TransferSupervisorRequest implements TransferSupervisorRequest {
   _$$TransferSupervisorRequestImplCopyWith<_$TransferSupervisorRequestImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
+
+ExtendProbationRequest _$ExtendProbationRequestFromJson(
+    Map<String, dynamic> json) {
+  return _ExtendProbationRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ExtendProbationRequest {
+  int get additionalDays => throw _privateConstructorUsedError;
+  String get reason => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ExtendProbationRequestCopyWith<ExtendProbationRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ExtendProbationRequestCopyWith<$Res> {
+  factory $ExtendProbationRequestCopyWith(ExtendProbationRequest value,
+          $Res Function(ExtendProbationRequest) then) =
+      _$ExtendProbationRequestCopyWithImpl<$Res, ExtendProbationRequest>;
+  @useResult
+  $Res call({int additionalDays, String reason});
+}
+
+/// @nodoc
+class _$ExtendProbationRequestCopyWithImpl<$Res,
+        $Val extends ExtendProbationRequest>
+    implements $ExtendProbationRequestCopyWith<$Res> {
+  _$ExtendProbationRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? additionalDays = null,
+    Object? reason = null,
+  }) {
+    return _then(_value.copyWith(
+      additionalDays: null == additionalDays
+          ? _value.additionalDays
+          : additionalDays // ignore: cast_nullable_to_non_nullable
+              as int,
+      reason: null == reason
+          ? _value.reason
+          : reason // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ExtendProbationRequestImplCopyWith<$Res>
+    implements $ExtendProbationRequestCopyWith<$Res> {
+  factory _$$ExtendProbationRequestImplCopyWith(
+          _$ExtendProbationRequestImpl value,
+          $Res Function(_$ExtendProbationRequestImpl) then) =
+      __$$ExtendProbationRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int additionalDays, String reason});
+}
+
+/// @nodoc
+class __$$ExtendProbationRequestImplCopyWithImpl<$Res>
+    extends _$ExtendProbationRequestCopyWithImpl<$Res,
+        _$ExtendProbationRequestImpl>
+    implements _$$ExtendProbationRequestImplCopyWith<$Res> {
+  __$$ExtendProbationRequestImplCopyWithImpl(
+      _$ExtendProbationRequestImpl _value,
+      $Res Function(_$ExtendProbationRequestImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? additionalDays = null,
+    Object? reason = null,
+  }) {
+    return _then(_$ExtendProbationRequestImpl(
+      additionalDays: null == additionalDays
+          ? _value.additionalDays
+          : additionalDays // ignore: cast_nullable_to_non_nullable
+              as int,
+      reason: null == reason
+          ? _value.reason
+          : reason // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ExtendProbationRequestImpl implements _ExtendProbationRequest {
+  const _$ExtendProbationRequestImpl(
+      {required this.additionalDays, required this.reason});
+
+  factory _$ExtendProbationRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ExtendProbationRequestImplFromJson(json);
+
+  @override
+  final int additionalDays;
+  @override
+  final String reason;
+
+  @override
+  String toString() {
+    return 'ExtendProbationRequest(additionalDays: $additionalDays, reason: $reason)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ExtendProbationRequestImpl &&
+            (identical(other.additionalDays, additionalDays) ||
+                other.additionalDays == additionalDays) &&
+            (identical(other.reason, reason) || other.reason == reason));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, additionalDays, reason);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ExtendProbationRequestImplCopyWith<_$ExtendProbationRequestImpl>
+      get copyWith => __$$ExtendProbationRequestImplCopyWithImpl<
+          _$ExtendProbationRequestImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ExtendProbationRequestImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ExtendProbationRequest implements ExtendProbationRequest {
+  const factory _ExtendProbationRequest(
+      {required final int additionalDays,
+      required final String reason}) = _$ExtendProbationRequestImpl;
+
+  factory _ExtendProbationRequest.fromJson(Map<String, dynamic> json) =
+      _$ExtendProbationRequestImpl.fromJson;
+
+  @override
+  int get additionalDays;
+  @override
+  String get reason;
+  @override
+  @JsonKey(ignore: true)
+  _$$ExtendProbationRequestImplCopyWith<_$ExtendProbationRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

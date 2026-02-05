@@ -348,6 +348,72 @@ class ProbationRecordNotifier extends StateNotifier<ProbationDetailState> {
       return null;
     }
   }
+
+  /// Make final decision (pass or fail)
+  Future<ProbationRecord?> makeFinalDecision({
+    required FinalDecision decision,
+    String? reason,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final request = FinalDecisionRequest(
+        decision: decision,
+        reason: reason,
+      );
+
+      final record = await _probationService.makeFinalDecision(recordId, request);
+      state = state.copyWith(record: record, isLoading: false);
+      return record;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
+
+  /// Transfer supervisor
+  Future<ProbationRecord?> transferSupervisor({
+    required String newSupervisorId,
+    String? reason,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final request = TransferSupervisorRequest(
+        newSupervisorId: newSupervisorId,
+        reason: reason,
+      );
+
+      final record = await _probationService.transferSupervisor(recordId, request);
+      state = state.copyWith(record: record, isLoading: false);
+      return record;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
+
+  /// Extend probation period
+  Future<ProbationRecord?> extendProbation({
+    required int additionalDays,
+    required String reason,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final request = ExtendProbationRequest(
+        additionalDays: additionalDays,
+        reason: reason,
+      );
+
+      final record = await _probationService.extendProbation(recordId, request);
+      state = state.copyWith(record: record, isLoading: false);
+      return record;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
 }
 
 /// Probation record provider family (ID-based with parameterless loadRecord)

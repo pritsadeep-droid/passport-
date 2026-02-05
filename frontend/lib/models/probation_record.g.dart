@@ -162,3 +162,17 @@ Map<String, dynamic> _$$TransferSupervisorRequestImplToJson(
       'newSupervisorId': instance.newSupervisorId,
       'reason': instance.reason,
     };
+
+_$ExtendProbationRequestImpl _$$ExtendProbationRequestImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ExtendProbationRequestImpl(
+      additionalDays: (json['additionalDays'] as num).toInt(),
+      reason: json['reason'] as String,
+    );
+
+Map<String, dynamic> _$$ExtendProbationRequestImplToJson(
+        _$ExtendProbationRequestImpl instance) =>
+    <String, dynamic>{
+      'additionalDays': instance.additionalDays,
+      'reason': instance.reason,
+    };

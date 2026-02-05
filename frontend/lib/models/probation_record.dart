@@ -179,6 +179,17 @@ class TransferSupervisorRequest with _$TransferSupervisorRequest {
       _$TransferSupervisorRequestFromJson(json);
 }
 
+@freezed
+class ExtendProbationRequest with _$ExtendProbationRequest {
+  const factory ExtendProbationRequest({
+    required int additionalDays,
+    required String reason,
+  }) = _ExtendProbationRequest;
+
+  factory ExtendProbationRequest.fromJson(Map<String, dynamic> json) =>
+      _$ExtendProbationRequestFromJson(json);
+}
+
 extension ProbationRecordExtension on ProbationRecord {
   /// Calculate days remaining until probation ends
   int get calculatedDaysRemaining {

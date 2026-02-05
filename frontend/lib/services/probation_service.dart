@@ -136,4 +136,20 @@ class ProbationService {
       throw ApiException.fromDioError(e);
     }
   }
+
+  /// Extend probation period (HR Admin only)
+  Future<ProbationRecord> extendProbation(
+    String id,
+    ExtendProbationRequest request,
+  ) async {
+    try {
+      final response = await _apiClient.patch(
+        '/probation/$id/extend',
+        data: request.toJson(),
+      );
+      return ProbationRecord.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
 }
