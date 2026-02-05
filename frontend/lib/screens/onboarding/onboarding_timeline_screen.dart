@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/onboarding.dart';
 import '../../providers/onboarding_provider.dart';
+import '../../widgets/stamp_collection.dart';
+import '../../widgets/journey_timeline.dart';
 
 class OnboardingTimelineScreen extends ConsumerStatefulWidget {
   const OnboardingTimelineScreen({super.key});
@@ -11,14 +13,39 @@ class OnboardingTimelineScreen extends ConsumerStatefulWidget {
   ConsumerState<OnboardingTimelineScreen> createState() => _OnboardingTimelineScreenState();
 }
 
-class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScreen> {
+class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(myOnboardingProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ภารกิจ Onboarding ของฉัน'),
+        title: const Text('Culture Passport'),
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(text: 'ภารกิจ HAPINES'),
+            Tab(text: 'เส้นทาง Onboarding'),
+          ],
+        ),
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -42,71 +69,181 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.assignment_ind, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text('คุณยังไม่มีโปรแกรม Onboarding'),
+                children: const [
+                  Icon(Icons.assignment_ind, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text('คุณยังไม่มีโปรแกรม Onboarding'),
                 ],
               ),
             );
           }
 
-          final template = instance.templateId;
-          final missions = template.missions;
-          
-          return RefreshIndicator(
-            onRefresh: () async => ref.refresh(myOnboardingProvider),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: missions.length + 1, // +1 for header
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _buildHeader(context, instance);
-                }
-                
-                final mission = missions[index - 1];
-                return _buildMissionCard(context, instance, mission);
-              },
-            ),
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              _MissionsTab(instance: instance),
+              _JourneyTab(instance: instance),
+            ],
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context, OnboardingInstance instance) {
-    // Calculate progress
-    // Simple logic: count passed missions / total missions
+class _MissionsTab extends ConsumerWidget {
+  final OnboardingInstance instance;
+
+  const _MissionsTab({required this.instance});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final template = instance.templateId;
+    final missions = template.missions;
+
+    return RefreshIndicator(
+      onRefresh: () async => ref.refresh(myOnboardingProvider),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Passport Info Card
+          _buildPassportInfoCard(context),
+          const SizedBox(height: 16),
+
+          // Stamp Collection
+          Card(
+            elevation: 0,
+            color: Colors.grey.shade50,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8, bottom: 8),
+                    child: Text(
+                      'Stamp Collection',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                  ),
+                  StampCollectionWidget(
+                    missions: missions,
+                    reviews: instance.reviews,
+                    startDate: instance.startDate,
+                    onStampTap: (mission) {
+                      if (_isMissionOpen(mission)) {
+                        context.push('/employee/onboarding/mission/${mission.code}');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Progress
+          _buildProgressHeader(context),
+          const SizedBox(height: 16),
+
+          // Mission List
+          ...missions.map((mission) => _buildMissionCard(context, mission)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPassportInfoCard(BuildContext context) {
+    final now = DateTime.now();
+    final daysElapsed = now.difference(instance.startDate).inDays;
+    final totalDays = instance.templateId.durationDays;
+
+    return Card(
+      color: const Color(0xFF1A237E),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade600,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.auto_awesome, color: Colors.white, size: 22),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'HAPINES\nCulture Passport',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade600,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Day $daysElapsed/$totalDays',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'เริ่มงาน: ${_formatDate(instance.startDate)}',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressHeader(BuildContext context) {
     final total = instance.templateId.missions.length;
     final passed = instance.reviews.where((r) => r.decision == 'pass').length;
-    final submitted = instance.answers.map((a) => a.questionId).toSet().length; 
-    // This is vague, answers are per question. 
-    // Let's rely on completed status if we computed it, but we didn't yet.
-    // For now display Start Date.
-    
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: EdgeInsets.zero,
       elevation: 0,
       color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              instance.templateId.name,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              'ภารกิจ HAPINES',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            Text('เริ่มงาน: ${_formatDate(instance.startDate)}'),
-            const SizedBox(height: 16),
             LinearProgressIndicator(
               value: total > 0 ? passed / total : 0,
               backgroundColor: Colors.grey[200],
-              minHeight: 10,
-              borderRadius: BorderRadius.circular(5),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(4),
             ),
             const SizedBox(height: 8),
             Text('$passed / $total ภารกิจสำเร็จ'),
@@ -116,22 +253,14 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
     );
   }
 
-  Widget _buildMissionCard(BuildContext context, OnboardingInstance instance, Mission mission) {
-    // Determine status
-    // 1. Check if reviewed
+  Widget _buildMissionCard(BuildContext context, Mission mission) {
     final review = instance.reviews.firstWhere(
-      (r) => r.missionCode == mission.code, 
-      orElse: () => const Review(missionCode: '', decision: ''), // dummy
+      (r) => r.missionCode == mission.code,
+      orElse: () => const Review(missionCode: '', decision: ''),
     );
-    
-    // 2. Check if submitted (any answer for this mission?)
-    // This requires linking questions to mission code.
-    // In our model Question has missionCode.
-    // We need to know if ALL required questions for this mission are answered.
-    // For MVP, let's just check if start date is open.
-    
-    final isOpen = _isMissionOpen(instance.startDate, mission.openOffsetDays);
-    
+
+    final isOpen = _isMissionOpen(mission);
+
     Color statusColor;
     String statusText;
     IconData statusIcon;
@@ -159,17 +288,14 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
     }
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: isOpen 
-            ? () {
-               // Navigate to Mission Detail
-               context.push('/onboarding/mission/${mission.code}'); 
-              } 
+        onTap: isOpen || review.decision == 'pass'
+            ? () => context.push('/employee/onboarding/mission/${mission.code}')
             : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
@@ -183,7 +309,7 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
                 child: Text(
                   mission.code,
                   style: TextStyle(
-                    fontSize: 24, 
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: statusColor,
                   ),
@@ -225,12 +351,59 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
     );
   }
 
-  bool _isMissionOpen(DateTime startDate, int offsetDays) {
-    final openDate = startDate.add(Duration(days: offsetDays));
+  bool _isMissionOpen(Mission mission) {
+    final openDate = instance.startDate.add(Duration(days: mission.openOffsetDays));
     return DateTime.now().isAfter(openDate);
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    final months = [
+      '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.',
+    ];
+    return '${date.day} ${months[date.month]} ${date.year + 543}';
+  }
+}
+
+class _JourneyTab extends ConsumerWidget {
+  final OnboardingInstance instance;
+
+  const _JourneyTab({required this.instance});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return RefreshIndicator(
+      onRefresh: () async => ref.refresh(myOnboardingProvider),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'เส้นทาง Onboarding',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'กิจกรรมและภารกิจตลอด ${instance.templateId.durationDays} วัน',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 16),
+            JourneyTimelineWidget(
+              instance: instance,
+              onMissionTap: (mission) {
+                final openDate = instance.startDate.add(Duration(days: mission.openOffsetDays));
+                if (DateTime.now().isAfter(openDate)) {
+                  context.push('/employee/onboarding/mission/${mission.code}');
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

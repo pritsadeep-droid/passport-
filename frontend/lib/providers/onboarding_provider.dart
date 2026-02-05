@@ -41,8 +41,15 @@ class MyOnboardingNotifier extends StateNotifier<AsyncValue<OnboardingInstance?>
       final updatedInstance = await _service.submitAnswer(request);
       state = AsyncValue.data(updatedInstance);
     } catch (e) {
-      // Handle error (maybe show toast via UI using listener, or update state with error?)
-      // For now, reloading to ensure consistency or rethrowing if UI needs to know
+      rethrow;
+    }
+  }
+
+  Future<void> completeEvent(String instanceId, String eventCode, {String? notes}) async {
+    try {
+      final updatedInstance = await _service.completeEvent(instanceId, eventCode, notes: notes);
+      state = AsyncValue.data(updatedInstance);
+    } catch (e) {
       rethrow;
     }
   }
@@ -87,6 +94,15 @@ class OnboardingDetailNotifier extends StateNotifier<AsyncValue<OnboardingInstan
         comment: comment,
       );
       final updatedInstance = await _service.reviewMission(request);
+      state = AsyncValue.data(updatedInstance);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> completeEvent(String eventCode, {String? notes}) async {
+    try {
+      final updatedInstance = await _service.completeEvent(_id, eventCode, notes: notes);
       state = AsyncValue.data(updatedInstance);
     } catch (e) {
       rethrow;

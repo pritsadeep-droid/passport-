@@ -33,6 +33,23 @@ enum MissionStatus {
   failed,
 }
 
+enum EventType {
+  @JsonValue('orientation')
+  orientation,
+  @JsonValue('workshop')
+  workshop,
+  @JsonValue('training')
+  training,
+  @JsonValue('evaluation')
+  evaluation,
+  @JsonValue('feedback')
+  feedback,
+  @JsonValue('celebration')
+  celebration,
+  @JsonValue('other')
+  other,
+}
+
 @freezed
 class Question with _$Question {
   const factory Question({
@@ -65,6 +82,39 @@ class Mission with _$Mission {
 }
 
 @freezed
+class JourneyEvent with _$JourneyEvent {
+  const factory JourneyEvent({
+    required String code,
+    required String title,
+    String? titleTh,
+    String? description,
+    @Default(EventType.other) EventType type,
+    required int day,
+    String? duration,
+    @Default(false) bool isLinkedToMilestone,
+    int? milestoneDay,
+    @Default(0) int sortOrder,
+  }) = _JourneyEvent;
+
+  factory JourneyEvent.fromJson(Map<String, dynamic> json) =>
+      _$JourneyEventFromJson(json);
+}
+
+@freezed
+class EventCompletion with _$EventCompletion {
+  const factory EventCompletion({
+    @JsonKey(name: '_id') String? id,
+    required String eventCode,
+    DateTime? completedAt,
+    String? completedBy,
+    String? notes,
+  }) = _EventCompletion;
+
+  factory EventCompletion.fromJson(Map<String, dynamic> json) =>
+      _$EventCompletionFromJson(json);
+}
+
+@freezed
 class OnboardingTemplate with _$OnboardingTemplate {
   const factory OnboardingTemplate({
     @JsonKey(name: '_id') required String id,
@@ -72,6 +122,8 @@ class OnboardingTemplate with _$OnboardingTemplate {
     String? description,
     @Default([]) List<Mission> missions,
     @Default([]) List<Question> questions,
+    @Default([]) List<JourneyEvent> events,
+    @Default(119) int durationDays,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _OnboardingTemplate;
@@ -120,6 +172,7 @@ class OnboardingInstance with _$OnboardingInstance {
     required String status,
     @Default([]) List<Answer> answers,
     @Default([]) List<Review> reviews,
+    @Default([]) List<EventCompletion> eventCompletions,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _OnboardingInstance;
@@ -138,7 +191,7 @@ class AssignOnboardingRequest with _$AssignOnboardingRequest {
 
   factory AssignOnboardingRequest.toJson() =>
       const AssignOnboardingRequest(employeeId: '', templateId: ''); // Dummy factory to satisfy linter if strictly typed
-  
+
   // Custom toJson since we don't deserialize requests usually
   factory AssignOnboardingRequest.fromJson(Map<String, dynamic> json) =>
       _$AssignOnboardingRequestFromJson(json);

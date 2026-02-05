@@ -1,6 +1,8 @@
 const ProbationRecord = require('../models/ProbationRecord');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
+const OnboardingTemplate = require('../models/OnboardingTemplate');
+const OnboardingInstance = require('../models/OnboardingInstance');
 const { asyncHandler, ApiError } = require('../middleware/errorHandler');
 const {
   successResponse,
@@ -201,6 +203,27 @@ const createProbationRecord = asyncHandler(async (req, res) => {
     ip: req.ip,
     userAgent: req.headers['user-agent'],
   });
+
+  // Auto-assign onboarding if active template exists
+  try {
+    const activeTemplate = await OnboardingTemplate.findOne({ isActive: true });
+    if (activeTemplate) {
+      const existingOnboarding = await OnboardingInstance.findOne({
+        employeeId,
+        status: { $ne: 'archived' },
+      });
+      if (!existingOnboarding) {
+        await OnboardingInstance.create({
+          employeeId,
+          templateId: activeTemplate._id,
+          startDate: new Date(startDate),
+        });
+      }
+    }
+  } catch (onboardingError) {
+    // Log but don't fail probation creation
+    console.error('Auto-assign onboarding failed:', onboardingError.message);
+  }
 
   // Populate and return
   await record.populate('employeeId', 'employeeId email name department');

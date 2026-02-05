@@ -87,4 +87,28 @@ class OnboardingService {
       throw ApiException.fromDioError(e);
     }
   }
+
+  Future<OnboardingInstance> completeEvent(String instanceId, String eventCode, {String? notes}) async {
+    try {
+      final response = await _apiClient.post(
+        '/onboarding/$instanceId/complete-event',
+        data: {
+          'eventCode': eventCode,
+          if (notes != null) 'notes': notes,
+        },
+      );
+      return OnboardingInstance.fromJson(response.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> getJourneyProgress(String instanceId) async {
+    try {
+      final response = await _apiClient.get('/onboarding/$instanceId/journey');
+      return response.data['data'] as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
 }

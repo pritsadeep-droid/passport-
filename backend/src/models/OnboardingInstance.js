@@ -43,6 +43,25 @@ const reviewSchema = new mongoose.Schema({
     },
 });
 
+const eventCompletionSchema = new mongoose.Schema({
+    eventCode: {
+        type: String,
+        required: true,
+    },
+    completedAt: {
+        type: Date,
+        default: Date.now,
+    },
+    completedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    notes: {
+        type: String,
+        trim: true,
+    },
+});
+
 const onboardingInstanceSchema = new mongoose.Schema(
     {
         employeeId: {
@@ -69,7 +88,8 @@ const onboardingInstanceSchema = new mongoose.Schema(
         answers: [answerSchema],
         // Track manager reviews
         reviews: [reviewSchema],
-        // Store simple progress map: { "H": "done", "A": "locked" } if needed, or compute on fly
+        // Track journey event completions
+        eventCompletions: [eventCompletionSchema],
     },
     {
         timestamps: true,

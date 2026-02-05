@@ -50,6 +50,50 @@ const missionSchema = new mongoose.Schema({
   },
 });
 
+const eventSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  titleTh: {
+    type: String,
+    trim: true,
+  },
+  description: {
+    type: String,
+    trim: true,
+  },
+  type: {
+    type: String,
+    enum: ['orientation', 'workshop', 'training', 'evaluation', 'feedback', 'celebration', 'other'],
+    default: 'other',
+  },
+  day: {
+    type: Number,
+    required: true,
+  },
+  duration: {
+    type: String,
+    trim: true,
+  },
+  isLinkedToMilestone: {
+    type: Boolean,
+    default: false,
+  },
+  milestoneDay: {
+    type: Number,
+  },
+  sortOrder: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const onboardingTemplateSchema = new mongoose.Schema(
   {
     name: {
@@ -68,6 +112,11 @@ const onboardingTemplateSchema = new mongoose.Schema(
     },
     missions: [missionSchema],
     questions: [questionSchema],
+    events: [eventSchema],
+    durationDays: {
+      type: Number,
+      default: 119,
+    },
   },
   {
     timestamps: true,

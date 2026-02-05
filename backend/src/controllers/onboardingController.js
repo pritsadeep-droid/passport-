@@ -200,3 +200,167 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
         data: instance,
     });
 });
+
+exports.completeEvent = catchAsync(async (req, res, next) => {
+    const { eventCode, notes } = req.body;
+    const instanceId = req.params.id;
+
+    const instance = await OnboardingInstance.findById(instanceId)
+        .populate('employeeId', 'supervisorId')
+        .populate('templateId');
+
+    if (!instance) {
+        return next(new AppError('Onboarding instance not found', 404));
+    }
+
+    // Auth: only supervisor or HR admin
+    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
+    const isAdmin = req.user.role === 'hr_admin';
+    if (!isSupervisor && !isAdmin) {
+        return next(new AppError('Not authorized to complete events', 403));
+    }
+
+    // Validate event code exists in template
+    const event = instance.templateId.events.find(e => e.code === eventCode);
+    if (!event) {
+        return next(new AppError('Invalid event code', 400));
+    }
+
+    // Check if already completed
+    const alreadyCompleted = instance.eventCompletions.find(ec => ec.eventCode === eventCode);
+    if (alreadyCompleted) {
+        return next(new AppError('Event already completed', 400));
+    }
+
+    instance.eventCompletions.push({
+        eventCode,
+        completedAt: new Date(),
+        completedBy: req.user.id,
+        notes,
+    });
+
+    await instance.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: instance,
+    });
+});
+
+exports.getJourney = catchAsync(async (req, res, next) => {
+    const instanceId = req.params.id;
+
+    const instance = await OnboardingInstance.findById(instanceId)
+        .populate('templateId')
+        .populate('employeeId', 'name email department position supervisorId')
+        .populate('eventCompletions.completedBy', 'name')
+        .populate('reviews.reviewedBy', 'name');
+
+    if (!instance) {
+        return next(new AppError('Onboarding instance not found', 404));
+    }
+
+    // Auth check
+    const isOwner = instance.employeeId._id.toString() === req.user.id;
+    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
+    const isAdmin = req.user.role === 'hr_admin';
+
+    if (!isOwner && !isSupervisor && !isAdmin) {
+        return next(new AppError('You do not have permission to view this', 403));
+    }
+
+    // Build combined journey timeline
+    const template = instance.templateId;
+    const startDate = instance.startDate;
+    const now = new Date();
+
+    // Map events
+    const eventItems = (template.events || []).map(event => {
+        const completion = instance.eventCompletions.find(ec => ec.eventCode === event.code);
+        const eventDate = new Date(startDate);
+        eventDate.setDate(eventDate.getDate() + event.day);
+
+        return {
+            type: 'event',
+            code: event.code,
+            title: event.title,
+            titleTh: event.titleTh,
+            description: event.description,
+            eventType: event.type,
+            day: event.day,
+            date: eventDate,
+            duration: event.duration,
+            isLinkedToMilestone: event.isLinkedToMilestone,
+            milestoneDay: event.milestoneDay,
+            completed: !!completion,
+            completedAt: completion?.completedAt,
+            completedBy: completion?.completedBy,
+            notes: completion?.notes,
+            sortOrder: event.sortOrder,
+        };
+    });
+
+    // Map missions
+    const missionItems = template.missions.map(mission => {
+        const review = instance.reviews.find(r => r.missionCode === mission.code);
+        const openDate = new Date(startDate);
+        openDate.setDate(openDate.getDate() + mission.openOffsetDays);
+
+        let status = 'locked';
+        if (review) {
+            status = review.decision; // pass, fail, revision_required
+        } else if (now >= openDate) {
+            // Check if any answers submitted for this mission
+            const missionQuestions = template.questions.filter(q => q.missionCode === mission.code);
+            const answeredQuestions = missionQuestions.filter(q =>
+                instance.answers.some(a => a.questionId.toString() === q._id.toString())
+            );
+            status = answeredQuestions.length > 0 ? 'in_progress' : 'open';
+        }
+
+        return {
+            type: 'mission',
+            code: mission.code,
+            title: mission.title,
+            description: mission.description,
+            day: mission.openOffsetDays,
+            date: openDate,
+            status,
+            review: review || null,
+        };
+    });
+
+    // Combine and sort by day
+    const timeline = [...eventItems, ...missionItems].sort((a, b) => {
+        if (a.day !== b.day) return a.day - b.day;
+        // Events before missions on same day
+        if (a.type === 'event' && b.type === 'mission') return -1;
+        if (a.type === 'mission' && b.type === 'event') return 1;
+        return (a.sortOrder || 0) - (b.sortOrder || 0);
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            instance,
+            timeline,
+        },
+    });
+});
+
+exports.updateTemplate = catchAsync(async (req, res, next) => {
+    const template = await OnboardingTemplate.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    );
+
+    if (!template) {
+        return next(new AppError('Template not found', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: template,
+    });
+});

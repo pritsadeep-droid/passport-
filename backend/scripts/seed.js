@@ -2,6 +2,8 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../src/models/User');
 const ProbationRecord = require('../src/models/ProbationRecord');
+const OnboardingTemplate = require('../src/models/OnboardingTemplate');
+const OnboardingInstance = require('../src/models/OnboardingInstance');
 
 const seedData = async () => {
   try {
@@ -11,6 +13,7 @@ const seedData = async () => {
     // Clear existing data
     await User.deleteMany({});
     await ProbationRecord.deleteMany({});
+    await OnboardingInstance.deleteMany({});
     console.log('Cleared existing data');
 
     // Create HR Admin
@@ -122,6 +125,25 @@ const seedData = async () => {
       });
     }
     console.log('Created Probation Records');
+
+    // Create onboarding instances for employees (if HAPINES template exists)
+    const hapinesTemplate = await OnboardingTemplate.findOne({ isActive: true });
+    if (hapinesTemplate) {
+      for (const emp of employees) {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - emp.daysAgo);
+
+        await OnboardingInstance.create({
+          employeeId: emp.user._id,
+          templateId: hapinesTemplate._id,
+          startDate: startDate,
+          status: emp.status === 'passed' || emp.status === 'failed' ? 'completed' : 'in_progress',
+        });
+      }
+      console.log('Created Onboarding Instances for all employees');
+    } else {
+      console.log('No active onboarding template found - run seedOnboarding.js first');
+    }
 
     console.log('\n========================================');
     console.log('          TEST ACCOUNTS');

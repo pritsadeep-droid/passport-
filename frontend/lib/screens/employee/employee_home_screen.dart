@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/milestone.dart';
-import '../../models/probation_record.dart';
 import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/onboarding_provider.dart';
 import '../../providers/self_assessment_provider.dart';
 import '../../services/assessment_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/milestone_timeline.dart';
+import '../../widgets/stamp_collection.dart';
 
 class EmployeeHomeScreen extends ConsumerStatefulWidget {
   const EmployeeHomeScreen({super.key});
@@ -107,7 +108,7 @@ class _DashboardTab extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg),
 
               // Onboarding Card
-              _buildOnboardingCard(context),
+              _buildOnboardingCard(context, ref),
               const SizedBox(height: AppSpacing.lg),
 
               // Countdown card
@@ -178,42 +179,81 @@ class _DashboardTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildOnboardingCard(BuildContext context) {
+  Widget _buildOnboardingCard(BuildContext context, WidgetRef ref) {
+    final onboardingState = ref.watch(myOnboardingProvider);
+
     return Card(
       color: Colors.indigo.shade50,
       child: InkWell(
-        onTap: () => context.push('/onboarding'),
+        onTap: () => context.push('/employee/onboarding'),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.indigo.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.rocket_launch, color: Colors.indigo, size: 28),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'ภารกิจ Onboarding',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'ทำภารกิจเพื่อก้าวสู่พนักงานมืออาชีพ',
-                      style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                    child: const Icon(Icons.auto_awesome, color: Colors.indigo, size: 28),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Culture Passport',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 4),
+                        onboardingState.when(
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => Text(
+                            'ทำภารกิจเพื่อก้าวสู่พนักงานมืออาชีพ',
+                            style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                          ),
+                          data: (instance) {
+                            if (instance == null) {
+                              return Text(
+                                'ยังไม่มีโปรแกรม Onboarding',
+                                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              );
+                            }
+                            final passed = instance.reviews.where((r) => r.decision == 'pass').length;
+                            final total = instance.templateId.missions.length;
+                            return Text(
+                              '$passed/$total stamps collected',
+                              style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const Icon(Icons.chevron_right, color: Colors.indigo),
+                ],
               ),
-              const Icon(Icons.chevron_right, color: Colors.indigo),
+              // Mini stamp dots
+              onboardingState.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (instance) {
+                  if (instance == null) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: MiniStampDots(
+                      missions: instance.templateId.missions,
+                      reviews: instance.reviews,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

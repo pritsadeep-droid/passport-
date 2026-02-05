@@ -544,6 +544,573 @@ abstract class _Mission implements Mission {
       throw _privateConstructorUsedError;
 }
 
+JourneyEvent _$JourneyEventFromJson(Map<String, dynamic> json) {
+  return _JourneyEvent.fromJson(json);
+}
+
+/// @nodoc
+mixin _$JourneyEvent {
+  String get code => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  String? get titleTh => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  EventType get type => throw _privateConstructorUsedError;
+  int get day => throw _privateConstructorUsedError;
+  String? get duration => throw _privateConstructorUsedError;
+  bool get isLinkedToMilestone => throw _privateConstructorUsedError;
+  int? get milestoneDay => throw _privateConstructorUsedError;
+  int get sortOrder => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $JourneyEventCopyWith<JourneyEvent> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $JourneyEventCopyWith<$Res> {
+  factory $JourneyEventCopyWith(
+          JourneyEvent value, $Res Function(JourneyEvent) then) =
+      _$JourneyEventCopyWithImpl<$Res, JourneyEvent>;
+  @useResult
+  $Res call(
+      {String code,
+      String title,
+      String? titleTh,
+      String? description,
+      EventType type,
+      int day,
+      String? duration,
+      bool isLinkedToMilestone,
+      int? milestoneDay,
+      int sortOrder});
+}
+
+/// @nodoc
+class _$JourneyEventCopyWithImpl<$Res, $Val extends JourneyEvent>
+    implements $JourneyEventCopyWith<$Res> {
+  _$JourneyEventCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? title = null,
+    Object? titleTh = freezed,
+    Object? description = freezed,
+    Object? type = null,
+    Object? day = null,
+    Object? duration = freezed,
+    Object? isLinkedToMilestone = null,
+    Object? milestoneDay = freezed,
+    Object? sortOrder = null,
+  }) {
+    return _then(_value.copyWith(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      titleTh: freezed == titleTh
+          ? _value.titleTh
+          : titleTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as EventType,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as int,
+      duration: freezed == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isLinkedToMilestone: null == isLinkedToMilestone
+          ? _value.isLinkedToMilestone
+          : isLinkedToMilestone // ignore: cast_nullable_to_non_nullable
+              as bool,
+      milestoneDay: freezed == milestoneDay
+          ? _value.milestoneDay
+          : milestoneDay // ignore: cast_nullable_to_non_nullable
+              as int?,
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$JourneyEventImplCopyWith<$Res>
+    implements $JourneyEventCopyWith<$Res> {
+  factory _$$JourneyEventImplCopyWith(
+          _$JourneyEventImpl value, $Res Function(_$JourneyEventImpl) then) =
+      __$$JourneyEventImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String code,
+      String title,
+      String? titleTh,
+      String? description,
+      EventType type,
+      int day,
+      String? duration,
+      bool isLinkedToMilestone,
+      int? milestoneDay,
+      int sortOrder});
+}
+
+/// @nodoc
+class __$$JourneyEventImplCopyWithImpl<$Res>
+    extends _$JourneyEventCopyWithImpl<$Res, _$JourneyEventImpl>
+    implements _$$JourneyEventImplCopyWith<$Res> {
+  __$$JourneyEventImplCopyWithImpl(
+      _$JourneyEventImpl _value, $Res Function(_$JourneyEventImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? title = null,
+    Object? titleTh = freezed,
+    Object? description = freezed,
+    Object? type = null,
+    Object? day = null,
+    Object? duration = freezed,
+    Object? isLinkedToMilestone = null,
+    Object? milestoneDay = freezed,
+    Object? sortOrder = null,
+  }) {
+    return _then(_$JourneyEventImpl(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      titleTh: freezed == titleTh
+          ? _value.titleTh
+          : titleTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as EventType,
+      day: null == day
+          ? _value.day
+          : day // ignore: cast_nullable_to_non_nullable
+              as int,
+      duration: freezed == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isLinkedToMilestone: null == isLinkedToMilestone
+          ? _value.isLinkedToMilestone
+          : isLinkedToMilestone // ignore: cast_nullable_to_non_nullable
+              as bool,
+      milestoneDay: freezed == milestoneDay
+          ? _value.milestoneDay
+          : milestoneDay // ignore: cast_nullable_to_non_nullable
+              as int?,
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$JourneyEventImpl implements _JourneyEvent {
+  const _$JourneyEventImpl(
+      {required this.code,
+      required this.title,
+      this.titleTh,
+      this.description,
+      this.type = EventType.other,
+      required this.day,
+      this.duration,
+      this.isLinkedToMilestone = false,
+      this.milestoneDay,
+      this.sortOrder = 0});
+
+  factory _$JourneyEventImpl.fromJson(Map<String, dynamic> json) =>
+      _$$JourneyEventImplFromJson(json);
+
+  @override
+  final String code;
+  @override
+  final String title;
+  @override
+  final String? titleTh;
+  @override
+  final String? description;
+  @override
+  @JsonKey()
+  final EventType type;
+  @override
+  final int day;
+  @override
+  final String? duration;
+  @override
+  @JsonKey()
+  final bool isLinkedToMilestone;
+  @override
+  final int? milestoneDay;
+  @override
+  @JsonKey()
+  final int sortOrder;
+
+  @override
+  String toString() {
+    return 'JourneyEvent(code: $code, title: $title, titleTh: $titleTh, description: $description, type: $type, day: $day, duration: $duration, isLinkedToMilestone: $isLinkedToMilestone, milestoneDay: $milestoneDay, sortOrder: $sortOrder)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$JourneyEventImpl &&
+            (identical(other.code, code) || other.code == code) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.titleTh, titleTh) || other.titleTh == titleTh) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.day, day) || other.day == day) &&
+            (identical(other.duration, duration) ||
+                other.duration == duration) &&
+            (identical(other.isLinkedToMilestone, isLinkedToMilestone) ||
+                other.isLinkedToMilestone == isLinkedToMilestone) &&
+            (identical(other.milestoneDay, milestoneDay) ||
+                other.milestoneDay == milestoneDay) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      code,
+      title,
+      titleTh,
+      description,
+      type,
+      day,
+      duration,
+      isLinkedToMilestone,
+      milestoneDay,
+      sortOrder);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$JourneyEventImplCopyWith<_$JourneyEventImpl> get copyWith =>
+      __$$JourneyEventImplCopyWithImpl<_$JourneyEventImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$JourneyEventImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _JourneyEvent implements JourneyEvent {
+  const factory _JourneyEvent(
+      {required final String code,
+      required final String title,
+      final String? titleTh,
+      final String? description,
+      final EventType type,
+      required final int day,
+      final String? duration,
+      final bool isLinkedToMilestone,
+      final int? milestoneDay,
+      final int sortOrder}) = _$JourneyEventImpl;
+
+  factory _JourneyEvent.fromJson(Map<String, dynamic> json) =
+      _$JourneyEventImpl.fromJson;
+
+  @override
+  String get code;
+  @override
+  String get title;
+  @override
+  String? get titleTh;
+  @override
+  String? get description;
+  @override
+  EventType get type;
+  @override
+  int get day;
+  @override
+  String? get duration;
+  @override
+  bool get isLinkedToMilestone;
+  @override
+  int? get milestoneDay;
+  @override
+  int get sortOrder;
+  @override
+  @JsonKey(ignore: true)
+  _$$JourneyEventImplCopyWith<_$JourneyEventImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+EventCompletion _$EventCompletionFromJson(Map<String, dynamic> json) {
+  return _EventCompletion.fromJson(json);
+}
+
+/// @nodoc
+mixin _$EventCompletion {
+  @JsonKey(name: '_id')
+  String? get id => throw _privateConstructorUsedError;
+  String get eventCode => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
+  String? get completedBy => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $EventCompletionCopyWith<EventCompletion> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EventCompletionCopyWith<$Res> {
+  factory $EventCompletionCopyWith(
+          EventCompletion value, $Res Function(EventCompletion) then) =
+      _$EventCompletionCopyWithImpl<$Res, EventCompletion>;
+  @useResult
+  $Res call(
+      {@JsonKey(name: '_id') String? id,
+      String eventCode,
+      DateTime? completedAt,
+      String? completedBy,
+      String? notes});
+}
+
+/// @nodoc
+class _$EventCompletionCopyWithImpl<$Res, $Val extends EventCompletion>
+    implements $EventCompletionCopyWith<$Res> {
+  _$EventCompletionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? eventCode = null,
+    Object? completedAt = freezed,
+    Object? completedBy = freezed,
+    Object? notes = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      eventCode: null == eventCode
+          ? _value.eventCode
+          : eventCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      completedBy: freezed == completedBy
+          ? _value.completedBy
+          : completedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$EventCompletionImplCopyWith<$Res>
+    implements $EventCompletionCopyWith<$Res> {
+  factory _$$EventCompletionImplCopyWith(_$EventCompletionImpl value,
+          $Res Function(_$EventCompletionImpl) then) =
+      __$$EventCompletionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: '_id') String? id,
+      String eventCode,
+      DateTime? completedAt,
+      String? completedBy,
+      String? notes});
+}
+
+/// @nodoc
+class __$$EventCompletionImplCopyWithImpl<$Res>
+    extends _$EventCompletionCopyWithImpl<$Res, _$EventCompletionImpl>
+    implements _$$EventCompletionImplCopyWith<$Res> {
+  __$$EventCompletionImplCopyWithImpl(
+      _$EventCompletionImpl _value, $Res Function(_$EventCompletionImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? eventCode = null,
+    Object? completedAt = freezed,
+    Object? completedBy = freezed,
+    Object? notes = freezed,
+  }) {
+    return _then(_$EventCompletionImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      eventCode: null == eventCode
+          ? _value.eventCode
+          : eventCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      completedAt: freezed == completedAt
+          ? _value.completedAt
+          : completedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      completedBy: freezed == completedBy
+          ? _value.completedBy
+          : completedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$EventCompletionImpl implements _EventCompletion {
+  const _$EventCompletionImpl(
+      {@JsonKey(name: '_id') this.id,
+      required this.eventCode,
+      this.completedAt,
+      this.completedBy,
+      this.notes});
+
+  factory _$EventCompletionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EventCompletionImplFromJson(json);
+
+  @override
+  @JsonKey(name: '_id')
+  final String? id;
+  @override
+  final String eventCode;
+  @override
+  final DateTime? completedAt;
+  @override
+  final String? completedBy;
+  @override
+  final String? notes;
+
+  @override
+  String toString() {
+    return 'EventCompletion(id: $id, eventCode: $eventCode, completedAt: $completedAt, completedBy: $completedBy, notes: $notes)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$EventCompletionImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.eventCode, eventCode) ||
+                other.eventCode == eventCode) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt) &&
+            (identical(other.completedBy, completedBy) ||
+                other.completedBy == completedBy) &&
+            (identical(other.notes, notes) || other.notes == notes));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, eventCode, completedAt, completedBy, notes);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$EventCompletionImplCopyWith<_$EventCompletionImpl> get copyWith =>
+      __$$EventCompletionImplCopyWithImpl<_$EventCompletionImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$EventCompletionImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _EventCompletion implements EventCompletion {
+  const factory _EventCompletion(
+      {@JsonKey(name: '_id') final String? id,
+      required final String eventCode,
+      final DateTime? completedAt,
+      final String? completedBy,
+      final String? notes}) = _$EventCompletionImpl;
+
+  factory _EventCompletion.fromJson(Map<String, dynamic> json) =
+      _$EventCompletionImpl.fromJson;
+
+  @override
+  @JsonKey(name: '_id')
+  String? get id;
+  @override
+  String get eventCode;
+  @override
+  DateTime? get completedAt;
+  @override
+  String? get completedBy;
+  @override
+  String? get notes;
+  @override
+  @JsonKey(ignore: true)
+  _$$EventCompletionImplCopyWith<_$EventCompletionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 OnboardingTemplate _$OnboardingTemplateFromJson(Map<String, dynamic> json) {
   return _OnboardingTemplate.fromJson(json);
 }
@@ -556,6 +1123,8 @@ mixin _$OnboardingTemplate {
   String? get description => throw _privateConstructorUsedError;
   List<Mission> get missions => throw _privateConstructorUsedError;
   List<Question> get questions => throw _privateConstructorUsedError;
+  List<JourneyEvent> get events => throw _privateConstructorUsedError;
+  int get durationDays => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -577,6 +1146,8 @@ abstract class $OnboardingTemplateCopyWith<$Res> {
       String? description,
       List<Mission> missions,
       List<Question> questions,
+      List<JourneyEvent> events,
+      int durationDays,
       DateTime? createdAt,
       DateTime? updatedAt});
 }
@@ -599,6 +1170,8 @@ class _$OnboardingTemplateCopyWithImpl<$Res, $Val extends OnboardingTemplate>
     Object? description = freezed,
     Object? missions = null,
     Object? questions = null,
+    Object? events = null,
+    Object? durationDays = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -623,6 +1196,14 @@ class _$OnboardingTemplateCopyWithImpl<$Res, $Val extends OnboardingTemplate>
           ? _value.questions
           : questions // ignore: cast_nullable_to_non_nullable
               as List<Question>,
+      events: null == events
+          ? _value.events
+          : events // ignore: cast_nullable_to_non_nullable
+              as List<JourneyEvent>,
+      durationDays: null == durationDays
+          ? _value.durationDays
+          : durationDays // ignore: cast_nullable_to_non_nullable
+              as int,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -649,6 +1230,8 @@ abstract class _$$OnboardingTemplateImplCopyWith<$Res>
       String? description,
       List<Mission> missions,
       List<Question> questions,
+      List<JourneyEvent> events,
+      int durationDays,
       DateTime? createdAt,
       DateTime? updatedAt});
 }
@@ -669,6 +1252,8 @@ class __$$OnboardingTemplateImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? missions = null,
     Object? questions = null,
+    Object? events = null,
+    Object? durationDays = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -693,6 +1278,14 @@ class __$$OnboardingTemplateImplCopyWithImpl<$Res>
           ? _value._questions
           : questions // ignore: cast_nullable_to_non_nullable
               as List<Question>,
+      events: null == events
+          ? _value._events
+          : events // ignore: cast_nullable_to_non_nullable
+              as List<JourneyEvent>,
+      durationDays: null == durationDays
+          ? _value.durationDays
+          : durationDays // ignore: cast_nullable_to_non_nullable
+              as int,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -714,10 +1307,13 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
       this.description,
       final List<Mission> missions = const [],
       final List<Question> questions = const [],
+      final List<JourneyEvent> events = const [],
+      this.durationDays = 119,
       this.createdAt,
       this.updatedAt})
       : _missions = missions,
-        _questions = questions;
+        _questions = questions,
+        _events = events;
 
   factory _$OnboardingTemplateImpl.fromJson(Map<String, dynamic> json) =>
       _$$OnboardingTemplateImplFromJson(json);
@@ -747,6 +1343,18 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
     return EqualUnmodifiableListView(_questions);
   }
 
+  final List<JourneyEvent> _events;
+  @override
+  @JsonKey()
+  List<JourneyEvent> get events {
+    if (_events is EqualUnmodifiableListView) return _events;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_events);
+  }
+
+  @override
+  @JsonKey()
+  final int durationDays;
   @override
   final DateTime? createdAt;
   @override
@@ -754,7 +1362,7 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
 
   @override
   String toString() {
-    return 'OnboardingTemplate(id: $id, name: $name, description: $description, missions: $missions, questions: $questions, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'OnboardingTemplate(id: $id, name: $name, description: $description, missions: $missions, questions: $questions, events: $events, durationDays: $durationDays, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -769,6 +1377,9 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
             const DeepCollectionEquality().equals(other._missions, _missions) &&
             const DeepCollectionEquality()
                 .equals(other._questions, _questions) &&
+            const DeepCollectionEquality().equals(other._events, _events) &&
+            (identical(other.durationDays, durationDays) ||
+                other.durationDays == durationDays) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -784,6 +1395,8 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
       description,
       const DeepCollectionEquality().hash(_missions),
       const DeepCollectionEquality().hash(_questions),
+      const DeepCollectionEquality().hash(_events),
+      durationDays,
       createdAt,
       updatedAt);
 
@@ -809,6 +1422,8 @@ abstract class _OnboardingTemplate implements OnboardingTemplate {
       final String? description,
       final List<Mission> missions,
       final List<Question> questions,
+      final List<JourneyEvent> events,
+      final int durationDays,
       final DateTime? createdAt,
       final DateTime? updatedAt}) = _$OnboardingTemplateImpl;
 
@@ -826,6 +1441,10 @@ abstract class _OnboardingTemplate implements OnboardingTemplate {
   List<Mission> get missions;
   @override
   List<Question> get questions;
+  @override
+  List<JourneyEvent> get events;
+  @override
+  int get durationDays;
   @override
   DateTime? get createdAt;
   @override
@@ -1348,6 +1967,8 @@ mixin _$OnboardingInstance {
   String get status => throw _privateConstructorUsedError;
   List<Answer> get answers => throw _privateConstructorUsedError;
   List<Review> get reviews => throw _privateConstructorUsedError;
+  List<EventCompletion> get eventCompletions =>
+      throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -1371,6 +1992,7 @@ abstract class $OnboardingInstanceCopyWith<$Res> {
       String status,
       List<Answer> answers,
       List<Review> reviews,
+      List<EventCompletion> eventCompletions,
       DateTime? createdAt,
       DateTime? updatedAt});
 
@@ -1397,6 +2019,7 @@ class _$OnboardingInstanceCopyWithImpl<$Res, $Val extends OnboardingInstance>
     Object? status = null,
     Object? answers = null,
     Object? reviews = null,
+    Object? eventCompletions = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -1429,6 +2052,10 @@ class _$OnboardingInstanceCopyWithImpl<$Res, $Val extends OnboardingInstance>
           ? _value.reviews
           : reviews // ignore: cast_nullable_to_non_nullable
               as List<Review>,
+      eventCompletions: null == eventCompletions
+          ? _value.eventCompletions
+          : eventCompletions // ignore: cast_nullable_to_non_nullable
+              as List<EventCompletion>,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1465,6 +2092,7 @@ abstract class _$$OnboardingInstanceImplCopyWith<$Res>
       String status,
       List<Answer> answers,
       List<Review> reviews,
+      List<EventCompletion> eventCompletions,
       DateTime? createdAt,
       DateTime? updatedAt});
 
@@ -1490,6 +2118,7 @@ class __$$OnboardingInstanceImplCopyWithImpl<$Res>
     Object? status = null,
     Object? answers = null,
     Object? reviews = null,
+    Object? eventCompletions = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -1522,6 +2151,10 @@ class __$$OnboardingInstanceImplCopyWithImpl<$Res>
           ? _value._reviews
           : reviews // ignore: cast_nullable_to_non_nullable
               as List<Review>,
+      eventCompletions: null == eventCompletions
+          ? _value._eventCompletions
+          : eventCompletions // ignore: cast_nullable_to_non_nullable
+              as List<EventCompletion>,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1545,10 +2178,12 @@ class _$OnboardingInstanceImpl implements _OnboardingInstance {
       required this.status,
       final List<Answer> answers = const [],
       final List<Review> reviews = const [],
+      final List<EventCompletion> eventCompletions = const [],
       this.createdAt,
       this.updatedAt})
       : _answers = answers,
-        _reviews = reviews;
+        _reviews = reviews,
+        _eventCompletions = eventCompletions;
 
   factory _$OnboardingInstanceImpl.fromJson(Map<String, dynamic> json) =>
       _$$OnboardingInstanceImplFromJson(json);
@@ -1583,6 +2218,16 @@ class _$OnboardingInstanceImpl implements _OnboardingInstance {
     return EqualUnmodifiableListView(_reviews);
   }
 
+  final List<EventCompletion> _eventCompletions;
+  @override
+  @JsonKey()
+  List<EventCompletion> get eventCompletions {
+    if (_eventCompletions is EqualUnmodifiableListView)
+      return _eventCompletions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_eventCompletions);
+  }
+
   @override
   final DateTime? createdAt;
   @override
@@ -1590,7 +2235,7 @@ class _$OnboardingInstanceImpl implements _OnboardingInstance {
 
   @override
   String toString() {
-    return 'OnboardingInstance(id: $id, employeeId: $employeeId, templateId: $templateId, startDate: $startDate, status: $status, answers: $answers, reviews: $reviews, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'OnboardingInstance(id: $id, employeeId: $employeeId, templateId: $templateId, startDate: $startDate, status: $status, answers: $answers, reviews: $reviews, eventCompletions: $eventCompletions, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -1608,6 +2253,8 @@ class _$OnboardingInstanceImpl implements _OnboardingInstance {
             (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._answers, _answers) &&
             const DeepCollectionEquality().equals(other._reviews, _reviews) &&
+            const DeepCollectionEquality()
+                .equals(other._eventCompletions, _eventCompletions) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -1625,6 +2272,7 @@ class _$OnboardingInstanceImpl implements _OnboardingInstance {
       status,
       const DeepCollectionEquality().hash(_answers),
       const DeepCollectionEquality().hash(_reviews),
+      const DeepCollectionEquality().hash(_eventCompletions),
       createdAt,
       updatedAt);
 
@@ -1652,6 +2300,7 @@ abstract class _OnboardingInstance implements OnboardingInstance {
       required final String status,
       final List<Answer> answers,
       final List<Review> reviews,
+      final List<EventCompletion> eventCompletions,
       final DateTime? createdAt,
       final DateTime? updatedAt}) = _$OnboardingInstanceImpl;
 
@@ -1673,6 +2322,8 @@ abstract class _OnboardingInstance implements OnboardingInstance {
   List<Answer> get answers;
   @override
   List<Review> get reviews;
+  @override
+  List<EventCompletion> get eventCompletions;
   @override
   DateTime? get createdAt;
   @override

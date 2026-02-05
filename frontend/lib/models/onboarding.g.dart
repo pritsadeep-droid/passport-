@@ -58,6 +58,67 @@ Map<String, dynamic> _$$MissionImplToJson(_$MissionImpl instance) =>
       'closeOffsetDays': instance.closeOffsetDays,
     };
 
+_$JourneyEventImpl _$$JourneyEventImplFromJson(Map<String, dynamic> json) =>
+    _$JourneyEventImpl(
+      code: json['code'] as String,
+      title: json['title'] as String,
+      titleTh: json['titleTh'] as String?,
+      description: json['description'] as String?,
+      type: $enumDecodeNullable(_$EventTypeEnumMap, json['type']) ??
+          EventType.other,
+      day: (json['day'] as num).toInt(),
+      duration: json['duration'] as String?,
+      isLinkedToMilestone: json['isLinkedToMilestone'] as bool? ?? false,
+      milestoneDay: (json['milestoneDay'] as num?)?.toInt(),
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$$JourneyEventImplToJson(_$JourneyEventImpl instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'title': instance.title,
+      'titleTh': instance.titleTh,
+      'description': instance.description,
+      'type': _$EventTypeEnumMap[instance.type]!,
+      'day': instance.day,
+      'duration': instance.duration,
+      'isLinkedToMilestone': instance.isLinkedToMilestone,
+      'milestoneDay': instance.milestoneDay,
+      'sortOrder': instance.sortOrder,
+    };
+
+const _$EventTypeEnumMap = {
+  EventType.orientation: 'orientation',
+  EventType.workshop: 'workshop',
+  EventType.training: 'training',
+  EventType.evaluation: 'evaluation',
+  EventType.feedback: 'feedback',
+  EventType.celebration: 'celebration',
+  EventType.other: 'other',
+};
+
+_$EventCompletionImpl _$$EventCompletionImplFromJson(
+        Map<String, dynamic> json) =>
+    _$EventCompletionImpl(
+      id: json['_id'] as String?,
+      eventCode: json['eventCode'] as String,
+      completedAt: json['completedAt'] == null
+          ? null
+          : DateTime.parse(json['completedAt'] as String),
+      completedBy: json['completedBy'] as String?,
+      notes: json['notes'] as String?,
+    );
+
+Map<String, dynamic> _$$EventCompletionImplToJson(
+        _$EventCompletionImpl instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'eventCode': instance.eventCode,
+      'completedAt': instance.completedAt?.toIso8601String(),
+      'completedBy': instance.completedBy,
+      'notes': instance.notes,
+    };
+
 _$OnboardingTemplateImpl _$$OnboardingTemplateImplFromJson(
         Map<String, dynamic> json) =>
     _$OnboardingTemplateImpl(
@@ -72,6 +133,11 @@ _$OnboardingTemplateImpl _$$OnboardingTemplateImplFromJson(
               ?.map((e) => Question.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      events: (json['events'] as List<dynamic>?)
+              ?.map((e) => JourneyEvent.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      durationDays: (json['durationDays'] as num?)?.toInt() ?? 119,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -88,6 +154,8 @@ Map<String, dynamic> _$$OnboardingTemplateImplToJson(
       'description': instance.description,
       'missions': instance.missions,
       'questions': instance.questions,
+      'events': instance.events,
+      'durationDays': instance.durationDays,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
@@ -154,6 +222,10 @@ _$OnboardingInstanceImpl _$$OnboardingInstanceImplFromJson(
               ?.map((e) => Review.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      eventCompletions: (json['eventCompletions'] as List<dynamic>?)
+              ?.map((e) => EventCompletion.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -172,6 +244,7 @@ Map<String, dynamic> _$$OnboardingInstanceImplToJson(
       'status': instance.status,
       'answers': instance.answers,
       'reviews': instance.reviews,
+      'eventCompletions': instance.eventCompletions,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

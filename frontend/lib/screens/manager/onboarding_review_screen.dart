@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/onboarding.dart';
 import '../../providers/onboarding_provider.dart';
+import '../../widgets/stamp_collection.dart';
 
 class OnboardingReviewScreen extends ConsumerStatefulWidget {
   final String onboardingId;
@@ -36,7 +37,16 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(context, instance),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                _buildStampOverview(context, instance),
+                const SizedBox(height: 16),
+                _buildEventChecklist(context, instance),
+                const SizedBox(height: 16),
+                const Text(
+                  'ภารกิจ HAPINES',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 8),
                 ...instance.templateId.missions.map(
                   (mission) => _buildMissionReviewCard(context, instance, mission),
                 ),
@@ -49,23 +59,137 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   }
 
   Widget _buildHeader(BuildContext context, OnboardingInstance instance) {
+    final total = instance.templateId.missions.length;
+    final passed = instance.reviews.where((r) => r.decision == 'pass').length;
+    final eventsTotal = instance.templateId.events.length;
+    final eventsCompleted = instance.eventCompletions.length;
+    final overallProgress = total > 0
+        ? ((passed / total * 0.6) + (eventsTotal > 0 ? eventsCompleted / eventsTotal * 0.4 : 0.4))
+        : 0.0;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
-              'พนักงาน: ${instance.employeeId}', // Ideally name, but we only have ID in this model unless populated? Backed populates it?
-              // In our backend controller `getOnboardingById`, we populated employeeId. 
-              // But our Frontend model OnboardingInstance defines employeeId as String.
-              // This is a common issue. Let's assume for now it's just ID or upgrade model later.
-              // For MVP, just ID is sufficient or we rely on 'name' if dynamic.
-               style: Theme.of(context).textTheme.titleLarge,
-             ),
-             const SizedBox(height: 8),
-             Text('สถานะ: ${instance.status}'),
-             Text('เริ่ม: ${instance.startDate}'),
+            Text(
+              'พนักงาน: ${instance.employeeId}',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text('สถานะ: ${instance.status}'),
+            Text('เริ่ม: ${_formatDate(instance.startDate)}'),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Text('ความคืบหน้ารวม: ', style: TextStyle(fontWeight: FontWeight.w500)),
+                Text(
+                  '${(overallProgress * 100).toInt()}%',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: overallProgress >= 0.8 ? Colors.green : Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: overallProgress.clamp(0.0, 1.0),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(4),
+              backgroundColor: Colors.grey[200],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStampOverview(BuildContext context, OnboardingInstance instance) {
+    final passed = instance.reviews.where((r) => r.decision == 'pass').length;
+    final total = instance.templateId.missions.length;
+
+    return Card(
+      elevation: 0,
+      color: Colors.indigo.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.auto_awesome, color: Colors.indigo),
+                const SizedBox(width: 8),
+                Text(
+                  'Stamp Collection ($passed/$total)',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            StampCollectionWidget(
+              missions: instance.templateId.missions,
+              reviews: instance.reviews,
+              startDate: instance.startDate,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEventChecklist(BuildContext context, OnboardingInstance instance) {
+    final events = instance.templateId.events;
+    if (events.isEmpty) return const SizedBox.shrink();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.event_available, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'กิจกรรม (${instance.eventCompletions.length}/${events.length})',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...events.map((event) {
+              final isCompleted = instance.eventCompletions
+                  .any((ec) => ec.eventCode == event.code);
+
+              return CheckboxListTile(
+                value: isCompleted,
+                title: Text(
+                  event.titleTh ?? event.title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                    color: isCompleted ? Colors.grey : null,
+                  ),
+                ),
+                subtitle: Text(
+                  'Day ${event.day} - ${event.title}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                dense: true,
+                controlAffinity: ListTileControlAffinity.leading,
+                onChanged: isCompleted
+                    ? null
+                    : (value) {
+                        if (value == true) {
+                          _completeEvent(event.code);
+                        }
+                      },
+              );
+            }),
           ],
         ),
       ),
@@ -73,24 +197,32 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   }
 
   Widget _buildMissionReviewCard(BuildContext context, OnboardingInstance instance, Mission mission) {
-    // Find answers for this mission
-    // We need to filter answers by questions belonging to this mission.
-    // In templateId.questions, find those with missionCode == mission.code
     final questions = instance.templateId.questions
         .where((q) => q.missionCode == mission.code)
         .toList();
-    
-    // Find review
+
     final review = instance.reviews.firstWhere(
       (r) => r.missionCode == mission.code,
       orElse: () => const Review(missionCode: '', decision: ''),
     );
 
+    Color? headerColor;
+    if (review.decision == 'pass') {
+      headerColor = Colors.green.shade50;
+    } else if (review.decision == 'fail') {
+      headerColor = Colors.red.shade50;
+    } else if (review.decision == 'revision_required') {
+      headerColor = Colors.orange.shade50;
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: ExpansionTile(
+        backgroundColor: headerColor,
+        collapsedBackgroundColor: headerColor,
         title: Text(mission.title),
-        subtitle: Text('สถานะ: ${review.decision.isEmpty ? "รอตรวจ" : review.decision}'),
+        subtitle: Text('สถานะ: ${review.decision.isEmpty ? "รอตรวจ" : _getDecisionText(review.decision)}'),
+        leading: _buildMissionStatusIcon(review.decision),
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
@@ -137,6 +269,32 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
     );
   }
 
+  Widget _buildMissionStatusIcon(String decision) {
+    switch (decision) {
+      case 'pass':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'fail':
+        return const Icon(Icons.cancel, color: Colors.red);
+      case 'revision_required':
+        return const Icon(Icons.warning, color: Colors.orange);
+      default:
+        return const Icon(Icons.pending, color: Colors.grey);
+    }
+  }
+
+  String _getDecisionText(String decision) {
+    switch (decision) {
+      case 'pass':
+        return 'ผ่าน';
+      case 'fail':
+        return 'ไม่ผ่าน';
+      case 'revision_required':
+        return 'แก้ไข';
+      default:
+        return decision;
+    }
+  }
+
   Widget _buildReviewForm(Mission mission, Review review) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,12 +331,11 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   }
 
   Future<void> _submitReview(String missionCode, String decision) async {
-    // Show dialog for comment
     final commentController = TextEditingController();
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('ยืนยันผล: $decision'),
+        title: Text('ยืนยันผล: ${_getDecisionText(decision)}'),
         content: TextField(
           controller: commentController,
           decoration: const InputDecoration(labelText: 'ความคิดเห็น (ถ้ามี)'),
@@ -196,5 +353,27 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _completeEvent(String eventCode) async {
+    try {
+      await ref.read(onboardingDetailProvider(widget.onboardingId).notifier)
+          .completeEvent(eventCode);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('บันทึกเรียบร้อย')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

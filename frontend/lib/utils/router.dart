@@ -37,8 +37,8 @@ class Routes {
   static const String employeeHome = '/employee';
   static const String employeeDashboard = '/employee/dashboard';
   static const String selfAssessment = '/employee/assessment/:recordId/:day';
-  static const String onboarding = '/onboarding';
-  static const String missionDetail = '/onboarding/mission/:code';
+  static const String onboarding = '/employee/onboarding';
+  static const String missionDetail = '/employee/onboarding/mission/:code';
 
   // Supervisor routes
   static const String supervisorHome = '/supervisor';
