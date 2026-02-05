@@ -35,12 +35,35 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Culture Passport'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.auto_stories, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text('Culture Passport'),
+          ],
+        ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          indicatorColor: const Color(0xFFFF6B35),
+          indicatorWeight: 3,
+          labelColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : const Color(0xFFFF6B35),
+          unselectedLabelColor: Colors.grey,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
           tabs: const [
             Tab(text: 'ภารกิจ HAPINES'),
             Tab(text: 'เส้นทาง Onboarding'),
@@ -111,21 +134,62 @@ class _MissionsTab extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // Stamp Collection
-          Card(
-            elevation: 0,
-            color: Colors.grey.shade50,
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFFFFF7ED), // orange-50
+                  const Color(0xFFFEF3C7).withOpacity(0.5), // amber-100
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFFED7AA)), // orange-200
+            ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8, bottom: 8),
-                    child: Text(
-                      'Stamp Collection',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.stars, color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Stamp Collection',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Color(0xFF9A3412), // orange-800
+                              ),
+                            ),
+                            Text(
+                              'สะสมแสตมป์ทั้ง 7 ภารกิจ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFFEA580C), // orange-600
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
                   StampCollectionWidget(
                     missions: missions,
                     reviews: instance.reviews,
@@ -157,9 +221,29 @@ class _MissionsTab extends ConsumerWidget {
     final now = DateTime.now();
     final daysElapsed = now.difference(instance.startDate).inDays;
     final totalDays = instance.templateId.durationDays;
+    final passed = instance.reviews.where((r) => r.decision == 'pass').length;
+    final total = instance.templateId.missions.length;
 
-    return Card(
-      color: const Color(0xFF1A237E),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDC2626), // red-600
+            Color(0xFFB91C1C), // red-700
+            Color(0xFFBE123C), // rose-800
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC2626).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -168,50 +252,78 @@ class _MissionsTab extends ConsumerWidget {
             Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: Colors.amber.shade600,
-                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(Icons.auto_awesome, color: Colors.white, size: 22),
+                  child: const Icon(Icons.auto_stories, color: Colors.white, size: 26),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'HAPINES\nCulture Passport',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.shade600,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Day $daysElapsed/$totalDays',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'HAPINES Culture Passport',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'เส้นทางสู่พนักงานมืออาชีพ',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              'เริ่มงาน: ${_formatDate(instance.startDate)}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 13,
-              ),
+            Container(
+              height: 1,
+              color: Colors.white.withOpacity(0.2),
+            ),
+            const SizedBox(height: 16),
+            // Stats row
+            Row(
+              children: [
+                _buildPassportStat(
+                  icon: Icons.calendar_today,
+                  value: 'Day $daysElapsed',
+                  label: 'จาก $totalDays วัน',
+                ),
+                const SizedBox(width: 24),
+                _buildPassportStat(
+                  icon: Icons.verified,
+                  value: '$passed/$total',
+                  label: 'stamps',
+                ),
+                const SizedBox(width: 24),
+                _buildPassportStat(
+                  icon: Icons.play_arrow,
+                  value: _formatDate(instance.startDate),
+                  label: 'เริ่มงาน',
+                ),
+              ],
             ),
           ],
         ),
@@ -219,34 +331,133 @@ class _MissionsTab extends ConsumerWidget {
     );
   }
 
+  Widget _buildPassportStat({
+    required IconData icon,
+    required String value,
+    required String label,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: Colors.white, size: 16),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildProgressHeader(BuildContext context) {
     final total = instance.templateId.missions.length;
     final passed = instance.reviews.where((r) => r.decision == 'pass').length;
+    final progress = total > 0 ? (passed / total * 100).round() : 0;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'ภารกิจ HAPINES',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ภารกิจ HAPINES',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: progress >= 100
+                        ? const Color(0xFFDCFCE7) // green-100
+                        : const Color(0xFFDBEAFE), // blue-100
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$progress%',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: progress >= 100
+                          ? const Color(0xFF16A34A) // green-600
+                          : const Color(0xFF2563EB), // blue-600
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: total > 0 ? passed / total : 0,
+                backgroundColor: Colors.grey[200],
+                minHeight: 10,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  progress >= 100
+                      ? const Color(0xFF16A34A) // green-600
+                      : const Color(0xFF2563EB), // blue-600
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: total > 0 ? passed / total : 0,
-              backgroundColor: Colors.grey[200],
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$passed / $total ภารกิจสำเร็จ',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  '${total - passed} ภารกิจเหลือ',
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text('$passed / $total ภารกิจสำเร็จ'),
           ],
         ),
       ),
