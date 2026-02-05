@@ -6,6 +6,68 @@ import 'user.dart';
 part 'probation_record.freezed.dart';
 part 'probation_record.g.dart';
 
+/// Converter that handles both String ID and populated User object
+class StringOrUserIdConverter implements JsonConverter<String, dynamic> {
+  const StringOrUserIdConverter();
+
+  @override
+  String fromJson(dynamic json) {
+    if (json is String) {
+      return json;
+    } else if (json is Map<String, dynamic>) {
+      return json['_id'] as String? ?? '';
+    }
+    return '';
+  }
+
+  @override
+  dynamic toJson(String object) => object;
+}
+
+/// Converter that extracts User from populated employeeId/supervisorId field
+class PopulatedUserConverter implements JsonConverter<User?, dynamic> {
+  const PopulatedUserConverter();
+
+  @override
+  User? fromJson(dynamic json) {
+    if (json is Map<String, dynamic> && json.containsKey('_id')) {
+      return User.fromJson(json);
+    }
+    return null;
+  }
+
+  @override
+  dynamic toJson(User? object) => object?.toJson();
+}
+
+/// Helper to read employee User from employeeId field
+dynamic _readEmployeeFromJson(Map json, String key) {
+  // First check if employee field exists directly
+  if (json.containsKey('employee') && json['employee'] != null) {
+    return json['employee'];
+  }
+  // Otherwise try to extract from employeeId if it's an object
+  final employeeId = json['employeeId'];
+  if (employeeId is Map<String, dynamic>) {
+    return employeeId;
+  }
+  return null;
+}
+
+/// Helper to read supervisor User from supervisorId field
+dynamic _readSupervisorFromJson(Map json, String key) {
+  // First check if supervisor field exists directly
+  if (json.containsKey('supervisor') && json['supervisor'] != null) {
+    return json['supervisor'];
+  }
+  // Otherwise try to extract from supervisorId if it's an object
+  final supervisorId = json['supervisorId'];
+  if (supervisorId is Map<String, dynamic>) {
+    return supervisorId;
+  }
+  return null;
+}
+
 enum ProbationStatus {
   @JsonValue('pending_kpi')
   pendingKpi,
@@ -47,8 +109,8 @@ class FinalDecisionInfo with _$FinalDecisionInfo {
 class ProbationRecord with _$ProbationRecord {
   const factory ProbationRecord({
     @JsonKey(name: '_id') required String id,
-    required String employeeId,
-    required String supervisorId,
+    @StringOrUserIdConverter() required String employeeId,
+    @StringOrUserIdConverter() required String supervisorId,
     required DateTime startDate,
     required int probationDays,
     required DateTime endDate,
@@ -61,9 +123,9 @@ class ProbationRecord with _$ProbationRecord {
     // Virtual fields
     int? daysRemaining,
     int? progressPercentage,
-    // Populated fields
-    User? employee,
-    User? supervisor,
+    // Populated fields - read from employeeId/supervisorId if they contain objects
+    @JsonKey(readValue: _readEmployeeFromJson) @PopulatedUserConverter() User? employee,
+    @JsonKey(readValue: _readSupervisorFromJson) @PopulatedUserConverter() User? supervisor,
   }) = _ProbationRecord;
 
   factory ProbationRecord.fromJson(Map<String, dynamic> json) =>

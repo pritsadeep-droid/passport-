@@ -224,7 +224,9 @@ ProbationRecord _$ProbationRecordFromJson(Map<String, dynamic> json) {
 mixin _$ProbationRecord {
   @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
+  @StringOrUserIdConverter()
   String get employeeId => throw _privateConstructorUsedError;
+  @StringOrUserIdConverter()
   String get supervisorId => throw _privateConstructorUsedError;
   DateTime get startDate => throw _privateConstructorUsedError;
   int get probationDays => throw _privateConstructorUsedError;
@@ -238,8 +240,12 @@ mixin _$ProbationRecord {
       throw _privateConstructorUsedError; // Virtual fields
   int? get daysRemaining => throw _privateConstructorUsedError;
   int? get progressPercentage =>
-      throw _privateConstructorUsedError; // Populated fields
+      throw _privateConstructorUsedError; // Populated fields - read from employeeId/supervisorId if they contain objects
+  @JsonKey(readValue: _readEmployeeFromJson)
+  @PopulatedUserConverter()
   User? get employee => throw _privateConstructorUsedError;
+  @JsonKey(readValue: _readSupervisorFromJson)
+  @PopulatedUserConverter()
   User? get supervisor => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -256,8 +262,8 @@ abstract class $ProbationRecordCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: '_id') String id,
-      String employeeId,
-      String supervisorId,
+      @StringOrUserIdConverter() String employeeId,
+      @StringOrUserIdConverter() String supervisorId,
       DateTime startDate,
       int probationDays,
       DateTime endDate,
@@ -269,7 +275,11 @@ abstract class $ProbationRecordCopyWith<$Res> {
       DateTime? updatedAt,
       int? daysRemaining,
       int? progressPercentage,
+      @JsonKey(readValue: _readEmployeeFromJson)
+      @PopulatedUserConverter()
       User? employee,
+      @JsonKey(readValue: _readSupervisorFromJson)
+      @PopulatedUserConverter()
       User? supervisor});
 
   $FinalDecisionInfoCopyWith<$Res>? get finalDecision;
@@ -422,8 +432,8 @@ abstract class _$$ProbationRecordImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: '_id') String id,
-      String employeeId,
-      String supervisorId,
+      @StringOrUserIdConverter() String employeeId,
+      @StringOrUserIdConverter() String supervisorId,
       DateTime startDate,
       int probationDays,
       DateTime endDate,
@@ -435,7 +445,11 @@ abstract class _$$ProbationRecordImplCopyWith<$Res>
       DateTime? updatedAt,
       int? daysRemaining,
       int? progressPercentage,
+      @JsonKey(readValue: _readEmployeeFromJson)
+      @PopulatedUserConverter()
       User? employee,
+      @JsonKey(readValue: _readSupervisorFromJson)
+      @PopulatedUserConverter()
       User? supervisor});
 
   @override
@@ -548,8 +562,8 @@ class __$$ProbationRecordImplCopyWithImpl<$Res>
 class _$ProbationRecordImpl implements _ProbationRecord {
   const _$ProbationRecordImpl(
       {@JsonKey(name: '_id') required this.id,
-      required this.employeeId,
-      required this.supervisorId,
+      @StringOrUserIdConverter() required this.employeeId,
+      @StringOrUserIdConverter() required this.supervisorId,
       required this.startDate,
       required this.probationDays,
       required this.endDate,
@@ -561,7 +575,11 @@ class _$ProbationRecordImpl implements _ProbationRecord {
       this.updatedAt,
       this.daysRemaining,
       this.progressPercentage,
+      @JsonKey(readValue: _readEmployeeFromJson)
+      @PopulatedUserConverter()
       this.employee,
+      @JsonKey(readValue: _readSupervisorFromJson)
+      @PopulatedUserConverter()
       this.supervisor})
       : _kpis = kpis,
         _milestones = milestones;
@@ -573,8 +591,10 @@ class _$ProbationRecordImpl implements _ProbationRecord {
   @JsonKey(name: '_id')
   final String id;
   @override
+  @StringOrUserIdConverter()
   final String employeeId;
   @override
+  @StringOrUserIdConverter()
   final String supervisorId;
   @override
   final DateTime startDate;
@@ -614,10 +634,14 @@ class _$ProbationRecordImpl implements _ProbationRecord {
   final int? daysRemaining;
   @override
   final int? progressPercentage;
-// Populated fields
+// Populated fields - read from employeeId/supervisorId if they contain objects
   @override
+  @JsonKey(readValue: _readEmployeeFromJson)
+  @PopulatedUserConverter()
   final User? employee;
   @override
+  @JsonKey(readValue: _readSupervisorFromJson)
+  @PopulatedUserConverter()
   final User? supervisor;
 
   @override
@@ -699,8 +723,8 @@ class _$ProbationRecordImpl implements _ProbationRecord {
 abstract class _ProbationRecord implements ProbationRecord {
   const factory _ProbationRecord(
       {@JsonKey(name: '_id') required final String id,
-      required final String employeeId,
-      required final String supervisorId,
+      @StringOrUserIdConverter() required final String employeeId,
+      @StringOrUserIdConverter() required final String supervisorId,
       required final DateTime startDate,
       required final int probationDays,
       required final DateTime endDate,
@@ -712,7 +736,11 @@ abstract class _ProbationRecord implements ProbationRecord {
       final DateTime? updatedAt,
       final int? daysRemaining,
       final int? progressPercentage,
+      @JsonKey(readValue: _readEmployeeFromJson)
+      @PopulatedUserConverter()
       final User? employee,
+      @JsonKey(readValue: _readSupervisorFromJson)
+      @PopulatedUserConverter()
       final User? supervisor}) = _$ProbationRecordImpl;
 
   factory _ProbationRecord.fromJson(Map<String, dynamic> json) =
@@ -722,8 +750,10 @@ abstract class _ProbationRecord implements ProbationRecord {
   @JsonKey(name: '_id')
   String get id;
   @override
+  @StringOrUserIdConverter()
   String get employeeId;
   @override
+  @StringOrUserIdConverter()
   String get supervisorId;
   @override
   DateTime get startDate;
@@ -747,9 +777,13 @@ abstract class _ProbationRecord implements ProbationRecord {
   int? get daysRemaining;
   @override
   int? get progressPercentage;
-  @override // Populated fields
+  @override // Populated fields - read from employeeId/supervisorId if they contain objects
+  @JsonKey(readValue: _readEmployeeFromJson)
+  @PopulatedUserConverter()
   User? get employee;
   @override
+  @JsonKey(readValue: _readSupervisorFromJson)
+  @PopulatedUserConverter()
   User? get supervisor;
   @override
   @JsonKey(ignore: true)

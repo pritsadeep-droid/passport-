@@ -35,8 +35,9 @@ _$ProbationRecordImpl _$$ProbationRecordImplFromJson(
         Map<String, dynamic> json) =>
     _$ProbationRecordImpl(
       id: json['_id'] as String,
-      employeeId: json['employeeId'] as String,
-      supervisorId: json['supervisorId'] as String,
+      employeeId: const StringOrUserIdConverter().fromJson(json['employeeId']),
+      supervisorId:
+          const StringOrUserIdConverter().fromJson(json['supervisorId']),
       startDate: DateTime.parse(json['startDate'] as String),
       probationDays: (json['probationDays'] as num).toInt(),
       endDate: DateTime.parse(json['endDate'] as String),
@@ -62,20 +63,19 @@ _$ProbationRecordImpl _$$ProbationRecordImplFromJson(
           : DateTime.parse(json['updatedAt'] as String),
       daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
       progressPercentage: (json['progressPercentage'] as num?)?.toInt(),
-      employee: json['employee'] == null
-          ? null
-          : User.fromJson(json['employee'] as Map<String, dynamic>),
-      supervisor: json['supervisor'] == null
-          ? null
-          : User.fromJson(json['supervisor'] as Map<String, dynamic>),
+      employee: const PopulatedUserConverter()
+          .fromJson(_readEmployeeFromJson(json, 'employee')),
+      supervisor: const PopulatedUserConverter()
+          .fromJson(_readSupervisorFromJson(json, 'supervisor')),
     );
 
 Map<String, dynamic> _$$ProbationRecordImplToJson(
         _$ProbationRecordImpl instance) =>
     <String, dynamic>{
       '_id': instance.id,
-      'employeeId': instance.employeeId,
-      'supervisorId': instance.supervisorId,
+      'employeeId': const StringOrUserIdConverter().toJson(instance.employeeId),
+      'supervisorId':
+          const StringOrUserIdConverter().toJson(instance.supervisorId),
       'startDate': instance.startDate.toIso8601String(),
       'probationDays': instance.probationDays,
       'endDate': instance.endDate.toIso8601String(),
@@ -87,8 +87,8 @@ Map<String, dynamic> _$$ProbationRecordImplToJson(
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'daysRemaining': instance.daysRemaining,
       'progressPercentage': instance.progressPercentage,
-      'employee': instance.employee,
-      'supervisor': instance.supervisor,
+      'employee': const PopulatedUserConverter().toJson(instance.employee),
+      'supervisor': const PopulatedUserConverter().toJson(instance.supervisor),
     };
 
 const _$ProbationStatusEnumMap = {
