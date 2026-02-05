@@ -42,7 +42,26 @@ class _MilestoneSettingsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ตั้งค่า Milestone'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.schedule, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text('ตั้งค่า Milestone'),
+          ],
+        ),
       ),
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
