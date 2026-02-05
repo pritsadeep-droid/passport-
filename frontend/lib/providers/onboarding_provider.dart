@@ -144,3 +144,45 @@ final assignOnboardingProvider = StateNotifierProvider<AssignOnboardingNotifier,
   final service = ref.watch(onboardingServiceProvider);
   return AssignOnboardingNotifier(service);
 });
+
+// Template Management (HR Admin)
+class OnboardingTemplateListNotifier extends StateNotifier<AsyncValue<List<OnboardingTemplate>>> {
+  final OnboardingService _service;
+
+  OnboardingTemplateListNotifier(this._service) : super(const AsyncValue.loading());
+
+  Future<void> load() async {
+    state = const AsyncValue.loading();
+    try {
+      final templates = await _service.getTemplates();
+      state = AsyncValue.data(templates);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<bool> create(Map<String, dynamic> data) async {
+    try {
+      await _service.createTemplate(data);
+      await load();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> update(String id, Map<String, dynamic> data) async {
+    try {
+      await _service.updateTemplate(id, data);
+      await load();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
+final onboardingTemplateListProvider = StateNotifierProvider<OnboardingTemplateListNotifier, AsyncValue<List<OnboardingTemplate>>>((ref) {
+  final service = ref.watch(onboardingServiceProvider);
+  return OnboardingTemplateListNotifier(service);
+});

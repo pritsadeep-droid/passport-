@@ -111,4 +111,23 @@ class OnboardingService {
       throw ApiException.fromDioError(e);
     }
   }
+
+  // Template Management (HR Admin)
+  Future<OnboardingTemplate> createTemplate(Map<String, dynamic> data) async {
+    try {
+      final response = await _apiClient.post('/onboarding/templates', data: data);
+      return OnboardingTemplate.fromJson(response.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<OnboardingTemplate> updateTemplate(String id, Map<String, dynamic> data) async {
+    try {
+      final response = await _apiClient.put('/onboarding/templates/$id', data: data);
+      return OnboardingTemplate.fromJson(response.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
 }

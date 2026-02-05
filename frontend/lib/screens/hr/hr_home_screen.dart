@@ -205,6 +205,14 @@ class _SettingsScreen extends ConsumerWidget {
 
           _buildSettingsTile(
             context,
+            icon: Icons.rocket_launch_outlined,
+            title: 'เทมเพลต Onboarding',
+            subtitle: 'จัดการคำถามและภารกิจ Onboarding',
+            onTap: () => context.push('/hr/onboarding-templates'),
+          ),
+
+          _buildSettingsTile(
+            context,
             icon: Icons.email_outlined,
             title: 'ตั้งค่าอีเมล',
             subtitle: 'กำหนดเทมเพลตอีเมลแจ้งเตือน',

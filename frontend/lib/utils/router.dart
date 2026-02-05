@@ -23,6 +23,7 @@ import '../screens/hr/reports_screen.dart';
 import '../screens/hr/create_user_screen.dart';
 import '../screens/hr/milestone_settings_screen.dart';
 import '../screens/hr/kpi_template_screen.dart';
+import '../screens/hr/onboarding_template_screen.dart';
 import '../screens/onboarding/onboarding_timeline_screen.dart';
 import '../screens/onboarding/mission_detail_screen.dart';
 import '../screens/manager/onboarding_review_screen.dart';
@@ -60,6 +61,7 @@ class Routes {
   static const String createUser = '/hr/create-user';
   static const String milestoneSettings = '/hr/milestone-settings';
   static const String kpiTemplates = '/hr/kpi-templates';
+  static const String onboardingTemplates = '/hr/onboarding-templates';
   static const String reports = '/hr/reports';
 
   // Common routes
@@ -274,6 +276,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'kpi-templates',
             name: 'kpiTemplates',
             builder: (context, state) => const KpiTemplateScreen(),
+          ),
+          GoRoute(
+            path: 'onboarding-templates',
+            name: 'onboardingTemplates',
+            builder: (context, state) => const OnboardingTemplateScreen(),
           ),
           GoRoute(
             path: 'reports',
