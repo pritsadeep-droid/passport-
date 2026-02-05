@@ -126,13 +126,16 @@ class _DashboardTab extends ConsumerWidget {
               _buildWelcomeCard(context, ref, user),
               const SizedBox(height: AppSpacing.lg),
 
-              // Onboarding Card
+              // Stats cards row (matching Figma design)
+              if (myMilestonesState.data != null)
+                _buildStatsCards(myMilestonesState.data!),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Onboarding Card (Culture Passport)
               _buildOnboardingCard(context, ref),
               const SizedBox(height: AppSpacing.lg),
 
-              // Countdown card
-
-              // Countdown card
+              // Probation countdown card
               if (myMilestonesState.data?.record != null)
                 _buildCountdownCard(myMilestonesState.data!.record!),
               const SizedBox(height: AppSpacing.lg),
@@ -431,135 +434,274 @@ class _DashboardTab extends ConsumerWidget {
     );
   }
 
+  Widget _buildStatsCards(MyMilestonesData data) {
+    final milestones = data.milestones;
+    final total = milestones.length;
+    final completed = milestones.where((m) => m.status == MilestoneStatus.passed).length;
+    final inProgress = milestones.where((m) =>
+      m.status == MilestoneStatus.pendingSelf ||
+      m.status == MilestoneStatus.pendingSupervisor ||
+      m.status == MilestoneStatus.pendingApproval
+    ).length;
+    final progress = total > 0 ? ((completed / total) * 100).round() : 0;
+
+    return Row(
+      children: [
+        // Progress card
+        Expanded(
+          child: _buildStatCard(
+            icon: Icons.trending_up,
+            iconColor: const Color(0xFF2563EB), // blue-600
+            label: 'ความคืบหน้า',
+            value: '$progress%',
+            subtitle: '$completed/$total',
+          ),
+        ),
+        const SizedBox(width: 8),
+        // Completed card
+        Expanded(
+          child: _buildStatCard(
+            icon: Icons.check_circle,
+            iconColor: const Color(0xFF16A34A), // green-600
+            label: 'เสร็จสิ้น',
+            value: '$completed',
+            subtitle: 'ภารกิจ',
+            valueColor: const Color(0xFF16A34A),
+          ),
+        ),
+        const SizedBox(width: 8),
+        // In progress card
+        Expanded(
+          child: _buildStatCard(
+            icon: Icons.schedule,
+            iconColor: const Color(0xFF2563EB), // blue-600
+            label: 'กำลังทำ',
+            value: '$inProgress',
+            subtitle: 'ภารกิจ',
+            valueColor: const Color(0xFF2563EB),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+    required String subtitle,
+    Color? valueColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              Icon(icon, size: 16, color: iconColor),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: valueColor ?? Colors.grey.shade900,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCountdownCard(MyRecordInfo record) {
     final now = DateTime.now();
     final daysRemaining = record.endDate.difference(now).inDays;
     final daysElapsed = now.difference(record.startDate).inDays;
     final totalDays = record.probationDays;
     final progress = (daysElapsed / totalDays).clamp(0.0, 1.0);
+    final isProbationPeriod = daysRemaining > 0;
 
-    return Card(
+    // Amber/orange color scheme from Figma
+    const amberBg = Color(0xFFFFFBEB); // amber-50
+    const amberBorder = Color(0xFFFCD34D); // amber-300
+    const amberText = Color(0xFFD97706); // amber-600
+    const amberDark = Color(0xFFB45309); // amber-700
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFFBEB), Color(0xFFFFF7ED)], // amber-50 to orange-50
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: amberBorder, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: amberBorder.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'ระยะเวลาทดลองงาน',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    '$totalDays วัน',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                    ),
+                  child: const Icon(Icons.calendar_month, color: amberText, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'ระยะเวลาทดลองงาน',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (isProbationPeriod)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFDE68A), // amber-200
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                'กำลังทดลองงาน',
+                                style: TextStyle(
+                                  color: amberDark,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
+            // Days counter
             Row(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        daysRemaining > 0 ? '$daysRemaining' : '0',
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      Text(
-                        'วันที่เหลือ',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                Text(
+                  '$daysElapsed',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: amberText,
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 60,
-                  color: Colors.grey.shade300,
+                const Text(
+                  ' / ',
+                  style: TextStyle(fontSize: 20, color: Colors.grey),
                 ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        '$daysElapsed',
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                      Text(
-                        'วันที่ผ่านมา',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                Text(
+                  '$totalDays',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
                   ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'วัน',
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
+            Text(
+              'เหลืออีก $daysRemaining วัน คุณจะผ่านระยะทดลองงาน',
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Progress bar with amber gradient
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 8,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              borderRadius: BorderRadius.circular(6),
+              child: Stack(
+                children: [
+                  Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: progress,
+                    child: Container(
+                      height: 10,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFF59E0B), Color(0xFFF97316)], // amber-500 to orange-500
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _formatDate(record.startDate),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                Text(
-                  '${(progress * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  _formatDate(record.endDate),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
+            Text(
+              'วันที่เริ่มงาน: ${_formatDate(record.startDate)}',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade600,
+              ),
             ),
           ],
         ),
