@@ -153,6 +153,7 @@ exports.submitAnswer = catchAsync(async (req, res, next) => {
 
     await instance.save();
     await instance.populate('templateId');
+    await instance.populate('reviews.reviewedBy', 'name');
 
     res.status(200).json({
         status: 'success',
@@ -196,6 +197,7 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
 
     await instance.save();
     await instance.populate('templateId');
+    await instance.populate('reviews.reviewedBy', 'name');
 
     res.status(200).json({
         status: 'success',
@@ -243,6 +245,7 @@ exports.completeEvent = catchAsync(async (req, res, next) => {
 
     await instance.save();
     await instance.populate('templateId');
+    await instance.populate('reviews.reviewedBy', 'name');
 
     res.status(200).json({
         status: 'success',
