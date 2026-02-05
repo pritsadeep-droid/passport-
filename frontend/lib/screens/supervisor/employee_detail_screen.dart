@@ -35,11 +35,11 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // Load probation record
+    // Load probation record by employee ID
     Future.microtask(() {
       ref
           .read(probationDetailProvider(widget.employeeId).notifier)
-          .loadRecord(widget.employeeId);
+          .loadRecordByEmployeeId(widget.employeeId);
     });
   }
 
@@ -80,7 +80,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen>
         message: state.error!,
         onRetry: () => ref
             .read(probationDetailProvider(widget.employeeId).notifier)
-            .loadRecord(widget.employeeId),
+            .loadRecordByEmployeeId(widget.employeeId),
       );
     }
 

@@ -208,6 +208,20 @@ class ProbationDetailNotifier extends StateNotifier<ProbationDetailState> {
     }
   }
 
+  /// Load probation record by employee ID
+  Future<void> loadRecordByEmployeeId(String employeeId) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final record =
+          await _probationService.getProbationRecordByEmployeeId(employeeId);
+      state = state.copyWith(record: record, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+          isLoading: false, error: 'ไม่พบข้อมูลการทดลองงาน');
+    }
+  }
+
   /// Load my probation record (for employee)
   Future<void> loadMyRecord() async {
     state = state.copyWith(isLoading: true, clearError: true);
