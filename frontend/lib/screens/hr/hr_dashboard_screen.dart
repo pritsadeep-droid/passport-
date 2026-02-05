@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/hr_dashboard_provider.dart' as provider;
 import '../../services/dashboard_service.dart';
 import '../../widgets/stats_card.dart';
 import '../../widgets/bottleneck_card.dart';
 import '../../widgets/notification_badge.dart';
+import '../../utils/theme.dart';
 
 /// HR Dashboard screen
 class HRDashboardScreen extends ConsumerStatefulWidget {
@@ -31,7 +33,31 @@ class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('HR Dashboard'),
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.auto_stories,
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text('CulturePassport'),
+          ],
+        ),
         actions: [
           NotificationIconBadge(
             onTap: () => context.push('/notifications'),
@@ -95,7 +121,11 @@ class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Summary Stats
+          // Red gradient welcome card
+          _buildWelcomeCard(context, ref),
+          const SizedBox(height: 16),
+
+          // Summary Stats - Updated style
           _buildSummaryStats(context, theme, data),
           const SizedBox(height: 24),
 
@@ -120,6 +150,140 @@ class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
     );
   }
 
+  Widget _buildWelcomeCard(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDC2626), // red-600
+            Color(0xFFB91C1C), // red-700
+            Color(0xFFBE123C), // rose-800
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC2626).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'แดชบอร์ดผู้ดูแลระบบ',
+              style: AppTextStyles.headline2.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'จัดการระบบและส่งออกข้อมูล',
+              style: AppTextStyles.body2.copyWith(
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              height: 1,
+              color: Colors.white.withOpacity(0.3),
+            ),
+            const SizedBox(height: 16),
+            // User info grid
+            Wrap(
+              spacing: 16,
+              runSpacing: 12,
+              children: [
+                _buildInfoChip(
+                  Icons.person_outline,
+                  'ชื่อ-นามสกุล',
+                  user?.name ?? 'HR Admin',
+                ),
+                _buildInfoChip(
+                  Icons.badge_outlined,
+                  'รหัสพนักงาน',
+                  user?.employeeId ?? 'ไม่ระบุ',
+                ),
+                _buildInfoChip(
+                  Icons.business_outlined,
+                  'บริษัท',
+                  'Lottery Plus Co., Ltd.',
+                ),
+                _buildInfoChip(
+                  Icons.groups_outlined,
+                  'แผนก',
+                  user?.department ?? 'HR',
+                ),
+                _buildInfoChip(
+                  Icons.work_outline,
+                  'ตำแหน่ง',
+                  user?.position ?? 'HR Admin',
+                ),
+                _buildInfoChip(
+                  Icons.star_outline,
+                  'ระดับตำแหน่ง',
+                  'Admin',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String label, String value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: const Color(0xFFB91C1C),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildSummaryStats(BuildContext context, ThemeData theme, HrDashboardData data) {
     final stats = data.stats;
 
@@ -133,42 +297,140 @@ class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        StatsGrid(
-          stats: [
-            StatData(
-              title: 'ทั้งหมด',
-              value: '${stats.total}',
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.5,
+          children: [
+            _buildStatCard(
+              context,
               icon: Icons.people,
-              color: theme.colorScheme.primaryContainer,
+              iconBgColor: const Color(0xFFDBEAFE), // blue-100
+              iconColor: const Color(0xFF2563EB), // blue-600
+              title: 'ผู้ใช้งานทั้งหมด',
+              value: '${stats.total}',
+              subtitle: '${stats.inProgress} กำลังทดลอง',
               onTap: () => context.push('/hr/employees'),
             ),
-            StatData(
-              title: 'กำลังทดลองงาน',
-              value: '${stats.inProgress}',
-              icon: Icons.hourglass_empty,
-              color: Colors.blue.shade50,
-              textColor: Colors.blue.shade700,
-              onTap: () => context.push('/hr/employees?status=in_progress'),
+            _buildStatCard(
+              context,
+              icon: Icons.flag,
+              iconBgColor: const Color(0xFFDCFCE7), // green-100
+              iconColor: const Color(0xFF16A34A), // green-600
+              title: 'ภารกิจทั้งหมด',
+              value: '7',
+              subtitle: 'HAPINES Culture',
+              onTap: () {},
             ),
-            StatData(
-              title: 'รอกำหนด KPI',
-              value: '${stats.pendingKpi}',
-              icon: Icons.assignment_late,
-              color: Colors.orange.shade50,
-              textColor: Colors.orange.shade700,
-              onTap: () => context.push('/hr/employees?status=pending_kpi'),
+            _buildStatCard(
+              context,
+              icon: Icons.check_circle,
+              iconBgColor: const Color(0xFFF3E8FF), // purple-100
+              iconColor: const Color(0xFF9333EA), // purple-600
+              title: 'อัตราเสร็จสิ้น',
+              value: '${data.passRate.toInt()}%',
+              subtitle: '${stats.passed}/${stats.passed + stats.failed} ผ่าน',
+              onTap: () {},
             ),
-            StatData(
-              title: 'รอการตัดสินใจ',
-              value: '${stats.pendingDecision}',
-              icon: Icons.pending_actions,
-              color: Colors.purple.shade50,
-              textColor: Colors.purple.shade700,
-              onTap: () => context.push('/hr/employees?status=pending_decision'),
+            _buildStatCard(
+              context,
+              icon: Icons.storage,
+              iconBgColor: const Color(0xFFFED7AA).withOpacity(0.5), // orange-100
+              iconColor: const Color(0xFFEA580C), // orange-600
+              title: 'ข้อมูลในระบบ',
+              value: '${stats.total}',
+              subtitle: 'บันทึกภารกิจ',
+              onTap: () {},
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required String title,
+    required String value,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade100),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: iconColor,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F2937), // gray-900
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
