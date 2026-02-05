@@ -44,8 +44,8 @@ const getProbationRecords = asyncHandler(async (req, res) => {
 
   // Build the query with population
   let recordsQuery = ProbationRecord.find(query)
-    .populate('employeeId', 'employeeId email name department')
-    .populate('supervisorId', 'employeeId email name')
+    .populate('employeeId', 'employeeId email name department role')
+    .populate('supervisorId', 'employeeId email name role department')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit));
@@ -86,8 +86,8 @@ const getProbationRecords = asyncHandler(async (req, res) => {
  */
 const getProbationRecordById = asyncHandler(async (req, res) => {
   const record = await ProbationRecord.findById(req.params.id)
-    .populate('employeeId', 'employeeId email name department')
-    .populate('supervisorId', 'employeeId email name')
+    .populate('employeeId', 'employeeId email name department role')
+    .populate('supervisorId', 'employeeId email name role department')
     .populate('finalDecision.decidedBy', 'name email');
 
   if (!record) {
@@ -116,8 +116,8 @@ const getProbationRecordByEmployeeId = asyncHandler(async (req, res) => {
   const record = await ProbationRecord.findOne({
     employeeId: req.params.employeeId,
   })
-    .populate('employeeId', 'employeeId email name department')
-    .populate('supervisorId', 'employeeId email name')
+    .populate('employeeId', 'employeeId email name department role')
+    .populate('supervisorId', 'employeeId email name role department')
     .populate('finalDecision.decidedBy', 'name email');
 
   if (!record) {
@@ -226,8 +226,8 @@ const createProbationRecord = asyncHandler(async (req, res) => {
   }
 
   // Populate and return
-  await record.populate('employeeId', 'employeeId email name department');
-  await record.populate('supervisorId', 'employeeId email name');
+  await record.populate('employeeId', 'employeeId email name department role');
+  await record.populate('supervisorId', 'employeeId email name role department');
 
   return createdResponse(res, 'สร้างข้อมูลทดลองงานสำเร็จ', record);
 });
@@ -292,8 +292,8 @@ const updateProbationStatus = asyncHandler(async (req, res) => {
     userAgent: req.headers['user-agent'],
   });
 
-  await record.populate('employeeId', 'employeeId email name department');
-  await record.populate('supervisorId', 'employeeId email name');
+  await record.populate('employeeId', 'employeeId email name department role');
+  await record.populate('supervisorId', 'employeeId email name role department');
 
   return successResponse(res, 200, 'อัปเดตสถานะสำเร็จ', record);
 });
@@ -345,8 +345,8 @@ const transferSupervisor = asyncHandler(async (req, res) => {
     userAgent: req.headers['user-agent'],
   });
 
-  await record.populate('employeeId', 'employeeId email name department');
-  await record.populate('supervisorId', 'employeeId email name');
+  await record.populate('employeeId', 'employeeId email name department role');
+  await record.populate('supervisorId', 'employeeId email name role department');
 
   return successResponse(res, 200, 'เปลี่ยนหัวหน้างานสำเร็จ', record);
 });
@@ -358,8 +358,8 @@ const transferSupervisor = asyncHandler(async (req, res) => {
  */
 const getMyProbationRecord = asyncHandler(async (req, res) => {
   const record = await ProbationRecord.findOne({ employeeId: req.userId })
-    .populate('employeeId', 'employeeId email name department')
-    .populate('supervisorId', 'employeeId email name')
+    .populate('employeeId', 'employeeId email name department role')
+    .populate('supervisorId', 'employeeId email name role department')
     .populate('finalDecision.decidedBy', 'name email');
 
   if (!record) {
