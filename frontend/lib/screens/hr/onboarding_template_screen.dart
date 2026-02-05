@@ -869,20 +869,61 @@ class _MissionExpansionTile extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        title: Text(
-          mission.title,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                mission.title,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+            // Add question button - visible without expanding
+            TextButton.icon(
+              onPressed: onAddQuestion,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('เพิ่มคำถาม'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         ),
-        subtitle: Text(
-          'เปิด: วันที่ ${mission.openOffsetDays} - ปิด: วันที่ ${mission.closeOffsetDays} | ${questions.length} คำถาม',
-          style: theme.textTheme.bodySmall,
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: onEditMission,
-          tooltip: 'แก้ไขกำหนดวัน',
+        subtitle: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'วันที่ ${mission.openOffsetDays}-${mission.closeOffsetDays} | ${questions.length} คำถาม',
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            // Settings button
+            InkWell(
+              onTap: onEditMission,
+              borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Icon(
+                  Icons.settings_outlined,
+                  size: 18,
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ),
+          ],
         ),
         children: [
+          if (questions.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'ยังไม่มีคำถาม กดปุ่ม "เพิ่มคำถาม" ด้านบนเพื่อเพิ่ม',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ),
           ...questions.asMap().entries.map((entry) {
             final index = entry.key;
             final question = entry.value;
@@ -906,6 +947,7 @@ class _MissionExpansionTile extends StatelessWidget {
               ),
             );
           }),
+          // Also keep add button inside for convenience
           ListTile(
             leading: CircleAvatar(
               radius: 14,

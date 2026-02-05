@@ -108,6 +108,7 @@ _$CreateProbationRequestImpl _$$CreateProbationRequestImplFromJson(
       supervisorId: json['supervisorId'] as String,
       startDate: DateTime.parse(json['startDate'] as String),
       probationDays: (json['probationDays'] as num?)?.toInt() ?? 90,
+      templateId: json['templateId'] as String?,
     );
 
 Map<String, dynamic> _$$CreateProbationRequestImplToJson(
@@ -117,6 +118,7 @@ Map<String, dynamic> _$$CreateProbationRequestImplToJson(
       'supervisorId': instance.supervisorId,
       'startDate': instance.startDate.toIso8601String(),
       'probationDays': instance.probationDays,
+      'templateId': instance.templateId,
     };
 
 _$UpdateProbationStatusRequestImpl _$$UpdateProbationStatusRequestImplFromJson(

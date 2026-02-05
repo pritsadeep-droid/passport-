@@ -139,6 +139,7 @@ class CreateProbationRequest with _$CreateProbationRequest {
     required String supervisorId,
     required DateTime startDate,
     @Default(90) int probationDays,
+    String? templateId,
   }) = _CreateProbationRequest;
 
   factory CreateProbationRequest.fromJson(Map<String, dynamic> json) =>

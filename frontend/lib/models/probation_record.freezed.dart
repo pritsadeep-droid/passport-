@@ -802,6 +802,7 @@ mixin _$CreateProbationRequest {
   String get supervisorId => throw _privateConstructorUsedError;
   DateTime get startDate => throw _privateConstructorUsedError;
   int get probationDays => throw _privateConstructorUsedError;
+  String? get templateId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -819,7 +820,8 @@ abstract class $CreateProbationRequestCopyWith<$Res> {
       {String employeeId,
       String supervisorId,
       DateTime startDate,
-      int probationDays});
+      int probationDays,
+      String? templateId});
 }
 
 /// @nodoc
@@ -840,6 +842,7 @@ class _$CreateProbationRequestCopyWithImpl<$Res,
     Object? supervisorId = null,
     Object? startDate = null,
     Object? probationDays = null,
+    Object? templateId = freezed,
   }) {
     return _then(_value.copyWith(
       employeeId: null == employeeId
@@ -858,6 +861,10 @@ class _$CreateProbationRequestCopyWithImpl<$Res,
           ? _value.probationDays
           : probationDays // ignore: cast_nullable_to_non_nullable
               as int,
+      templateId: freezed == templateId
+          ? _value.templateId
+          : templateId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -875,7 +882,8 @@ abstract class _$$CreateProbationRequestImplCopyWith<$Res>
       {String employeeId,
       String supervisorId,
       DateTime startDate,
-      int probationDays});
+      int probationDays,
+      String? templateId});
 }
 
 /// @nodoc
@@ -895,6 +903,7 @@ class __$$CreateProbationRequestImplCopyWithImpl<$Res>
     Object? supervisorId = null,
     Object? startDate = null,
     Object? probationDays = null,
+    Object? templateId = freezed,
   }) {
     return _then(_$CreateProbationRequestImpl(
       employeeId: null == employeeId
@@ -913,6 +922,10 @@ class __$$CreateProbationRequestImplCopyWithImpl<$Res>
           ? _value.probationDays
           : probationDays // ignore: cast_nullable_to_non_nullable
               as int,
+      templateId: freezed == templateId
+          ? _value.templateId
+          : templateId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -924,7 +937,8 @@ class _$CreateProbationRequestImpl implements _CreateProbationRequest {
       {required this.employeeId,
       required this.supervisorId,
       required this.startDate,
-      this.probationDays = 90});
+      this.probationDays = 90,
+      this.templateId});
 
   factory _$CreateProbationRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$CreateProbationRequestImplFromJson(json);
@@ -938,10 +952,12 @@ class _$CreateProbationRequestImpl implements _CreateProbationRequest {
   @override
   @JsonKey()
   final int probationDays;
+  @override
+  final String? templateId;
 
   @override
   String toString() {
-    return 'CreateProbationRequest(employeeId: $employeeId, supervisorId: $supervisorId, startDate: $startDate, probationDays: $probationDays)';
+    return 'CreateProbationRequest(employeeId: $employeeId, supervisorId: $supervisorId, startDate: $startDate, probationDays: $probationDays, templateId: $templateId)';
   }
 
   @override
@@ -956,13 +972,15 @@ class _$CreateProbationRequestImpl implements _CreateProbationRequest {
             (identical(other.startDate, startDate) ||
                 other.startDate == startDate) &&
             (identical(other.probationDays, probationDays) ||
-                other.probationDays == probationDays));
+                other.probationDays == probationDays) &&
+            (identical(other.templateId, templateId) ||
+                other.templateId == templateId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, employeeId, supervisorId, startDate, probationDays);
+  int get hashCode => Object.hash(runtimeType, employeeId, supervisorId,
+      startDate, probationDays, templateId);
 
   @JsonKey(ignore: true)
   @override
@@ -984,7 +1002,8 @@ abstract class _CreateProbationRequest implements CreateProbationRequest {
       {required final String employeeId,
       required final String supervisorId,
       required final DateTime startDate,
-      final int probationDays}) = _$CreateProbationRequestImpl;
+      final int probationDays,
+      final String? templateId}) = _$CreateProbationRequestImpl;
 
   factory _CreateProbationRequest.fromJson(Map<String, dynamic> json) =
       _$CreateProbationRequestImpl.fromJson;
@@ -997,6 +1016,8 @@ abstract class _CreateProbationRequest implements CreateProbationRequest {
   DateTime get startDate;
   @override
   int get probationDays;
+  @override
+  String? get templateId;
   @override
   @JsonKey(ignore: true)
   _$$CreateProbationRequestImplCopyWith<_$CreateProbationRequestImpl>

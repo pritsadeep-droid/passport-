@@ -179,9 +179,9 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
     showStartProbationDialog(
       context: context,
       employeeName: 'รหัส ${widget.employeeId}', // TODO: Fetch name
-      onStart: (supervisorId, startDate, probationDays) async {
+      onStart: (supervisorId, startDate, probationDays, templateId) async {
         Navigator.of(context).pop();
-        
+
         final success = await ref
             .read(probationRecordProvider(widget.employeeId).notifier)
             .createProbationRecord(
@@ -189,6 +189,7 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
               supervisorId: supervisorId,
               startDate: startDate,
               probationDays: probationDays,
+              templateId: templateId,
             );
             
         if (mounted) {

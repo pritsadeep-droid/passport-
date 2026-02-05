@@ -255,6 +255,7 @@ class ProbationDetailNotifier extends StateNotifier<ProbationDetailState> {
     required String supervisorId,
     required DateTime startDate,
     int probationDays = 90,
+    String? templateId,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
@@ -264,6 +265,7 @@ class ProbationDetailNotifier extends StateNotifier<ProbationDetailState> {
         supervisorId: supervisorId,
         startDate: startDate,
         probationDays: probationDays,
+        templateId: templateId,
       );
 
       final record = await _probationService.createProbationRecord(request);
@@ -326,6 +328,7 @@ class ProbationRecordNotifier extends StateNotifier<ProbationDetailState> {
     required String supervisorId,
     required DateTime startDate,
     int probationDays = 90,
+    String? templateId,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
@@ -335,6 +338,7 @@ class ProbationRecordNotifier extends StateNotifier<ProbationDetailState> {
         supervisorId: supervisorId,
         startDate: startDate,
         probationDays: probationDays,
+        templateId: templateId,
       );
 
       final record = await _probationService.createProbationRecord(request);

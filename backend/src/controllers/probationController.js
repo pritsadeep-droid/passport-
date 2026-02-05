@@ -144,7 +144,7 @@ const getProbationRecordByEmployeeId = asyncHandler(async (req, res) => {
  * @access  Private (HR Admin)
  */
 const createProbationRecord = asyncHandler(async (req, res) => {
-  const { employeeId, supervisorId, startDate, probationDays = 90 } = req.body;
+  const { employeeId, supervisorId, startDate, probationDays = 90, templateId } = req.body;
 
   // Validate employee exists
   const employee = await User.findById(employeeId);
@@ -204,10 +204,22 @@ const createProbationRecord = asyncHandler(async (req, res) => {
     userAgent: req.headers['user-agent'],
   });
 
-  // Auto-assign onboarding if active template exists
+  // Auto-assign onboarding template
   try {
-    const activeTemplate = await OnboardingTemplate.findOne({ isActive: true });
-    if (activeTemplate) {
+    // Use provided templateId or fall back to active template
+    let selectedTemplate;
+    if (templateId) {
+      selectedTemplate = await OnboardingTemplate.findById(templateId);
+      if (!selectedTemplate) {
+        console.warn('Specified onboarding template not found, falling back to active template');
+      }
+    }
+
+    if (!selectedTemplate) {
+      selectedTemplate = await OnboardingTemplate.findOne({ isActive: true });
+    }
+
+    if (selectedTemplate) {
       const existingOnboarding = await OnboardingInstance.findOne({
         employeeId,
         status: { $ne: 'archived' },
@@ -215,7 +227,7 @@ const createProbationRecord = asyncHandler(async (req, res) => {
       if (!existingOnboarding) {
         await OnboardingInstance.create({
           employeeId,
-          templateId: activeTemplate._id,
+          templateId: selectedTemplate._id,
           startDate: new Date(startDate),
         });
       }
