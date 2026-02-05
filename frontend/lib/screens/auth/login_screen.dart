@@ -64,14 +64,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // Title
                   Text(
-                    'ระบบติดตาม KPI ทดลองงาน',
-                    style: AppTextStyles.headline2,
+                    'CulturePassport',
+                    style: AppTextStyles.headline1.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    'เข้าสู่ระบบเพื่อดำเนินการต่อ',
+                    'ระบบติดตามการเข้าปรับตัวพนักงานใหม่',
                     style: AppTextStyles.body2.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  // Form header
+                  Text(
+                    'กรอกข้อมูลเพื่อเข้าใช้งาน',
+                    style: AppTextStyles.headline3,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'ใช้อีเมลและรหัสผ่านของคุณเพื่อเข้าสู่ระบบ',
+                    style: AppTextStyles.caption.copyWith(
                       color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
@@ -195,24 +212,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLogo() {
     return Container(
-      width: 120,
-      height: 120,
-      margin: const EdgeInsets.symmetric(horizontal: 100),
+      width: 80,
+      height: 80,
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: const Color(0xFFFF6B35).withOpacity(0.4),
             blurRadius: 20,
-            offset: const Offset(0, 10),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: const Center(
         child: Icon(
-          Icons.assessment,
-          size: 64,
+          Icons.auto_stories,
+          size: 40,
           color: Colors.white,
         ),
       ),
