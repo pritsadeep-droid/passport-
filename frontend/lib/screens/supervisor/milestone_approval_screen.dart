@@ -144,6 +144,7 @@ class _MilestoneApprovalScreenState
     return Scaffold(
       appBar: CustomAppBar(
         title: 'พิจารณาอนุมัติ',
+        logoIcon: Icons.fact_check,
         showBackButton: true,
       ),
       body: _buildBody(state),

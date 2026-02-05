@@ -134,6 +134,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'ประเมินตนเอง Day ${widget.day}',
+        logoIcon: Icons.rate_review,
         showBackButton: true,
         actions: [
           if (!state.isLoading)

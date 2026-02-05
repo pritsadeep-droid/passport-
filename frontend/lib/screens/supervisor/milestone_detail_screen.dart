@@ -113,6 +113,7 @@ class _MilestoneDetailScreenState extends ConsumerState<MilestoneDetailScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Milestone Day ${widget.day}',
+        logoIcon: Icons.flag,
         showBackButton: true,
       ),
       body: _buildBody(state),

@@ -43,7 +43,26 @@ class _MissionDetailScreenState extends ConsumerState<MissionDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('ภารกิจ ${widget.missionCode}'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.assignment, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            Text('ภารกิจ ${widget.missionCode}'),
+          ],
+        ),
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),

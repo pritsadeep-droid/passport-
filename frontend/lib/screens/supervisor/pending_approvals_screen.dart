@@ -34,6 +34,7 @@ class _PendingApprovalsScreenState
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'รออนุมัติ Milestone',
+        logoIcon: Icons.pending_actions,
         showBackButton: true,
       ),
       body: _buildBody(state),

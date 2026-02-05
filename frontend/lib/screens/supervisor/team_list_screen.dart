@@ -64,6 +64,7 @@ class _TeamListScreenState extends ConsumerState<TeamListScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'พนักงานในทีม',
+        logoIcon: Icons.people,
         showBackButton: false,
         onNotificationTap: () => context.push('/notifications'),
       ),

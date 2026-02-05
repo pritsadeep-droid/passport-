@@ -34,6 +34,7 @@ class _CreateKpiScreenState extends ConsumerState<CreateKpiScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'กำหนด KPI',
+        logoIcon: Icons.flag,
         actions: [
           if (_kpis.isNotEmpty)
             TextButton(

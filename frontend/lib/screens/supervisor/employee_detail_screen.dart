@@ -56,6 +56,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen>
     return Scaffold(
       appBar: CustomAppBar(
         title: state.record?.employee?.name ?? 'รายละเอียดพนักงาน',
+        logoIcon: Icons.person,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
