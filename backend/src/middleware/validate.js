@@ -6,7 +6,7 @@ const { errorResponse } = require('../utils/response');
  * Escapes HTML special characters
  */
 const escapeHtml = (str) => {
-  if (typeof str !== 'string') return str;
+  if (typeof str !== 'string') {return str;}
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -20,9 +20,9 @@ const escapeHtml = (str) => {
  * Recursively sanitize object values
  */
 const sanitizeObject = (obj) => {
-  if (obj === null || obj === undefined) return obj;
-  if (typeof obj === 'string') return escapeHtml(obj);
-  if (Array.isArray(obj)) return obj.map(sanitizeObject);
+  if (obj === null || obj === undefined) {return obj;}
+  if (typeof obj === 'string') {return escapeHtml(obj);}
+  if (Array.isArray(obj)) {return obj.map(sanitizeObject);}
   if (typeof obj === 'object') {
     const sanitized = {};
     for (const [key, value] of Object.entries(obj)) {

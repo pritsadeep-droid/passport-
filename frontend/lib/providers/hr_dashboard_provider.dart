@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/dashboard_service.dart';
-import '../services/api_client.dart';
 import 'dashboard_provider.dart';
 
 /// HR Dashboard state

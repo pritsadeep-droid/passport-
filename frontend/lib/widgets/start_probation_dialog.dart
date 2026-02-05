@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user.dart';
-import '../models/onboarding.dart';
-import '../services/user_service.dart';
 import '../providers/user_provider.dart';
 import '../providers/onboarding_provider.dart';
 

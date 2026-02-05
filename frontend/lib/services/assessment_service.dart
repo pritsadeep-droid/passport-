@@ -3,7 +3,6 @@ import '../models/assessment.dart' hide AssessmentScore;
 import '../models/kpi.dart';
 import '../models/milestone.dart';
 import '../models/probation_record.dart';
-import '../models/user.dart';
 import 'api_client.dart';
 import 'milestone_service.dart' hide UserInfo;
 

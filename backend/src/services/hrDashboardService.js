@@ -1,5 +1,4 @@
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
 const logger = require('../utils/logger');
 
 /**
@@ -44,7 +43,7 @@ const getDashboardSummary = async () => {
 
     for (const record of records) {
       // Count by status
-      if (summary.byStatus.hasOwnProperty(record.status)) {
+      if (Object.hasOwn(summary.byStatus, record.status)) {
         summary.byStatus[record.status]++;
       }
 
@@ -100,7 +99,7 @@ const detectBottlenecks = async () => {
 
     for (const record of records) {
       const employee = record.employeeId;
-      if (!employee) continue;
+      if (!employee) {continue;}
 
       // 1. KPI not assigned after 5+ days
       if (record.status === 'pending_kpi') {
@@ -211,8 +210,8 @@ const detectBottlenecks = async () => {
 
     // Sort by severity (critical first), then by date
     bottlenecks.sort((a, b) => {
-      if (a.severity === 'critical' && b.severity !== 'critical') return -1;
-      if (a.severity !== 'critical' && b.severity === 'critical') return 1;
+      if (a.severity === 'critical' && b.severity !== 'critical') {return -1;}
+      if (a.severity !== 'critical' && b.severity === 'critical') {return 1;}
       return 0;
     });
 
@@ -417,7 +416,7 @@ const getSupervisorWorkload = async () => {
 
     for (const record of records) {
       const supervisor = record.supervisorId;
-      if (!supervisor) continue;
+      if (!supervisor) {continue;}
 
       const supervisorId = supervisor._id.toString();
 
@@ -505,7 +504,7 @@ const getTimelineSummary = async (days = 30) => {
       const recordStart = new Date(record.startDate);
 
       // Count new starts
-      for (const [weekKey, weekStats] of Object.entries(weeklyStats)) {
+      for (const [, weekStats] of Object.entries(weeklyStats)) {
         const weekStart = new Date(weekStats.weekStart);
         const weekEnd = new Date(weekStats.weekEnd);
 

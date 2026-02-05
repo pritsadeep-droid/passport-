@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/theme.dart';
 
 /// 5-Point scale rating widget
 class RatingScale extends StatelessWidget {

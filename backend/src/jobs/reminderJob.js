@@ -1,5 +1,4 @@
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
 const notificationService = require('../services/notificationService');
 const logger = require('../utils/logger');
 
@@ -32,10 +31,10 @@ const sendOverdueReminders = async () => {
       const employee = record.employeeId;
       const supervisor = record.supervisorId;
 
-      if (!employee) continue;
+      if (!employee) {continue;}
 
       for (const milestone of record.milestones) {
-        if (milestone.status !== 'overdue') continue;
+        if (milestone.status !== 'overdue') {continue;}
 
         const dueDate = new Date(milestone.dueDate);
         const daysOverdue = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
@@ -107,7 +106,7 @@ const shouldSendReminder = (daysOverdue, lastReminderSent) => {
   const now = new Date();
 
   // If no reminder sent yet, send one
-  if (!lastReminderSent) return true;
+  if (!lastReminderSent) {return true;}
 
   const lastReminder = new Date(lastReminderSent);
   const hoursSinceLastReminder = (now - lastReminder) / (1000 * 60 * 60);
@@ -147,14 +146,14 @@ const sendPendingApprovalReminders = async () => {
       const employee = record.employeeId;
       const supervisor = record.supervisorId;
 
-      if (!supervisor) continue;
+      if (!supervisor) {continue;}
 
       for (const milestone of record.milestones) {
-        if (milestone.status !== 'pending_approval') continue;
+        if (milestone.status !== 'pending_approval') {continue;}
 
         // Check when supervisor assessment was submitted
         const submittedAt = milestone.supervisorAssessment?.submittedAt;
-        if (!submittedAt) continue;
+        if (!submittedAt) {continue;}
 
         const daysPending = Math.ceil((now - new Date(submittedAt)) / (1000 * 60 * 60 * 24));
 
@@ -165,7 +164,7 @@ const sendPendingApprovalReminders = async () => {
           // Don't send more than once per day
           if (lastReminder) {
             const hoursSinceLastReminder = (now - new Date(lastReminder)) / (1000 * 60 * 60);
-            if (hoursSinceLastReminder < 24) continue;
+            if (hoursSinceLastReminder < 24) {continue;}
           }
 
           try {
@@ -233,7 +232,7 @@ const sendPendingKpiReminders = async () => {
       const supervisor = record.supervisorId;
       const employee = record.employeeId;
 
-      if (!supervisor) continue;
+      if (!supervisor) {continue;}
 
       const daysSinceStart = Math.ceil(
         (now - new Date(record.startDate)) / (1000 * 60 * 60 * 24)
@@ -246,7 +245,7 @@ const sendPendingKpiReminders = async () => {
         // Don't send more than once every 2 days
         if (lastReminder) {
           const hoursSinceLastReminder = (now - new Date(lastReminder)) / (1000 * 60 * 60);
-          if (hoursSinceLastReminder < 48) continue;
+          if (hoursSinceLastReminder < 48) {continue;}
         }
 
         try {

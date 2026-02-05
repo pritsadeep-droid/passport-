@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/assessment.dart';
-import '../models/probation_record.dart';
 import '../utils/theme.dart';
 
 /// Widget to display assessment summary

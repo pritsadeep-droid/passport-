@@ -90,7 +90,7 @@ notificationSchema.index({ type: 1, createdAt: -1 });
 
 // Virtual for isRead
 notificationSchema.virtual('isRead').get(function () {
-  return this.channels?.inApp?.readAt != null;
+  return this.channels?.inApp?.readAt !== null;
 });
 
 // Ensure virtuals are included in JSON output

@@ -178,7 +178,7 @@ const stopAllJobs = () => {
  */
 const getJobStatus = (name) => {
   const jobInfo = activeJobs.get(name);
-  if (!jobInfo) return null;
+  if (!jobInfo) {return null;}
 
   return {
     name,

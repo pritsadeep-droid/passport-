@@ -43,7 +43,7 @@ const getProbationRecords = asyncHandler(async (req, res) => {
   }
 
   // Build the query with population
-  let recordsQuery = ProbationRecord.find(query)
+  const recordsQuery = ProbationRecord.find(query)
     .populate('employeeId', 'employeeId email name department role')
     .populate('supervisorId', 'employeeId email name role department')
     .sort({ createdAt: -1 })

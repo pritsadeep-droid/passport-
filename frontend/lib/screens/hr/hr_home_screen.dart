@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/notification_badge.dart';
 import 'hr_dashboard_screen.dart';
 import 'all_employees_screen.dart';
 import 'reports_screen.dart';

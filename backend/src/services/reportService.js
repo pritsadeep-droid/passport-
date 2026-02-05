@@ -5,7 +5,6 @@
 
 const PDFDocument = require('pdfkit');
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
 
 /**
  * Thai month names
@@ -19,7 +18,7 @@ const THAI_MONTHS = [
  * Format date to Thai format
  */
 const formatThaiDate = (date) => {
-  if (!date) return '-';
+  if (!date) {return '-';}
   const d = new Date(date);
   const day = d.getDate();
   const month = THAI_MONTHS[d.getMonth() + 1];

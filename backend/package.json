@@ -56,5 +56,8 @@
     "assessment"
   ],
   "author": "",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "overrides": {
+    "fast-xml-parser": "^5.3.4"
+  }
 }

@@ -1,6 +1,5 @@
 const assessmentService = require('../services/assessmentService');
 const { success } = require('../utils/response');
-const { ApiError } = require('../middleware/errorHandler');
 
 /**
  * Get self assessment for a milestone

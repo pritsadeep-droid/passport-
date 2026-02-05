@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../models/probation_record.dart';
 import '../../providers/self_assessment_provider.dart';
-import '../../services/local_storage.dart';
-import '../../services/milestone_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/assessment_category_card.dart';
 import '../../widgets/custom_app_bar.dart';
-import '../../widgets/error_widget.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/rating_scale.dart';
 

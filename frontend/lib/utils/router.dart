@@ -27,7 +27,6 @@ import '../screens/hr/onboarding_template_screen.dart';
 import '../screens/onboarding/onboarding_timeline_screen.dart';
 import '../screens/onboarding/mission_detail_screen.dart';
 import '../screens/manager/onboarding_review_screen.dart';
-import '../widgets/loading.dart';
 
 /// Route names
 class Routes {

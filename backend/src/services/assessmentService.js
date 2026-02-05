@@ -19,9 +19,9 @@ const calculateAverageScore = (scores) => {
     jobPerformance?.score,
     attendance?.score,
     cultureFit?.score,
-  ].filter((v) => v != null);
+  ].filter((v) => v !== null && v !== undefined);
 
-  if (values.length === 0) return 0;
+  if (values.length === 0) {return 0;}
 
   const sum = values.reduce((acc, val) => acc + val, 0);
   return Math.round((sum / values.length) * 100) / 100;
@@ -56,7 +56,7 @@ const validateAssessmentScores = (scores) => {
   const requiredFields = ['coreValue', 'jobPerformance', 'attendance', 'cultureFit'];
 
   for (const field of requiredFields) {
-    if (!scores[field] || scores[field].score == null) {
+    if (!scores[field] || scores[field].score === null || scores[field].score === undefined) {
       throw new ApiError(400, `กรุณากรอกคะแนน ${field}`);
     }
 

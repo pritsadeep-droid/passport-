@@ -4,24 +4,7 @@ const User = require('../models/User');
 const { AppError } = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-// Helper checking if mission is open
-const isMissionOpen = (template, missionCode, startDate) => {
-    const mission = template.missions.find((m) => m.code === missionCode);
-    if (!mission) return false;
-
-    const now = new Date();
-    const start = new Date(startDate);
-
-    const openDate = new Date(start);
-    openDate.setDate(openDate.getDate() + mission.openOffsetDays);
-
-    const closeDate = new Date(openDate);
-    closeDate.setDate(closeDate.getDate() + mission.closeOffsetDays);
-
-    return now >= openDate && now <= closeDate;
-};
-
-exports.createTemplate = catchAsync(async (req, res, next) => {
+exports.createTemplate = catchAsync(async (req, res, _next) => {
     const template = await OnboardingTemplate.create(req.body);
     res.status(201).json({
         status: 'success',
@@ -29,7 +12,7 @@ exports.createTemplate = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getTemplates = catchAsync(async (req, res, next) => {
+exports.getTemplates = catchAsync(async (req, res, _next) => {
     const templates = await OnboardingTemplate.find();
     res.status(200).json({
         status: 'success',
@@ -77,7 +60,7 @@ exports.getMyOnboarding = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getTeamOnboarding = catchAsync(async (req, res, next) => {
+exports.getTeamOnboarding = catchAsync(async (req, res, _next) => {
     // Find employees supervised by current user
     const employees = await User.find({ supervisorId: req.user.id });
     const employeeIds = employees.map(e => e._id);
@@ -338,10 +321,10 @@ exports.getJourney = catchAsync(async (req, res, next) => {
 
     // Combine and sort by day
     const timeline = [...eventItems, ...missionItems].sort((a, b) => {
-        if (a.day !== b.day) return a.day - b.day;
+        if (a.day !== b.day) {return a.day - b.day;}
         // Events before missions on same day
-        if (a.type === 'event' && b.type === 'mission') return -1;
-        if (a.type === 'mission' && b.type === 'event') return 1;
+        if (a.type === 'event' && b.type === 'mission') {return -1;}
+        if (a.type === 'mission' && b.type === 'event') {return 1;}
         return (a.sortOrder || 0) - (b.sortOrder || 0);
     });
 

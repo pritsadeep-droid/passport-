@@ -18,10 +18,10 @@ const getProbationSummary = async (req, res) => {
     const { format = 'pdf', status, department, startDate, endDate } = req.query;
 
     const filters = {};
-    if (status) filters.status = status;
-    if (department) filters.department = department;
-    if (startDate) filters.startDate = startDate;
-    if (endDate) filters.endDate = endDate;
+    if (status) {filters.status = status;}
+    if (department) {filters.department = department;}
+    if (startDate) {filters.startDate = startDate;}
+    if (endDate) {filters.endDate = endDate;}
 
     let buffer;
     let contentType;

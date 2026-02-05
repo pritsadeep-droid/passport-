@@ -11,7 +11,7 @@ let firebaseApp = null;
  * Initialize Firebase Admin SDK
  */
 const initializeFirebase = () => {
-  if (firebaseApp) return firebaseApp;
+  if (firebaseApp) {return firebaseApp;}
 
   try {
     // Check for Firebase credentials

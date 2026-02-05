@@ -1,5 +1,4 @@
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
 const notificationService = require('../services/notificationService');
 const logger = require('../utils/logger');
 
@@ -37,10 +36,10 @@ const checkUpcomingMilestones = async (daysBeforeDue = 3) => {
 
     for (const record of records) {
       const employee = record.employeeId;
-      if (!employee) continue;
+      if (!employee) {continue;}
 
       for (const milestone of record.milestones) {
-        if (milestone.status !== 'upcoming') continue;
+        if (milestone.status !== 'upcoming') {continue;}
 
         const dueDate = new Date(milestone.dueDate);
         const daysRemaining = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
@@ -120,13 +119,13 @@ const checkOverdueMilestones = async () => {
       const employee = record.employeeId;
       const supervisor = record.supervisorId;
 
-      if (!employee) continue;
+      if (!employee) {continue;}
 
       for (const milestone of record.milestones) {
         const dueDate = new Date(milestone.dueDate);
 
-        if (dueDate >= now) continue;
-        if (!['pending_self', 'pending_supervisor'].includes(milestone.status)) continue;
+        if (dueDate >= now) {continue;}
+        if (!['pending_self', 'pending_supervisor'].includes(milestone.status)) {continue;}
 
         const daysOverdue = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
 
@@ -206,10 +205,10 @@ const activateDueMilestones = async () => {
       const employee = record.employeeId;
 
       for (const milestone of record.milestones) {
-        if (milestone.status !== 'upcoming') continue;
+        if (milestone.status !== 'upcoming') {continue;}
 
         const dueDate = new Date(milestone.dueDate);
-        if (dueDate > now) continue;
+        if (dueDate > now) {continue;}
 
         // Activate the milestone
         milestone.status = 'pending_self';

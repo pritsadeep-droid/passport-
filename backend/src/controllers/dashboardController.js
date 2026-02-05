@@ -1,6 +1,4 @@
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
-const milestoneService = require('../services/milestoneService');
 const { asyncHandler } = require('../middleware/errorHandler');
 const { successResponse } = require('../utils/response');
 
@@ -210,8 +208,8 @@ const getHrDashboard = asyncHandler(async (req, res) => {
       byDepartment[dept] = { total: 0, passed: 0, failed: 0, inProgress: 0 };
     }
     byDepartment[dept].total++;
-    if (record.status === 'passed') byDepartment[dept].passed++;
-    if (record.status === 'failed') byDepartment[dept].failed++;
+    if (record.status === 'passed') {byDepartment[dept].passed++;}
+    if (record.status === 'failed') {byDepartment[dept].failed++;}
     if (['pending_kpi', 'in_progress', 'pending_decision'].includes(record.status)) {
       byDepartment[dept].inProgress++;
     }

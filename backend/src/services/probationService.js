@@ -1,5 +1,4 @@
 const ProbationRecord = require('../models/ProbationRecord');
-const User = require('../models/User');
 const notificationService = require('./notificationService');
 const logger = require('../utils/logger');
 
@@ -31,7 +30,7 @@ const FINAL_DECISIONS = ['passed', 'failed'];
  */
 const isValidTransition = (currentStatus, newStatus) => {
   const validNext = STATUS_TRANSITIONS[currentStatus];
-  if (!validNext) return false;
+  if (!validNext) {return false;}
   return validNext.includes(newStatus);
 };
 
@@ -140,7 +139,7 @@ const sendFinalDecisionNotifications = async (record, decision, reason) => {
   const employee = record.employeeId;
   const supervisor = record.supervisorId;
 
-  if (!employee) return;
+  if (!employee) {return;}
 
   const isPassed = decision === 'passed';
   const title = isPassed

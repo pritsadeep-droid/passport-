@@ -60,10 +60,10 @@ const updateTemplate = asyncHandler(async (req, res) => {
     return notFoundResponse(res, 'Template not found');
   }
 
-  if (title !== undefined) template.title = title;
-  if (description !== undefined) template.description = description;
-  if (criteria !== undefined) template.criteria = criteria;
-  if (category !== undefined) template.category = category || null;
+  if (title !== undefined) {template.title = title;}
+  if (description !== undefined) {template.description = description;}
+  if (criteria !== undefined) {template.criteria = criteria;}
+  if (category !== undefined) {template.category = category || null;}
   template.updatedBy = req.userId;
 
   await template.save();

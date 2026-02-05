@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/probation_record.dart';
 import '../../models/milestone.dart';
 import '../../providers/probation_provider.dart';
-import '../../providers/kpi_provider.dart';
 import '../../providers/onboarding_provider.dart';
 import '../../utils/theme.dart';
 import '../../widgets/app_bar.dart';

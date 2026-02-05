@@ -124,7 +124,7 @@ const removeFcmToken = asyncHandler(async (req, res) => {
  * @access  Private (Supervisor)
  */
 const getTeamMembers = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 20, status } = req.query;
+  const { page = 1, limit = 20 } = req.query;
   const skip = (page - 1) * limit;
 
   const query = {
@@ -315,11 +315,11 @@ const updateUser = asyncHandler(async (req, res) => {
   };
 
   // Update fields
-  if (name !== undefined) user.name = name;
-  if (role !== undefined) user.role = role;
-  if (department !== undefined) user.department = department;
-  if (supervisorId !== undefined) user.supervisorId = supervisorId;
-  if (isActive !== undefined) user.isActive = isActive;
+  if (name !== undefined) {user.name = name;}
+  if (role !== undefined) {user.role = role;}
+  if (department !== undefined) {user.department = department;}
+  if (supervisorId !== undefined) {user.supervisorId = supervisorId;}
+  if (isActive !== undefined) {user.isActive = isActive;}
 
   await user.save();
 

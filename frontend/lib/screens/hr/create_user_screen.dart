@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/user.dart';
 import '../../providers/user_provider.dart';
 import '../../services/user_service.dart';
-import '../../widgets/loading.dart';
 
 class CreateUserScreen extends ConsumerStatefulWidget {
   const CreateUserScreen({super.key});

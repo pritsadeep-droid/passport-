@@ -324,7 +324,7 @@ const probationRecordSchema = new mongoose.Schema(
         {
           validator: function (v) {
             // Allow empty KPIs in pending_kpi status
-            if (this.status === 'pending_kpi') return true;
+            if (this.status === 'pending_kpi') {return true;}
             return v.length >= 3;
           },
           message: 'Minimum 3 KPIs required',

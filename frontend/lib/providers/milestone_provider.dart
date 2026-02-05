@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/milestone.dart';
 import '../models/probation_record.dart';
-import '../services/api_client.dart';
 import '../services/milestone_service.dart';
 import 'auth_provider.dart';
 
