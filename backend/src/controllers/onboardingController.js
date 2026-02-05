@@ -44,7 +44,7 @@ exports.assignOnboarding = catchAsync(async (req, res, next) => {
     // Check if already exists
     const existing = await OnboardingInstance.findOne({ employeeId, status: { $ne: 'archived' } });
     if (existing) {
-        return next(new AppError('Employee already has an active onboarding process', 400));
+        return next(new AppError(400, 'Employee already has an active onboarding process'));
     }
 
     const instance = await OnboardingInstance.create({
@@ -68,7 +68,7 @@ exports.getMyOnboarding = catchAsync(async (req, res, next) => {
         .populate('reviews.reviewedBy', 'name');
 
     if (!instance) {
-        return next(new AppError('No active onboarding found', 404));
+        return next(new AppError(404, 'No active onboarding found'));
     }
 
     res.status(200).json({
@@ -103,7 +103,7 @@ exports.getOnboardingById = catchAsync(async (req, res, next) => {
         .populate('employeeId', 'name email department position supervisorId');
 
     if (!instance) {
-        return next(new AppError('Onboarding not found', 404));
+        return next(new AppError(404, 'Onboarding not found'));
     }
 
     // Auth check
@@ -112,7 +112,7 @@ exports.getOnboardingById = catchAsync(async (req, res, next) => {
     const isAdmin = req.user.role === 'hr_admin';
 
     if (!isOwner && !isSupervisor && !isAdmin) {
-        return next(new AppError('You do not have permission to view this', 403));
+        return next(new AppError(403, 'You do not have permission to view this'));
     }
 
     res.status(200).json({
@@ -130,7 +130,7 @@ exports.submitAnswer = catchAsync(async (req, res, next) => {
     });
 
     if (!instance) {
-        return next(new AppError('No active onboarding found', 404));
+        return next(new AppError(404, 'No active onboarding found'));
     }
 
     // Optional: Check if mission is open (logic omitted for MVP simplicity, can be added later)
@@ -165,12 +165,12 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
     const instance = await OnboardingInstance.findById(onboardingId).populate('employeeId');
 
     if (!instance) {
-        return next(new AppError('Onboarding instance not found', 404));
+        return next(new AppError(404, 'Onboarding instance not found'));
     }
 
     // Check if supervisor
     if (instance.employeeId.supervisorId.toString() !== req.user.id && req.user.role !== 'hr_admin') {
-        return next(new AppError('Not authorized to review this employee', 403));
+        return next(new AppError(403, 'Not authorized to review this employee'));
     }
 
     // Update or push review
@@ -210,26 +210,26 @@ exports.completeEvent = catchAsync(async (req, res, next) => {
         .populate('templateId');
 
     if (!instance) {
-        return next(new AppError('Onboarding instance not found', 404));
+        return next(new AppError(404, 'Onboarding instance not found'));
     }
 
     // Auth: only supervisor or HR admin
     const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
     const isAdmin = req.user.role === 'hr_admin';
     if (!isSupervisor && !isAdmin) {
-        return next(new AppError('Not authorized to complete events', 403));
+        return next(new AppError(403, 'Not authorized to complete events'));
     }
 
     // Validate event code exists in template
     const event = instance.templateId.events.find(e => e.code === eventCode);
     if (!event) {
-        return next(new AppError('Invalid event code', 400));
+        return next(new AppError(400, 'Invalid event code'));
     }
 
     // Check if already completed
     const alreadyCompleted = instance.eventCompletions.find(ec => ec.eventCode === eventCode);
     if (alreadyCompleted) {
-        return next(new AppError('Event already completed', 400));
+        return next(new AppError(400, 'Event already completed'));
     }
 
     instance.eventCompletions.push({
@@ -257,7 +257,7 @@ exports.getJourney = catchAsync(async (req, res, next) => {
         .populate('reviews.reviewedBy', 'name');
 
     if (!instance) {
-        return next(new AppError('Onboarding instance not found', 404));
+        return next(new AppError(404, 'Onboarding instance not found'));
     }
 
     // Auth check
@@ -266,7 +266,7 @@ exports.getJourney = catchAsync(async (req, res, next) => {
     const isAdmin = req.user.role === 'hr_admin';
 
     if (!isOwner && !isSupervisor && !isAdmin) {
-        return next(new AppError('You do not have permission to view this', 403));
+        return next(new AppError(403, 'You do not have permission to view this'));
     }
 
     // Build combined journey timeline
@@ -356,7 +356,7 @@ exports.updateTemplate = catchAsync(async (req, res, next) => {
     );
 
     if (!template) {
-        return next(new AppError('Template not found', 404));
+        return next(new AppError(404, 'Template not found'));
     }
 
     res.status(200).json({
