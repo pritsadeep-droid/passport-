@@ -82,7 +82,26 @@ class _DashboardTab extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('หน้าแรก'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.auto_stories, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text('CulturePassport'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -137,41 +156,127 @@ class _DashboardTab extends ConsumerWidget {
   }
 
   Widget _buildWelcomeCard(BuildContext context, WidgetRef ref, user) {
-    return Card(
-      color: AppColors.primary,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDC2626), // red-600
+            Color(0xFFB91C1C), // red-700
+            Color(0xFFBE123C), // rose-800
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFEF4444).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.white.withOpacity(0.2),
-              child: const Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 32,
-              ),
+            // Header with logo
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'CP',
+                      style: TextStyle(
+                        color: Color(0xFFF62B25),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ยินดีต้อนรับสู่ CulturePassport',
+                        style: AppTextStyles.headline3.copyWith(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'ติดตามความคืบหน้าการเข้าปรับตัวของคุณ',
+                        style: AppTextStyles.caption.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'สวัสดี, ${user?.name ?? ""}',
-                    style: AppTextStyles.headline3.copyWith(
-                      color: Colors.white,
-                    ),
+            const SizedBox(height: 16),
+            // Divider
+            Container(
+              height: 1,
+              color: Colors.white.withOpacity(0.2),
+            ),
+            const SizedBox(height: 16),
+            // Employee info grid
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInfoItem(
+                    icon: Icons.person_outline,
+                    label: 'ชื่อ-นามสกุล',
+                    value: user?.name ?? '-',
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'พนักงานทดลองงาน • ${user?.department ?? ""}',
-                    style: AppTextStyles.body2.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildInfoItem(
+                    icon: Icons.badge_outlined,
+                    label: 'รหัสพนักงาน',
+                    value: user?.employeeId ?? '-',
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInfoItem(
+                    icon: Icons.business_outlined,
+                    label: 'แผนก',
+                    value: user?.department ?? '-',
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildInfoItem(
+                    icon: Icons.work_outline,
+                    label: 'ตำแหน่ง',
+                    value: user?.position ?? 'พนักงาน',
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -179,11 +284,60 @@ class _DashboardTab extends ConsumerWidget {
     );
   }
 
+  Widget _buildInfoItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 10,
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildOnboardingCard(BuildContext context, WidgetRef ref) {
     final onboardingState = ref.watch(myOnboardingProvider);
+    const culturePassportOrange = Color(0xFFFF6B35);
 
     return Card(
-      color: Colors.indigo.shade50,
+      color: const Color(0xFFFFF7ED), // orange-50
       child: InkWell(
         onTap: () => context.push('/employee/onboarding'),
         borderRadius: BorderRadius.circular(12),
@@ -195,12 +349,24 @@ class _DashboardTab extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.indigo.withOpacity(0.1),
-                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: culturePassportOrange.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: const Icon(Icons.auto_awesome, color: Colors.indigo, size: 28),
+                    child: const Icon(Icons.auto_stories, color: Colors.white, size: 24),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -209,14 +375,18 @@ class _DashboardTab extends ConsumerWidget {
                       children: [
                         const Text(
                           'Culture Passport',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color(0xFF9A3412), // orange-800
+                          ),
                         ),
                         const SizedBox(height: 4),
                         onboardingState.when(
                           loading: () => const SizedBox.shrink(),
-                          error: (_, __) => Text(
+                          error: (_, __) => const Text(
                             'ทำภารกิจเพื่อก้าวสู่พนักงานมืออาชีพ',
-                            style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                            style: TextStyle(color: Color(0xFFEA580C), fontSize: 12),
                           ),
                           data: (instance) {
                             if (instance == null) {
@@ -229,14 +399,14 @@ class _DashboardTab extends ConsumerWidget {
                             final total = instance.templateId.missions.length;
                             return Text(
                               '$passed/$total stamps collected',
-                              style: TextStyle(color: Colors.indigo.shade800, fontSize: 12),
+                              style: const TextStyle(color: Color(0xFFEA580C), fontSize: 12),
                             );
                           },
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.indigo),
+                  const Icon(Icons.chevron_right, color: Color(0xFFEA580C)),
                 ],
               ),
               // Mini stamp dots
