@@ -79,9 +79,6 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
       role: _selectedRole,
       department: _departmentController.text.trim(),
       position: _positionController.text.trim(),
-      role: _selectedRole,
-      department: _departmentController.text.trim(),
-      position: _positionController.text.trim(),
       supervisorId: _selectedSupervisorId,
     );
 

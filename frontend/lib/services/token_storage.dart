@@ -15,6 +15,10 @@ class TokenStorage {
               iOptions: IOSOptions(
                 accessibility: KeychainAccessibility.first_unlock,
               ),
+              webOptions: WebOptions(
+                dbName: 'kpi_probation_auth',
+                publicKey: 'kpi_probation_public_key',
+              ),
             );
 
   /// Save access and refresh tokens
