@@ -12,6 +12,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool showNotificationBadge;
   final VoidCallback? onNotificationTap;
   final PreferredSizeWidget? bottom;
+  final IconData? logoIcon;
 
   const CustomAppBar({
     super.key,
@@ -22,6 +23,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.showNotificationBadge = true,
     this.onNotificationTap,
     this.bottom,
+    this.logoIcon,
   });
 
   @override
@@ -34,7 +36,28 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final user = ref.watch(currentUserProvider);
 
     return AppBar(
-      title: Text(title),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (logoIcon != null) ...[
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(logoIcon, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+          ],
+          Text(title),
+        ],
+      ),
       leading: leading ??
           (showBackButton && Navigator.canPop(context)
               ? IconButton(
