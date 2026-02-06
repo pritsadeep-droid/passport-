@@ -3,8 +3,8 @@ FROM nginx:alpine
 # Copy build files to nginx
 COPY webdeploy /usr/share/nginx/html
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
