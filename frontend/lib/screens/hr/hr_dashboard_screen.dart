@@ -35,24 +35,10 @@ class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Container(
+            Image.asset(
+              'assets/images/logo.webp',
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.auto_stories,
-                  size: 18,
-                  color: Colors.white,
-                ),
-              ),
             ),
             const SizedBox(width: 10),
             const Text('CulturePassport'),

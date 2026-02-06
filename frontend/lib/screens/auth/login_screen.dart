@@ -179,31 +179,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLogo() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFF6B35).withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: const Center(
-        child: Icon(
-          Icons.auto_stories,
-          size: 40,
-          color: Colors.white,
-        ),
-      ),
+    return Image.asset(
+      'assets/images/logo.webp',
+      width: 120,
+      height: 120,
     );
   }
 }

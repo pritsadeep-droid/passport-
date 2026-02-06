@@ -252,10 +252,17 @@ class _OnboardingTemplateScreenState
           });
 
           if (!context.mounted) return;
-          Navigator.pop(ctx);
           if (success) {
+            Navigator.pop(ctx);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('บันทึกสำเร็จ')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('เกิดข้อผิดพลาด กรุณาลองใหม่'),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
@@ -1021,7 +1028,7 @@ class _EventCard extends StatelessWidget {
 
 class _MissionEditDialog extends StatefulWidget {
   final Mission mission;
-  final void Function(int openDays, int closeDays) onSave;
+  final Future<void> Function(int openDays, int closeDays) onSave;
 
   const _MissionEditDialog({
     required this.mission,
@@ -1035,6 +1042,7 @@ class _MissionEditDialog extends StatefulWidget {
 class _MissionEditDialogState extends State<_MissionEditDialog> {
   late final TextEditingController _openController;
   late final TextEditingController _closeController;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -1052,6 +1060,19 @@ class _MissionEditDialogState extends State<_MissionEditDialog> {
     super.dispose();
   }
 
+  Future<void> _submit() async {
+    final open = int.tryParse(_openController.text) ?? 0;
+    final close = int.tryParse(_closeController.text) ?? 7;
+
+    setState(() => _saving = true);
+
+    await widget.onSave(open, close);
+
+    if (mounted) {
+      setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -1066,6 +1087,7 @@ class _MissionEditDialogState extends State<_MissionEditDialog> {
               suffixText: 'วัน',
             ),
             keyboardType: TextInputType.number,
+            enabled: !_saving,
           ),
           const SizedBox(height: 16),
           TextField(
@@ -1075,21 +1097,27 @@ class _MissionEditDialogState extends State<_MissionEditDialog> {
               suffixText: 'วัน',
             ),
             keyboardType: TextInputType.number,
+            enabled: !_saving,
           ),
         ],
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: _saving ? null : () => Navigator.pop(context),
           child: const Text('ยกเลิก'),
         ),
         FilledButton(
-          onPressed: () {
-            final open = int.tryParse(_openController.text) ?? 0;
-            final close = int.tryParse(_closeController.text) ?? 7;
-            widget.onSave(open, close);
-          },
-          child: const Text('บันทึก'),
+          onPressed: _saving ? null : _submit,
+          child: _saving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text('บันทึก'),
         ),
       ],
     );

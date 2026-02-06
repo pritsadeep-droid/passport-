@@ -274,7 +274,7 @@ class PassRateIndicator extends StatelessWidget {
   const PassRateIndicator({
     super.key,
     required this.passRate,
-    this.size = 80,
+    this.size = 90,
   });
 
   @override
@@ -303,14 +303,14 @@ class PassRateIndicator extends StatelessWidget {
             children: [
               Text(
                 '$passRate%',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: rateColor,
                 ),
               ),
               Text(
                 'ผ่าน',
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.labelSmall,
               ),
             ],
           ),

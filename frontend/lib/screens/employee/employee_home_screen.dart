@@ -85,18 +85,10 @@ class _DashboardTab extends ConsumerWidget {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Icon(Icons.auto_stories, color: Colors.white, size: 16),
+            Image.asset(
+              'assets/images/logo.webp',
+              width: 32,
+              height: 32,
             ),
             const SizedBox(width: 8),
             const Text('CulturePassport'),
