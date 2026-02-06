@@ -193,7 +193,7 @@ class _OnboardingTemplateScreenState
         existingCodes: template.missions.map((m) => m.code).toList(),
         onSave: (missionData) async {
           final updatedMissions = [
-            ...template.missions.map((m) => {
+            ...template.missions.map((m) => <String, dynamic>{
                   'code': m.code,
                   'title': m.title,
                   'description': m.description,
@@ -242,7 +242,7 @@ class _OnboardingTemplateScreenState
           final success = await ref
               .read(onboardingTemplateListProvider.notifier)
               .update(template.id, {
-            'missions': updatedMissions.map((m) => {
+            'missions': updatedMissions.map((m) => <String, dynamic>{
               'code': m.code,
               'title': m.title,
               'description': m.description,
@@ -302,7 +302,7 @@ class _OnboardingTemplateScreenState
           } else {
             // Add new
             updatedQuestions = [
-              ...template.questions.map((q) => {
+              ...template.questions.map((q) => <String, dynamic>{
                     '_id': q.id,
                     'text': q.text,
                     'type': q.type.name,
@@ -335,7 +335,7 @@ class _OnboardingTemplateScreenState
             ? () async {
                 final updatedQuestions = template.questions
                     .where((q) => q.id != question.id)
-                    .map((q) => {
+                    .map((q) => <String, dynamic>{
                           '_id': q.id,
                           'text': q.text,
                           'type': q.type.name,
