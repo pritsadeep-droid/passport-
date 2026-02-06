@@ -70,11 +70,20 @@ class _OnboardingTimelineScreenState extends ConsumerState<OnboardingTimelineScr
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('เกิดข้อผิดพลาด: $error'),
+              const Text(
+                'ไม่สามารถโหลดข้อมูล Onboarding ได้',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'กรุณาลองใหม่อีกครั้ง',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
               const SizedBox(height: 16),
-              FilledButton(
+              FilledButton.icon(
                 onPressed: () => ref.refresh(myOnboardingProvider),
-                child: const Text('ลองใหม่'),
+                icon: const Icon(Icons.refresh),
+                label: const Text('ลองใหม่'),
               ),
             ],
           ),

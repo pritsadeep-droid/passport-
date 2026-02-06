@@ -90,6 +90,61 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
+// Cascade delete - clean up related records when user is deleted
+userSchema.pre('deleteOne', { document: true, query: false }, async function () {
+  const userId = this._id;
+
+  // Lazy load models to avoid circular dependency
+  const ProbationRecord = mongoose.model('ProbationRecord');
+  const OnboardingInstance = mongoose.model('OnboardingInstance');
+  const Notification = mongoose.model('Notification');
+
+  // Delete probation records where user is the employee
+  await ProbationRecord.deleteMany({ employeeId: userId });
+
+  // Delete onboarding instances where user is the employee
+  await OnboardingInstance.deleteMany({ employeeId: userId });
+
+  // Delete notifications for this user
+  await Notification.deleteMany({ userId: userId });
+
+  // Update probation records where user was supervisor (set to null)
+  await ProbationRecord.updateMany(
+    { supervisorId: userId },
+    { $set: { supervisorId: null } }
+  );
+
+  // Update users who had this user as supervisor
+  await mongoose.model('User').updateMany(
+    { supervisorId: userId },
+    { $set: { supervisorId: null } }
+  );
+});
+
+// Also handle findOneAndDelete
+userSchema.pre('findOneAndDelete', async function () {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) {
+    const userId = doc._id;
+
+    const ProbationRecord = mongoose.model('ProbationRecord');
+    const OnboardingInstance = mongoose.model('OnboardingInstance');
+    const Notification = mongoose.model('Notification');
+
+    await ProbationRecord.deleteMany({ employeeId: userId });
+    await OnboardingInstance.deleteMany({ employeeId: userId });
+    await Notification.deleteMany({ userId: userId });
+    await ProbationRecord.updateMany(
+      { supervisorId: userId },
+      { $set: { supervisorId: null } }
+    );
+    await mongoose.model('User').updateMany(
+      { supervisorId: userId },
+      { $set: { supervisorId: null } }
+    );
+  }
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

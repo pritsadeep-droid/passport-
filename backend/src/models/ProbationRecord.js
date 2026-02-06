@@ -313,6 +313,7 @@ const probationRecordSchema = new mongoose.Schema(
         'pending_decision',
         'passed',
         'failed',
+        'extended',
         'resigned',
         'terminated',
       ],

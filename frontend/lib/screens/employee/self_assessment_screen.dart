@@ -217,7 +217,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
 
             // Core Value
             AssessmentCategoryCard(
-              title: 'Core Value',
+              title: 'ค่านิยมองค์กร',
               description: 'ความคิดสร้างสรรค์และความรวดเร็ว (Lottery Plus Style)',
               icon: Icons.lightbulb,
               iconColor: Colors.amber,
@@ -241,7 +241,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
 
             // Job Performance
             AssessmentCategoryCard(
-              title: 'Job Performance',
+              title: 'ผลงาน',
               description: 'ผลงานตามรายละเอียดงาน (JD)',
               icon: Icons.work,
               iconColor: Colors.blue,
@@ -268,7 +268,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
 
             // Attendance
             AssessmentCategoryCard(
-              title: 'Attendance',
+              title: 'การเข้างาน',
               description: 'การมาทำงานตรงต่อเวลา',
               icon: Icons.access_time,
               iconColor: Colors.green,
@@ -292,7 +292,7 @@ class _SelfAssessmentScreenState extends ConsumerState<SelfAssessmentScreen> {
 
             // Culture Fit
             AssessmentCategoryCard(
-              title: 'Culture Fit',
+              title: 'วัฒนธรรมองค์กร',
               description: 'การปรับตัวเข้ากับทีมและ CI ขององค์กร',
               icon: Icons.people,
               iconColor: Colors.purple,

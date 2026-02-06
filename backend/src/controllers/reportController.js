@@ -67,6 +67,20 @@ const getEmployeeReport = async (req, res) => {
     const { employeeId } = req.params;
     const { format = 'pdf' } = req.query;
 
+    // Authorization check: supervisors can only access their team members
+    if (req.user.role === 'supervisor') {
+      const User = require('../models/User');
+      const employee = await User.findById(employeeId).select('supervisorId');
+
+      if (!employee) {
+        return error(res, 'Employee not found', 404);
+      }
+
+      if (!employee.supervisorId || employee.supervisorId.toString() !== req.user._id.toString()) {
+        return error(res, 'You can only access reports for your team members', 403);
+      }
+    }
+
     let buffer;
     let contentType;
     let filename;

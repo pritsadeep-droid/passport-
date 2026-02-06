@@ -32,8 +32,8 @@ router.get('/team', authorize(ROLES.SUPERVISOR, ROLES.HR_ADMIN), getTeamOnboardi
 router.get('/:id', getOnboardingById);
 router.get('/:id/journey', getJourney);
 
-// Interaction
-router.post('/submit', submitAnswer);
+// Interaction (Employee submits their own answers - controller validates ownership)
+router.post('/submit', authorize(ROLES.EMPLOYEE, ROLES.HR_ADMIN), submitAnswer);
 router.post('/:id/complete-event', authorize(ROLES.SUPERVISOR, ROLES.HR_ADMIN), completeEvent);
 router.post('/review', authorize(ROLES.SUPERVISOR, ROLES.HR_ADMIN), reviewMission);
 

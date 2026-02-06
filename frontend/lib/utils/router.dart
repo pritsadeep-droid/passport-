@@ -15,6 +15,8 @@ import '../screens/supervisor/milestone_detail_screen.dart';
 import '../screens/supervisor/milestone_approval_screen.dart';
 import '../screens/supervisor/pending_approvals_screen.dart';
 import '../screens/common/notifications_screen.dart';
+import '../screens/common/profile_screen.dart';
+import '../screens/common/settings_screen.dart';
 import '../screens/hr/hr_home_screen.dart';
 import '../screens/hr/hr_dashboard_screen.dart';
 import '../screens/hr/all_employees_screen.dart';
@@ -97,6 +99,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Redirect to appropriate home based on role
       if (isAuthenticated && isLoggingIn) {
         return _getHomeRouteForRole(authState.user?.role);
+      }
+
+      // Role-based route guards
+      if (isAuthenticated && authState.user != null) {
+        final role = authState.user!.role;
+        final path = state.matchedLocation;
+
+        // Supervisor routes - only for supervisor and hr_admin
+        if (path.startsWith('/supervisor')) {
+          if (role != UserRole.supervisor && role != UserRole.hrAdmin) {
+            return _getHomeRouteForRole(role);
+          }
+        }
+
+        // HR routes - only for hr_admin
+        if (path.startsWith('/hr')) {
+          if (role != UserRole.hrAdmin) {
+            return _getHomeRouteForRole(role);
+          }
+        }
+
+        // Employee routes - accessible by all roles (employees, supervisors viewing own, hr viewing)
+        // No restriction needed
       }
 
       return null;
@@ -298,12 +323,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.profile,
         name: 'profile',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Profile'),
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         path: Routes.settings,
         name: 'settings',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Settings'),
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
     errorBuilder: (context, state) => _ErrorScreen(error: state.error),

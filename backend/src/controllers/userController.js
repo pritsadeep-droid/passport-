@@ -314,6 +314,20 @@ const updateUser = asyncHandler(async (req, res) => {
     isActive: user.isActive,
   };
 
+  // Validate supervisorId if provided
+  if (supervisorId !== undefined && supervisorId !== null) {
+    const supervisor = await User.findById(supervisorId);
+    if (!supervisor) {
+      return errorResponse(res, 400, 'ไม่พบหัวหน้างานที่ระบุ');
+    }
+    if (!['supervisor', 'hr_admin'].includes(supervisor.role)) {
+      return errorResponse(res, 400, 'ผู้ใช้ที่เลือกไม่ใช่หัวหน้างานหรือ HR Admin');
+    }
+    if (!supervisor.isActive) {
+      return errorResponse(res, 400, 'หัวหน้างานที่เลือกถูกระงับการใช้งาน');
+    }
+  }
+
   // Update fields
   if (name !== undefined) {user.name = name;}
   if (role !== undefined) {user.role = role;}

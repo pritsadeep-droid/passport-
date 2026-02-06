@@ -44,7 +44,7 @@ exports.assignOnboarding = catchAsync(async (req, res, next) => {
 
 exports.getMyOnboarding = catchAsync(async (req, res, next) => {
     const instance = await OnboardingInstance.findOne({
-        employeeId: req.user.id,
+        employeeId: req.user._id.toString(),
         status: { $ne: 'archived' }
     })
         .populate('templateId')
@@ -62,7 +62,7 @@ exports.getMyOnboarding = catchAsync(async (req, res, next) => {
 
 exports.getTeamOnboarding = catchAsync(async (req, res, _next) => {
     // Find employees supervised by current user
-    const employees = await User.find({ supervisorId: req.user.id });
+    const employees = await User.find({ supervisorId: req.user._id.toString() });
     const employeeIds = employees.map(e => e._id);
 
     const instances = await OnboardingInstance.find({
@@ -90,8 +90,8 @@ exports.getOnboardingById = catchAsync(async (req, res, next) => {
     }
 
     // Auth check
-    const isOwner = instance.employeeId._id.toString() === req.user.id;
-    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
+    const isOwner = instance.employeeId._id.toString() === req.user._id.toString();
+    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'hr_admin';
 
     if (!isOwner && !isSupervisor && !isAdmin) {
@@ -108,7 +108,7 @@ exports.submitAnswer = catchAsync(async (req, res, next) => {
     const { questionId, text, attachments } = req.body;
 
     const instance = await OnboardingInstance.findOne({
-        employeeId: req.user.id,
+        employeeId: req.user._id.toString(),
         status: 'in_progress'
     });
 
@@ -154,7 +154,7 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
     }
 
     // Check if supervisor
-    if (instance.employeeId.supervisorId.toString() !== req.user.id && req.user.role !== 'hr_admin') {
+    if (instance.employeeId.supervisorId.toString() !== req.user._id.toString() && req.user.role !== 'hr_admin') {
         return next(new AppError(403, 'Not authorized to review this employee'));
     }
 
@@ -165,7 +165,7 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
         instance.reviews[existingIndex].score = score;
         instance.reviews[existingIndex].decision = decision;
         instance.reviews[existingIndex].comment = comment;
-        instance.reviews[existingIndex].reviewedBy = req.user.id;
+        instance.reviews[existingIndex].reviewedBy = req.user._id.toString();
         instance.reviews[existingIndex].reviewedAt = new Date();
     } else {
         instance.reviews.push({
@@ -173,7 +173,7 @@ exports.reviewMission = catchAsync(async (req, res, next) => {
             score,
             decision,
             comment,
-            reviewedBy: req.user.id,
+            reviewedBy: req.user._id.toString(),
             reviewedAt: new Date(),
         });
     }
@@ -201,7 +201,7 @@ exports.completeEvent = catchAsync(async (req, res, next) => {
     }
 
     // Auth: only supervisor or HR admin
-    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
+    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'hr_admin';
     if (!isSupervisor && !isAdmin) {
         return next(new AppError(403, 'Not authorized to complete events'));
@@ -222,7 +222,7 @@ exports.completeEvent = catchAsync(async (req, res, next) => {
     instance.eventCompletions.push({
         eventCode,
         completedAt: new Date(),
-        completedBy: req.user.id,
+        completedBy: req.user._id.toString(),
         notes,
     });
 
@@ -250,8 +250,8 @@ exports.getJourney = catchAsync(async (req, res, next) => {
     }
 
     // Auth check
-    const isOwner = instance.employeeId._id.toString() === req.user.id;
-    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user.id;
+    const isOwner = instance.employeeId._id.toString() === req.user._id.toString();
+    const isSupervisor = instance.employeeId.supervisorId?.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'hr_admin';
 
     if (!isOwner && !isSupervisor && !isAdmin) {
@@ -338,6 +338,14 @@ exports.getJourney = catchAsync(async (req, res, next) => {
 });
 
 exports.updateTemplate = catchAsync(async (req, res, next) => {
+    const logger = require('../utils/logger');
+    logger.info('updateTemplate called', {
+        templateId: req.params.id,
+        bodyKeys: Object.keys(req.body),
+        missionsCount: req.body.missions?.length,
+        firstMission: req.body.missions?.[0]
+    });
+
     const template = await OnboardingTemplate.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -347,6 +355,15 @@ exports.updateTemplate = catchAsync(async (req, res, next) => {
     if (!template) {
         return next(new AppError(404, 'Template not found'));
     }
+
+    logger.info('Template updated successfully', {
+        templateId: template._id,
+        missionsCount: template.missions?.length,
+        firstMissionDays: template.missions?.[0] ? {
+            open: template.missions[0].openOffsetDays,
+            close: template.missions[0].closeOffsetDays
+        } : null
+    });
 
     res.status(200).json({
         status: 'success',

@@ -215,10 +215,18 @@ class MilestoneService {
         '/milestones/probation/$probationRecordId/milestones',
       );
 
-      final data = response.data['data'] as Map<String, dynamic>;
-      final milestones = (data['milestones'] as List)
-          .map((m) => Milestone.fromJson(m as Map<String, dynamic>))
-          .toList();
+      final responseData = response.data['data'];
+      if (responseData == null || responseData is! Map<String, dynamic>) {
+        throw ApiException(message: 'Invalid response format', statusCode: 500);
+      }
+      final data = responseData;
+      final milestonesRaw = data['milestones'];
+      final milestones = (milestonesRaw is List)
+          ? milestonesRaw
+              .whereType<Map<String, dynamic>>()
+              .map((m) => Milestone.fromJson(m))
+              .toList()
+          : <Milestone>[];
 
       return {
         'milestones': milestones,

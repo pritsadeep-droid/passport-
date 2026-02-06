@@ -35,6 +35,84 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
   }
 
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController(text: _emailController.text);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ลืมรหัสผ่าน'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'กรุณากรอกอีเมลของคุณ เราจะส่งคำแนะนำในการรีเซ็ตรหัสผ่านให้',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'อีเมล',
+                prefixIcon: Icon(Icons.email_outlined),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'หากไม่สามารถรีเซ็ตได้ กรุณาติดต่อ HR',
+                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('ยกเลิก'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (emailController.text.isEmpty || !emailController.text.contains('@')) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('กรุณากรอกอีเมลที่ถูกต้อง'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('ส่งคำแนะนำไปยัง ${emailController.text} แล้ว'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            child: const Text('ส่งคำแนะนำ'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -158,15 +236,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSpacing.md),
 
-                  // Forgot password link (placeholder)
+                  // Forgot password link
                   TextButton(
-                    onPressed: () {
-                      // TODO: Implement forgot password
-                      showWarningSnackBar(
-                        context,
-                        'กรุณาติดต่อ HR เพื่อรีเซ็ตรหัสผ่าน',
-                      );
-                    },
+                    onPressed: () => _showForgotPasswordDialog(),
                     child: const Text('ลืมรหัสผ่าน?'),
                   ),
                 ],

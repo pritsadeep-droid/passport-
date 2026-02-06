@@ -281,7 +281,7 @@ class _EmployeeReviewScreenState extends ConsumerState<EmployeeReviewScreen> {
 
             // Milestones
             Text(
-              'Milestones',
+              'ไมล์สโตน',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

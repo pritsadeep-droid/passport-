@@ -43,8 +43,14 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
         });
       }
     } catch (e) {
-      // Handle error implicitly or show snackbar
-      print('Error loading supervisors: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('ไม่สามารถโหลดรายชื่อหัวหน้างานได้'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoadingSupervisors = false);

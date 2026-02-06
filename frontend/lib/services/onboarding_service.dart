@@ -11,9 +11,13 @@ class OnboardingService {
   Future<List<OnboardingTemplate>> getTemplates() async {
     try {
       final response = await _apiClient.get('/onboarding/templates');
-      final data = response.data['data'] as List;
+      final data = response.data['data'];
+      if (data == null || data is! List) {
+        return <OnboardingTemplate>[];
+      }
       return data
-          .map((e) => OnboardingTemplate.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<String, dynamic>>()
+          .map((e) => OnboardingTemplate.fromJson(e))
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -45,9 +49,13 @@ class OnboardingService {
   Future<List<OnboardingInstance>> getTeamOnboarding() async {
     try {
       final response = await _apiClient.get('/onboarding/team');
-      final data = response.data['data'] as List;
+      final data = response.data['data'];
+      if (data == null || data is! List) {
+        return <OnboardingInstance>[];
+      }
       return data
-          .map((e) => OnboardingInstance.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<String, dynamic>>()
+          .map((e) => OnboardingInstance.fromJson(e))
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -106,7 +114,11 @@ class OnboardingService {
   Future<Map<String, dynamic>> getJourneyProgress(String instanceId) async {
     try {
       final response = await _apiClient.get('/onboarding/$instanceId/journey');
-      return response.data['data'] as Map<String, dynamic>;
+      final data = response.data['data'];
+      if (data == null || data is! Map<String, dynamic>) {
+        return <String, dynamic>{};
+      }
+      return data;
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

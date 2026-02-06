@@ -6,6 +6,8 @@ import '../../models/probation_record.dart';
 import '../../models/milestone.dart';
 import '../../providers/probation_provider.dart';
 import '../../providers/onboarding_provider.dart';
+import '../../providers/kpi_provider.dart';
+import '../../models/kpi.dart';
 import '../../utils/theme.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/loading.dart';
@@ -138,7 +140,7 @@ class _OverviewTab extends StatelessWidget {
 
           // Milestones
           Text(
-            'Milestones',
+            'ไมล์สโตน',
             style: AppTextStyles.headline3,
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -376,16 +378,210 @@ class _KpiTab extends ConsumerWidget {
           kpi: kpi,
           index: index,
           canEdit: record.status.isActive,
-          onEdit: () {
-            // TODO: Navigate to edit KPI
-          },
-          onDelete: () {
-            // TODO: Delete KPI
-          },
+          onEdit: () => _showEditKpiDialog(context, ref, record.id, kpi),
+          onDelete: () => _showDeleteKpiConfirmation(context, ref, record.id, kpi),
         );
       },
     );
   }
+}
+
+void _showEditKpiDialog(BuildContext context, WidgetRef ref, String recordId, Kpi kpi) {
+  final titleController = TextEditingController(text: kpi.title);
+  final descriptionController = TextEditingController(text: kpi.description);
+  final criteriaController = TextEditingController(text: kpi.criteria);
+
+  showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('แก้ไข KPI'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'ชื่อ KPI',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'รายละเอียด',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: criteriaController,
+              maxLines: 2,
+              decoration: const InputDecoration(
+                labelText: 'เกณฑ์การวัดผล',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('ยกเลิก'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            if (titleController.text.isEmpty ||
+                descriptionController.text.isEmpty ||
+                criteriaController.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('กรุณากรอกข้อมูลให้ครบ'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+
+            Navigator.pop(dialogContext);
+
+            final success = await ref.read(kpiProvider(recordId).notifier).updateKpi(
+              kpi.id,
+              UpdateKpiRequest(
+                title: titleController.text,
+                description: descriptionController.text,
+                criteria: criteriaController.text,
+              ),
+            );
+
+            if (context.mounted) {
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('แก้ไข KPI สำเร็จ'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Reload probation detail
+                ref.read(probationDetailProvider(recordId).notifier).loadRecordByEmployeeId(recordId);
+              } else {
+                final error = ref.read(kpiProvider(recordId)).error;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(error ?? 'เกิดข้อผิดพลาด'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+          child: const Text('บันทึก'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showDeleteKpiConfirmation(BuildContext context, WidgetRef ref, String recordId, Kpi kpi) {
+  showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('ยืนยันการลบ KPI'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('คุณต้องการลบ KPI นี้หรือไม่?'),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  kpi.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  kpi.description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.warning_amber, color: Colors.orange, size: 20),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'การลบ KPI ไม่สามารถย้อนกลับได้',
+                    style: TextStyle(fontSize: 12, color: Colors.orange),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('ยกเลิก'),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () async {
+            Navigator.pop(dialogContext);
+
+            final success = await ref.read(kpiProvider(recordId).notifier).deleteKpi(kpi.id);
+
+            if (context.mounted) {
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('ลบ KPI สำเร็จ'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                // Reload probation detail
+                ref.read(probationDetailProvider(recordId).notifier).loadRecordByEmployeeId(recordId);
+              } else {
+                final error = ref.read(kpiProvider(recordId)).error;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(error ?? 'เกิดข้อผิดพลาด'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+          child: const Text('ลบ'),
+        ),
+      ],
+    ),
+  );
 }
 
 class _MilestoneCard extends StatelessWidget {

@@ -282,28 +282,28 @@ class AssessmentCategories {
   static const List<Map<String, dynamic>> categories = [
     {
       'key': 'coreValue',
-      'title': 'Core Value',
+      'title': 'ค่านิยมองค์กร',
       'description': 'ความคิดสร้างสรรค์และความรวดเร็ว',
       'icon': Icons.lightbulb,
       'color': Colors.amber,
     },
     {
       'key': 'jobPerformance',
-      'title': 'Job Performance',
+      'title': 'ผลงาน',
       'description': 'ผลงานตามรายละเอียดงาน (JD)',
       'icon': Icons.work,
       'color': Colors.blue,
     },
     {
       'key': 'attendance',
-      'title': 'Attendance',
+      'title': 'การเข้างาน',
       'description': 'การมาทำงานตรงต่อเวลา',
       'icon': Icons.access_time,
       'color': Colors.green,
     },
     {
       'key': 'cultureFit',
-      'title': 'Culture Fit',
+      'title': 'วัฒนธรรมองค์กร',
       'description': 'การปรับตัวเข้ากับทีมและ CI ขององค์กร',
       'icon': Icons.people,
       'color': Colors.purple,

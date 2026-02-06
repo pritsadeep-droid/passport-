@@ -100,10 +100,10 @@ class _AssessmentCard extends StatelessWidget {
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 8),
-              _ScoreRow(label: 'Core Value', score: assessment.coreValue),
-              _ScoreRow(label: 'Job Performance', score: assessment.jobPerformance),
-              _ScoreRow(label: 'Attendance', score: assessment.attendance),
-              _ScoreRow(label: 'Culture Fit', score: assessment.cultureFit),
+              _ScoreRow(label: 'ค่านิยมองค์กร', score: assessment.coreValue),
+              _ScoreRow(label: 'ผลงาน', score: assessment.jobPerformance),
+              _ScoreRow(label: 'การเข้างาน', score: assessment.attendance),
+              _ScoreRow(label: 'วัฒนธรรมองค์กร', score: assessment.cultureFit),
               if (assessment.comments != null &&
                   assessment.comments!.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -221,10 +221,10 @@ class _SupervisorAssessmentCard extends StatelessWidget {
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 8),
-              _ScoreRow(label: 'Core Value', score: assessment.coreValue),
-              _ScoreRow(label: 'Job Performance', score: assessment.jobPerformance),
-              _ScoreRow(label: 'Attendance', score: assessment.attendance),
-              _ScoreRow(label: 'Culture Fit', score: assessment.cultureFit),
+              _ScoreRow(label: 'ค่านิยมองค์กร', score: assessment.coreValue),
+              _ScoreRow(label: 'ผลงาน', score: assessment.jobPerformance),
+              _ScoreRow(label: 'การเข้างาน', score: assessment.attendance),
+              _ScoreRow(label: 'วัฒนธรรมองค์กร', score: assessment.cultureFit),
               if (assessment.kpiScores != null &&
                   assessment.kpiScores!.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -447,22 +447,22 @@ class AssessmentComparison extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ComparisonRow(
-              label: 'Core Value',
+              label: 'ค่านิยมองค์กร',
               selfScore: selfAssessment?.coreValue?.score,
               supervisorScore: supervisorAssessment?.coreValue?.score,
             ),
             _ComparisonRow(
-              label: 'Job Performance',
+              label: 'ผลงาน',
               selfScore: selfAssessment?.jobPerformance?.score,
               supervisorScore: supervisorAssessment?.jobPerformance?.score,
             ),
             _ComparisonRow(
-              label: 'Attendance',
+              label: 'การเข้างาน',
               selfScore: selfAssessment?.attendance?.score,
               supervisorScore: supervisorAssessment?.attendance?.score,
             ),
             _ComparisonRow(
-              label: 'Culture Fit',
+              label: 'วัฒนธรรมองค์กร',
               selfScore: selfAssessment?.cultureFit?.score,
               supervisorScore: supervisorAssessment?.cultureFit?.score,
             ),

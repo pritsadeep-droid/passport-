@@ -56,7 +56,7 @@ class _HRHomeScreenState extends ConsumerState<HRHomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'แดชบอร์ด',
           ),
           NavigationDestination(
             icon: Icon(Icons.people_outline),
@@ -214,12 +214,9 @@ class _SettingsScreen extends ConsumerWidget {
             context,
             icon: Icons.email_outlined,
             title: 'ตั้งค่าอีเมล',
-            subtitle: 'กำหนดเทมเพลตอีเมลแจ้งเตือน',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('กำลังพัฒนา...')),
-              );
-            },
+            subtitle: 'กำลังพัฒนา...',
+            enabled: false,
+            onTap: () {},
           ),
 
           const Divider(),
@@ -228,12 +225,9 @@ class _SettingsScreen extends ConsumerWidget {
             context,
             icon: Icons.help_outline,
             title: 'ช่วยเหลือ',
-            subtitle: 'คู่มือการใช้งาน',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('กำลังพัฒนา...')),
-              );
-            },
+            subtitle: 'กำลังพัฒนา...',
+            enabled: false,
+            onTap: () {},
           ),
 
           _buildSettingsTile(
@@ -280,21 +274,35 @@ class _SettingsScreen extends ConsumerWidget {
     Color? iconColor,
     Color? titleColor,
     bool showTrailing = true,
+    bool enabled = true,
   }) {
     final theme = Theme.of(context);
+    final disabledColor = Colors.grey[400];
 
     return ListTile(
       leading: Icon(
         icon,
-        color: iconColor ?? theme.iconTheme.color,
+        color: enabled ? (iconColor ?? theme.iconTheme.color) : disabledColor,
       ),
       title: Text(
         title,
-        style: TextStyle(color: titleColor),
+        style: TextStyle(
+          color: enabled ? titleColor : disabledColor,
+        ),
       ),
-      subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
-      trailing: showTrailing ? const Icon(Icons.chevron_right) : null,
-      onTap: onTap,
+      subtitle: subtitle.isNotEmpty
+          ? Text(
+              subtitle,
+              style: TextStyle(color: enabled ? null : disabledColor),
+            )
+          : null,
+      trailing: showTrailing
+          ? Icon(
+              Icons.chevron_right,
+              color: enabled ? null : disabledColor,
+            )
+          : null,
+      onTap: enabled ? onTap : null,
     );
   }
 

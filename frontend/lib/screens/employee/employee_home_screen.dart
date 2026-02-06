@@ -58,7 +58,7 @@ class _EmployeeHomeScreenState extends ConsumerState<EmployeeHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.timeline_outlined),
             activeIcon: Icon(Icons.timeline),
-            label: 'Milestones',
+            label: 'ไมล์สโตน',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -939,7 +939,7 @@ class _MilestonesTab extends ConsumerWidget {
               child: const Icon(Icons.flag, color: Colors.white, size: 16),
             ),
             const SizedBox(width: 8),
-            const Text('Milestones'),
+            const Text('ไมล์สโตน'),
           ],
         ),
       ),
