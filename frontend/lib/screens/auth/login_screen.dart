@@ -169,44 +169,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                     child: const Text('ลืมรหัสผ่าน?'),
                   ),
-
-                  // Debug: Quick login buttons for testing
-                  const SizedBox(height: AppSpacing.xl),
-                  const Divider(),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Quick Login (Dev)',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: AppSpacing.sm,
-                    children: [
-                      _buildQuickLoginChip('Employee', 'employee1@company.com'),
-                      _buildQuickLoginChip('Supervisor', 'supervisor@company.com'),
-                      _buildQuickLoginChip('HR', 'hr@company.com'),
-                    ],
-                  ),
                 ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildQuickLoginChip(String label, String email) {
-    return ActionChip(
-      label: Text(label),
-      onPressed: () {
-        _emailController.text = email;
-        _passwordController.text = 'password123';
-        // Auto-submit the form
-        _handleLogin();
-      },
     );
   }
 

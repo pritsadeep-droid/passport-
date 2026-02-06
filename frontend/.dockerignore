@@ -1,9 +1,9 @@
+# Source files (not needed for deployment)
 .dart_tool
 .idea
 .git
 test
 lib
-assets
 *.iml
 .metadata
 android
@@ -14,3 +14,7 @@ windows
 web
 pubspec.*
 analysis_options.yaml
+build
+
+# Keep webdeploy (contains built app)
+# !webdeploy

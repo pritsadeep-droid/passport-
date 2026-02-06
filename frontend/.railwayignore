@@ -4,7 +4,6 @@
 .git
 test
 lib
-assets
 *.iml
 .metadata
 android
@@ -13,3 +12,6 @@ linux
 macos
 windows
 web
+build
+pubspec.*
+analysis_options.yaml
