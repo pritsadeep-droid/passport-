@@ -1,0 +1,16 @@
+.dart_tool
+.idea
+.git
+test
+lib
+assets
+*.iml
+.metadata
+android
+ios
+linux
+macos
+windows
+web
+pubspec.*
+analysis_options.yaml

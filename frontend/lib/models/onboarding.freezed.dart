@@ -1125,6 +1125,7 @@ mixin _$OnboardingTemplate {
   List<Question> get questions => throw _privateConstructorUsedError;
   List<JourneyEvent> get events => throw _privateConstructorUsedError;
   int get durationDays => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -1148,6 +1149,7 @@ abstract class $OnboardingTemplateCopyWith<$Res> {
       List<Question> questions,
       List<JourneyEvent> events,
       int durationDays,
+      bool isActive,
       DateTime? createdAt,
       DateTime? updatedAt});
 }
@@ -1172,6 +1174,7 @@ class _$OnboardingTemplateCopyWithImpl<$Res, $Val extends OnboardingTemplate>
     Object? questions = null,
     Object? events = null,
     Object? durationDays = null,
+    Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -1204,6 +1207,10 @@ class _$OnboardingTemplateCopyWithImpl<$Res, $Val extends OnboardingTemplate>
           ? _value.durationDays
           : durationDays // ignore: cast_nullable_to_non_nullable
               as int,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1232,6 +1239,7 @@ abstract class _$$OnboardingTemplateImplCopyWith<$Res>
       List<Question> questions,
       List<JourneyEvent> events,
       int durationDays,
+      bool isActive,
       DateTime? createdAt,
       DateTime? updatedAt});
 }
@@ -1254,6 +1262,7 @@ class __$$OnboardingTemplateImplCopyWithImpl<$Res>
     Object? questions = null,
     Object? events = null,
     Object? durationDays = null,
+    Object? isActive = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -1286,6 +1295,10 @@ class __$$OnboardingTemplateImplCopyWithImpl<$Res>
           ? _value.durationDays
           : durationDays // ignore: cast_nullable_to_non_nullable
               as int,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1309,6 +1322,7 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
       final List<Question> questions = const [],
       final List<JourneyEvent> events = const [],
       this.durationDays = 119,
+      this.isActive = false,
       this.createdAt,
       this.updatedAt})
       : _missions = missions,
@@ -1356,13 +1370,16 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
   @JsonKey()
   final int durationDays;
   @override
+  @JsonKey()
+  final bool isActive;
+  @override
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'OnboardingTemplate(id: $id, name: $name, description: $description, missions: $missions, questions: $questions, events: $events, durationDays: $durationDays, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'OnboardingTemplate(id: $id, name: $name, description: $description, missions: $missions, questions: $questions, events: $events, durationDays: $durationDays, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -1380,6 +1397,8 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
             const DeepCollectionEquality().equals(other._events, _events) &&
             (identical(other.durationDays, durationDays) ||
                 other.durationDays == durationDays) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -1397,6 +1416,7 @@ class _$OnboardingTemplateImpl implements _OnboardingTemplate {
       const DeepCollectionEquality().hash(_questions),
       const DeepCollectionEquality().hash(_events),
       durationDays,
+      isActive,
       createdAt,
       updatedAt);
 
@@ -1424,6 +1444,7 @@ abstract class _OnboardingTemplate implements OnboardingTemplate {
       final List<Question> questions,
       final List<JourneyEvent> events,
       final int durationDays,
+      final bool isActive,
       final DateTime? createdAt,
       final DateTime? updatedAt}) = _$OnboardingTemplateImpl;
 
@@ -1445,6 +1466,8 @@ abstract class _OnboardingTemplate implements OnboardingTemplate {
   List<JourneyEvent> get events;
   @override
   int get durationDays;
+  @override
+  bool get isActive;
   @override
   DateTime? get createdAt;
   @override

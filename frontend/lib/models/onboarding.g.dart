@@ -138,6 +138,7 @@ _$OnboardingTemplateImpl _$$OnboardingTemplateImplFromJson(
               .toList() ??
           const [],
       durationDays: (json['durationDays'] as num?)?.toInt() ?? 119,
+      isActive: json['isActive'] as bool? ?? false,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -156,6 +157,7 @@ Map<String, dynamic> _$$OnboardingTemplateImplToJson(
       'questions': instance.questions,
       'events': instance.events,
       'durationDays': instance.durationDays,
+      'isActive': instance.isActive,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

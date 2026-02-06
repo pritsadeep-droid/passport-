@@ -124,6 +124,7 @@ class OnboardingTemplate with _$OnboardingTemplate {
     @Default([]) List<Question> questions,
     @Default([]) List<JourneyEvent> events,
     @Default(119) int durationDays,
+    @Default(false) bool isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _OnboardingTemplate;

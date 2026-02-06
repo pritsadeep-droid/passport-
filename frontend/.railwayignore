@@ -1,0 +1,15 @@
+# Only ignore these for Railway upload
+.dart_tool
+.idea
+.git
+test
+lib
+assets
+*.iml
+.metadata
+android
+ios
+linux
+macos
+windows
+web
