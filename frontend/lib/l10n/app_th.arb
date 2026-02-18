@@ -1,0 +1,33 @@
+{
+  "@@locale": "th",
+  "appTitle": "ระบบติดตาม KPI ทดลองงาน",
+  "login": "เข้าสู่ระบบ",
+  "logout": "ออกจากระบบ",
+  "email": "อีเมล",
+  "password": "รหัสผ่าน",
+  "dashboard": "แดชบอร์ด",
+  "employees": "พนักงาน",
+  "kpi": "KPI",
+  "assessment": "การประเมิน",
+  "notifications": "การแจ้งเตือน",
+  "settings": "ตั้งค่า",
+  "probationPeriod": "ช่วงทดลองงาน",
+  "daysRemaining": "เหลืออีก {days} วัน",
+  "@daysRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "progress": "ความคืบหน้า",
+  "complete": "เสร็จสมบูรณ์",
+  "pending": "รอดำเนินการ",
+  "approved": "อนุมัติแล้ว",
+  "rejected": "ไม่อนุมัติ",
+  "submit": "ส่ง",
+  "save": "บันทึก",
+  "cancel": "ยกเลิก",
+  "confirm": "ยืนยัน",
+  "loading": "กำลังโหลด..."
+}

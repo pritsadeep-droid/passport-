@@ -1,0 +1,33 @@
+{
+  "@@locale": "en",
+  "appTitle": "KPI Probation Tracking System",
+  "login": "Login",
+  "logout": "Logout",
+  "email": "Email",
+  "password": "Password",
+  "dashboard": "Dashboard",
+  "employees": "Employees",
+  "kpi": "KPI",
+  "assessment": "Assessment",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "probationPeriod": "Probation Period",
+  "daysRemaining": "{days} days remaining",
+  "@daysRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "progress": "Progress",
+  "complete": "Complete",
+  "pending": "Pending",
+  "approved": "Approved",
+  "rejected": "Rejected",
+  "submit": "Submit",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "loading": "Loading..."
+}

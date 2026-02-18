@@ -1,0 +1,722 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/hr_dashboard_provider.dart' as provider;
+import '../../services/dashboard_service.dart';
+import '../../widgets/stats_card.dart';
+import '../../widgets/bottleneck_card.dart';
+import '../../widgets/notification_badge.dart';
+import '../../utils/theme.dart';
+
+/// HR Dashboard screen
+class HRDashboardScreen extends ConsumerStatefulWidget {
+  const HRDashboardScreen({super.key});
+
+  @override
+  ConsumerState<HRDashboardScreen> createState() => _HRDashboardScreenState();
+}
+
+class _HRDashboardScreenState extends ConsumerState<HRDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(provider.hrDashboardProvider.notifier).loadDashboard();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final state = ref.watch(provider.hrDashboardProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/logo.webp',
+              width: 32,
+              height: 32,
+            ),
+            const SizedBox(width: 10),
+            const Text('CulturePassport'),
+          ],
+        ),
+        actions: [
+          NotificationIconBadge(
+            onTap: () => context.push('/notifications'),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(provider.hrDashboardProvider.notifier).refresh();
+        },
+        child: state.isLoading && state.data == null
+            ? const Center(child: CircularProgressIndicator())
+            : state.error != null && state.data == null
+                ? _buildErrorState(state.error!, theme)
+                : _buildContent(context, theme, state.data!),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error, ThemeData theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: theme.colorScheme.error.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'เกิดข้อผิดพลาด',
+              style: theme.textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () {
+                ref.read(provider.hrDashboardProvider.notifier).refresh();
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('ลองใหม่'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ThemeData theme, HrDashboardData data) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Red gradient welcome card
+          _buildWelcomeCard(context, ref),
+          const SizedBox(height: 16),
+
+          // Summary Stats - Updated style
+          _buildSummaryStats(context, theme, data),
+          const SizedBox(height: 24),
+
+          // Pass Rate
+          _buildPassRateCard(context, theme, data),
+          const SizedBox(height: 24),
+
+          // Bottlenecks
+          _buildBottlenecksSection(context, theme, data),
+          const SizedBox(height: 24),
+
+          // Pending Decisions
+          if (data.pendingDecisions.isNotEmpty) ...[
+            _buildPendingDecisionsSection(context, theme, data),
+            const SizedBox(height: 24),
+          ],
+
+          // Department Summary
+          _buildDepartmentSummary(context, theme, data),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeCard(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDC2626), // red-600
+            Color(0xFFB91C1C), // red-700
+            Color(0xFFBE123C), // rose-800
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC2626).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'แดชบอร์ดผู้ดูแลระบบ',
+              style: AppTextStyles.headline2.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'จัดการระบบและส่งออกข้อมูล',
+              style: AppTextStyles.body2.copyWith(
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              height: 1,
+              color: Colors.white.withOpacity(0.3),
+            ),
+            const SizedBox(height: 16),
+            // User info grid
+            Wrap(
+              spacing: 16,
+              runSpacing: 12,
+              children: [
+                _buildInfoChip(
+                  Icons.person_outline,
+                  'ชื่อ-นามสกุล',
+                  user?.name ?? 'HR Admin',
+                ),
+                _buildInfoChip(
+                  Icons.badge_outlined,
+                  'รหัสพนักงาน',
+                  user?.employeeId ?? 'ไม่ระบุ',
+                ),
+                _buildInfoChip(
+                  Icons.business_outlined,
+                  'บริษัท',
+                  'Lottery Plus Co., Ltd.',
+                ),
+                _buildInfoChip(
+                  Icons.groups_outlined,
+                  'แผนก',
+                  user?.department ?? 'HR',
+                ),
+                _buildInfoChip(
+                  Icons.work_outline,
+                  'ตำแหน่ง',
+                  user?.position ?? 'HR Admin',
+                ),
+                _buildInfoChip(
+                  Icons.star_outline,
+                  'ระดับตำแหน่ง',
+                  'Admin',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String label, String value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: const Color(0xFFB91C1C),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryStats(BuildContext context, ThemeData theme, HrDashboardData data) {
+    final stats = data.stats;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ภาพรวม',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.5,
+          children: [
+            _buildStatCard(
+              context,
+              icon: Icons.people,
+              iconBgColor: const Color(0xFFDBEAFE), // blue-100
+              iconColor: const Color(0xFF2563EB), // blue-600
+              title: 'ผู้ใช้งานทั้งหมด',
+              value: '${stats.total}',
+              subtitle: '${stats.inProgress} กำลังทดลอง',
+              onTap: () => context.push('/hr/employees'),
+            ),
+            _buildStatCard(
+              context,
+              icon: Icons.flag,
+              iconBgColor: const Color(0xFFDCFCE7), // green-100
+              iconColor: const Color(0xFF16A34A), // green-600
+              title: 'ภารกิจทั้งหมด',
+              value: '7',
+              subtitle: 'HAPINES Culture',
+              onTap: () {},
+            ),
+            _buildStatCard(
+              context,
+              icon: Icons.check_circle,
+              iconBgColor: const Color(0xFFF3E8FF), // purple-100
+              iconColor: const Color(0xFF9333EA), // purple-600
+              title: 'อัตราเสร็จสิ้น',
+              value: '${data.passRate.toInt()}%',
+              subtitle: '${stats.passed}/${stats.passed + stats.failed} ผ่าน',
+              onTap: () {},
+            ),
+            _buildStatCard(
+              context,
+              icon: Icons.storage,
+              iconBgColor: const Color(0xFFFED7AA).withOpacity(0.5), // orange-100
+              iconColor: const Color(0xFFEA580C), // orange-600
+              title: 'ข้อมูลในระบบ',
+              value: '${stats.total}',
+              subtitle: 'บันทึกภารกิจ',
+              onTap: () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required String title,
+    required String value,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade100),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: iconColor,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F2937), // gray-900
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPassRateCard(BuildContext context, ThemeData theme, HrDashboardData data) {
+    final passRate = data.passRate;
+    final passed = data.stats.passed;
+    final failed = data.stats.failed;
+    final total = passed + failed;
+
+    return Card(
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            PassRateIndicator(passRate: passRate),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'อัตราผ่านทดลองงาน',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildMiniStat(
+                        theme,
+                        'ผ่าน',
+                        '$passed',
+                        Colors.green,
+                      ),
+                      const SizedBox(width: 24),
+                      _buildMiniStat(
+                        theme,
+                        'ไม่ผ่าน',
+                        '$failed',
+                        theme.colorScheme.error,
+                      ),
+                      const SizedBox(width: 24),
+                      _buildMiniStat(
+                        theme,
+                        'รวม',
+                        '$total',
+                        theme.colorScheme.outline,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMiniStat(ThemeData theme, String label, String value, Color color) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottlenecksSection(BuildContext context, ThemeData theme, HrDashboardData data) {
+    // Convert from dashboard_service.BottleneckItem to provider.BottleneckItem
+    final bottlenecks = data.bottlenecks.map((b) => provider.BottleneckItem(
+      type: b.type,
+      severity: b.type == 'kpi_not_assigned' || b.type == 'ending_soon_incomplete' ? 'critical' : 'warning',
+      recordId: b.probationRecordId,
+      employeeId: b.employee.id,
+      employeeName: b.employee.name ?? b.employee.email ?? 'Unknown',
+      department: b.employee.department,
+      supervisorName: b.supervisor?.name,
+      message: _getBottleneckMessage(b),
+      milestoneDay: b.milestone != null ? ((b.milestone as Map<String, dynamic>)['day'] as int?) : null,
+      daysOverdue: b.milestone != null ? ((b.milestone as Map<String, dynamic>)['daysOverdue'] as int?) : null,
+      daysPending: b.daysSinceStart,
+    )).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'ปัญหาที่ต้องดำเนินการ',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            BottleneckSummaryChip(
+              criticalCount: bottlenecks.where((b) => b.isCritical).length,
+              warningCount: bottlenecks.where((b) => !b.isCritical).length,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        BottleneckList(
+          bottlenecks: bottlenecks,
+          onItemTap: (bottleneck) {
+            context.push('/hr/employee/${bottleneck.employeeId}/review');
+          },
+          maxItems: 5,
+          onSeeAll: () {
+            // Navigate to bottlenecks list
+          },
+        ),
+      ],
+    );
+  }
+
+  String _getBottleneckMessage(BottleneckItem b) {
+    switch (b.type) {
+      case 'kpi_not_assigned':
+        return 'ยังไม่ได้กำหนด KPI (${b.daysSinceStart ?? 0} วันแล้ว)';
+      case 'milestone_overdue':
+        final milestone = b.milestone as Map<String, dynamic>?;
+        final day = milestone?['day'] ?? 0;
+        final daysOverdue = milestone?['daysOverdue'] ?? 0;
+        return 'Milestone วันที่ $day ค้างอยู่ $daysOverdue วัน';
+      case 'pending_approval':
+        final milestone = b.milestone as Map<String, dynamic>?;
+        final day = milestone?['day'] ?? 0;
+        return 'Milestone วันที่ $day รออนุมัติ';
+      case 'ending_soon_incomplete':
+        return 'ใกล้สิ้นสุดทดลองงานแต่ยังไม่เสร็จสมบูรณ์';
+      default:
+        return 'มีปัญหาที่ต้องดำเนินการ';
+    }
+  }
+
+  Widget _buildPendingDecisionsSection(BuildContext context, ThemeData theme, HrDashboardData data) {
+    final pending = data.pendingDecisions;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'รอการตัดสินใจ',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push('/hr/employees?status=pending_decision'),
+              child: const Text('ดูทั้งหมด'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: pending.length > 5 ? 5 : pending.length,
+          itemBuilder: (context, index) {
+            final item = pending[index];
+            final employee = item.employee;
+            final daysRemaining = item.daysRemaining;
+
+            return Card(
+              elevation: 0,
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                onTap: () => context.push('/hr/employee/${item.id}/review'),
+                leading: CircleAvatar(
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  child: Text(
+                    (employee.name ?? employee.email ?? 'U')[0].toUpperCase(),
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ),
+                title: Text(employee.name ?? employee.email ?? 'Unknown'),
+                subtitle: Text(employee.department ?? ''),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: daysRemaining <= 3
+                        ? theme.colorScheme.errorContainer
+                        : Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'เหลือ $daysRemaining วัน',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: daysRemaining <= 3
+                          ? theme.colorScheme.error
+                          : Colors.orange.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDepartmentSummary(BuildContext context, ThemeData theme, HrDashboardData data) {
+    final departments = data.byDepartment;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'สรุปตามแผนก',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          elevation: 0,
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: departments.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final entry = departments.entries.elementAt(index);
+              final dept = entry.key;
+              final stats = entry.value;
+
+              return ListTile(
+                onTap: () => context.push('/hr/employees?department=$dept'),
+                title: Text(dept),
+                subtitle: Text(
+                  '${stats.total} คน (${stats.inProgress} กำลังทดลอง)',
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (stats.passed > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        margin: const EdgeInsets.only(right: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${stats.passed} ผ่าน',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                      ),
+                    if (stats.failed > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${stats.failed} ไม่ผ่าน',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}

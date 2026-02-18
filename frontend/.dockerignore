@@ -1,0 +1,20 @@
+# Source files (not needed for deployment)
+.dart_tool
+.idea
+.git
+test
+lib
+*.iml
+.metadata
+android
+ios
+linux
+macos
+windows
+web
+pubspec.*
+analysis_options.yaml
+build
+
+# Keep webdeploy (contains built app)
+# !webdeploy
